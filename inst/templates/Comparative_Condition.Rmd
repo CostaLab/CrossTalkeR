@@ -33,7 +33,6 @@ plot_ggi<-function(graph,color){
   V(graph)$genes <- v_names$genes
   V(graph)$cluster <- v_names$cluster
   V(graph)$lcolors <-color[V(graph)$cluster]
-  print(V(graph)$lcolors)
   ecolors <- rev(pals::coolwarm(25))[round(oce::rescale(E(graph)$MeanLR,xlow = min(E(graph)$MeanLR),rlow = 1, rhigh = 25))]
   E(graph)$colors <- ecolors
   cls <- names(color)

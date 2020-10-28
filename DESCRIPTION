@@ -28,4 +28,7 @@ Imports:
     rmarkdown,
     ggraph (>= 2.0.3),
     scales,
-    oce
+    oce,
+    gprofiler2, 
+    pals,
+    netdiffuseR

@@ -1,0 +1,51 @@
+---
+title: "LR_Report"
+author: "Nagai"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+      toc: true
+      toc_float: true
+      number_sections: true
+      theme: simplex
+params:
+  single: "path to single report template"
+  comp: "path to comparative report template"
+  obj1: "single tables obj"
+  obj2: "comparative tables obj"
+   
+
+---
+<style>
+      div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+
+# Single Condition Analysis
+
+```{r cci, child='Single_Condition.Rmd'}
+```
+
+# Differential Analysis
+
+```{r ccr, child='Comparative_Condition.Rmd'}
+```
+
+
+# Sankey Plot Visualization
+
+```{r snkey, child='SankeyPlot.html',eval=F}
+```
+
+# Table
+
+## CellPhoneDB  tables
+
+[Link](tables/cpdb_results/cellphonedb_fmt_output.xlsx)
+
+
+
+## Differential Network Tables
+
+[Link](tables/gene_level_results/network.xlsx)
+)
+

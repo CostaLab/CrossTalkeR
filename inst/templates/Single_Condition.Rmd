@@ -1,0 +1,65 @@
+---
+title: "Report per condition"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+params:
+  obj1: "path to obj"
+    
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(stringr)
+require(patchwork)
+require(LRAnalytics)
+```
+
+## Single Condition Cell Cell Interaction Plot (CCI)
+
+```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+path <-params$obj1
+all_data <- readRDS(path)
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(!str_detect(curr, '_x_', negate = FALSE)){
+      curr_net <- all_data@graphs[[curr]]
+      plotLR_diff1(curr_net,
+                 all_data@colors[V(curr_net)$name],
+                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE)
+  }
+}
+```
+
+## Single Condition Cell Cell Ranking Sending(out-degree) Receiving (in-degree)
+
+```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(!str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs[[curr]]
+    in_deg <- igraph::degree(curr_net, mode = 'in')
+    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
+    out_deg <- igraph::degree(curr_net, mode = 'out')
+    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
+    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green3')+
+      ggplot2::ggtitle('Receiving Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green4')+
+      ggplot2::ggtitle('Sending Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
+  }
+}
+```

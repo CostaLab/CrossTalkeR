@@ -1,0 +1,150 @@
+---
+title: "Report diferential analysis"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+params:
+  obj2: "path to obj"
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F, echo=FALSE}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(patchwork)
+require(stringr)
+require(LRAnalytics)
+require(ggraph)
+require(graphlayouts)
+require(pals)
+plot_ggi<-function(graph,color){
+  deg <- degree(graph)
+  deg1 <- deg[order(deg,decreasing = T)]
+  root <-names(deg1)[1]
+  v_names <- V(graph)$name
+  v_names <- tibble::as_tibble(v_names)
+  v_names <-v_names %>%
+    separate(value, c("genes", "cluster"), "_")
+  V(graph)$genes <- v_names$genes
+  V(graph)$cluster <- v_names$cluster
+  V(graph)$lcolors <-color[V(graph)$cluster]
+  print(V(graph)$lcolors)
+  ecolors <- rev(pals::coolwarm(25))[round(oce::rescale(E(graph)$MeanLR,xlow = min(E(graph)$MeanLR),rlow = 1, rhigh = 25))]
+  E(graph)$colors <- ecolors
+  cls <- names(color)
+  names(color) <- NULL
+  ewidth <- (abs(E(graph)$MeanLR) - mean(abs(E(graph)$MeanLR)))/sd(abs(E(graph)$MeanLR))
+  ewidth <-  (ewidth-min(ewidth))/(max(ewidth)-min(ewidth))
+  print(ggraph(graph,layout='stress')+
+    geom_edge_link0(aes(edge_width=ewidth,color=E(graph)$MeanLR),alpha=ewidth)+
+    scale_edge_color_gradient2(low=coolwarm(25)[1],high =coolwarm(25)[25])+
+    geom_node_point(size=(deg/max(deg)*10),alpha=1,aes(color=V(graph)$lcolors))+
+    scale_colour_manual(values=color,labels=cls,name='Clusters')+
+    geom_node_text(aes(filter=deg>deg1[10],label=genes))+
+    scale_edge_width_continuous(range = c(0,1))+
+    #scale_size(range = c(1,6))+
+    theme_graph()+
+    theme(legend.position = "left"))
+  
+  }
+
+```
+
+## Differential Cell Cell Interaction Plot (CCI)
+
+```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+path <-params$obj2
+all_data <- readRDS(path)
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs[[curr]]
+    plotLR_diff1(curr_net,
+               all_data@colors[V(curr_net)$name],
+               paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE)
+  }
+}
+```
+
+## Differential Cell Cell Ranking Sending(out-degree) Receiving (in-degree)
+
+```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs[[curr]]
+    in_deg <- igraph::degree(curr_net, mode = 'in')
+    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
+    out_deg <- igraph::degree(curr_net, mode = 'out')
+    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
+    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green3')+
+      ggplot2::ggtitle('Receiving Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green4')+
+      ggplot2::ggtitle('Sending Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
+  }
+}
+```
+
+
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI)
+
+```{r fig.align='center', fig.height=10, fig.width=10,message=FALSE, warning=FALSE,echo=F}
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs_ggi[[curr]]
+    plot_ggi(curr_net,color = all_data@colors)
+  }
+}
+```
+
+## Differential Gene_Cell Gene_Cell Ranking Sending(out-degree) Receiving (in-degree)
+
+```{r fig.align='center', fig.height=6, fig.width=10,message=FALSE, warning=FALSE,echo=F}
+
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs_ggi[[curr]]
+    in_deg <- igraph::degree(curr_net, mode = 'in')
+    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
+    out_deg <- igraph::degree(curr_net, mode = 'out')
+    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
+    p1 <- ggplot2::ggplot(dplyr::top_n(in_deg, 25, inter),ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green3')+
+      ggplot2::ggtitle('Receiving Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    p2 <- ggplot2::ggplot(dplyr::top_n(out_deg, 25, inter),ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+      ggplot2::geom_bar(stat="identity",fill='green4')+
+      ggplot2::ggtitle('Sending Interactions')+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+

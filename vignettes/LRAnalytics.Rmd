@@ -1,0 +1,32 @@
+
+---
+title: "LRAnalytics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LRAnalytics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(LRAnalytics)
+```
+
+```{r}
+paths <- c('SHAM' = '../Nadine/Report/shan_filtered_corrected.csv',
+             'IRI' = '../Nadine/Report/iri_filtered_corrected.csv',
+             'SNTX' = '../Nadine/Report/stnx_filtered_corrected.csv')
+genes <- c('PECAM1','FGFR2','CD74')
+data <- generate_report(paths,genes,'/home/nagai/Documents/')
+
+
+```
+
+

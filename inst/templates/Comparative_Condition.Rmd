@@ -22,35 +22,7 @@ require(LRAnalytics)
 require(ggraph)
 require(graphlayouts)
 require(pals)
-plot_ggi<-function(graph,color){
-  deg <- degree(graph)
-  deg1 <- deg[order(deg,decreasing = T)]
-  root <-names(deg1)[1]
-  v_names <- V(graph)$name
-  v_names <- tibble::as_tibble(v_names)
-  v_names <-v_names %>%
-    separate(value, c("genes", "cluster"), "_")
-  V(graph)$genes <- v_names$genes
-  V(graph)$cluster <- v_names$cluster
-  V(graph)$lcolors <-color[V(graph)$cluster]
-  ecolors <- rev(pals::coolwarm(25))[round(oce::rescale(E(graph)$MeanLR,xlow = min(E(graph)$MeanLR),rlow = 1, rhigh = 25))]
-  E(graph)$colors <- ecolors
-  cls <- names(color)
-  names(color) <- NULL
-  ewidth <- (abs(E(graph)$MeanLR) - mean(abs(E(graph)$MeanLR)))/sd(abs(E(graph)$MeanLR))
-  ewidth <-  (ewidth-min(ewidth))/(max(ewidth)-min(ewidth))
-  print(ggraph(graph,layout='stress')+
-    geom_edge_link0(aes(edge_width=ewidth,color=E(graph)$MeanLR),alpha=ewidth)+
-    scale_edge_color_gradient2(low=coolwarm(25)[1],high =coolwarm(25)[25])+
-    geom_node_point(size=(deg/max(deg)*10),alpha=1,aes(color=V(graph)$lcolors))+
-    scale_colour_manual(values=color,labels=cls,name='Clusters')+
-    geom_node_text(aes(filter=deg>deg1[10],label=genes))+
-    scale_edge_width_continuous(range = c(0,1))+
-    #scale_size(range = c(1,6))+
-    theme_graph()+
-    theme(legend.position = "left"))
-  
-  }
+
 
 ```
 
@@ -98,9 +70,9 @@ for(i in 1:length(names(all_data@tables))){
 ```
 
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (GGI)
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree*
 
-```{r fig.align='center', fig.height=10, fig.width=10,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=8, fig.width=15,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
@@ -109,6 +81,19 @@ for(i in 1:length(names(all_data@tables))){
   }
 }
 ```
+
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Articulation point*
+
+```{r fig.align='center', fig.height=8, fig.width=15,message=FALSE, warning=FALSE,echo=F}
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+    curr_net <- all_data@graphs_ggi[[curr]]
+    plot_articulation(curr_net,color = all_data@colors)
+  }
+}
+```
+
 
 ## Differential Gene_Cell Gene_Cell Ranking Sending(out-degree) Receiving (in-degree)
 

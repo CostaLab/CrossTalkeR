@@ -13,6 +13,7 @@ params:
   comp: "path to comparative report template"
   obj1: "single tables obj"
   obj2: "comparative tables obj"
+  obj3: "sankey gene plot"
    
 
 ---
@@ -33,9 +34,9 @@ params:
 
 # Sankey Plot Visualization
 
-```{r snkey, child='SankeyPlot.html',eval=F}
+```{r snkey, child='SankeyPlots.Rmd'}
 ```
-
+<!-- 
 # Table
 
 ## CellPhoneDB  tables
@@ -48,4 +49,4 @@ params:
 
 [Link](tables/gene_level_results/network.xlsx)
 )
-
+-->

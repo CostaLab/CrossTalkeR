@@ -29,6 +29,5 @@ Imports:
     ggraph (>= 2.0.3),
     scales,
     oce,
-    gprofiler2, 
     pals,
     netdiffuseR

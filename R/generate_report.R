@@ -10,7 +10,7 @@
 #'@importFrom tidyr %>%
 #'@export
 #'
-generate_report <- function(LRpaths,out_path,sep=','){
+generate_report <- function(LRpaths,genes,out_path,sep=','){
   # Creating the single condition Object
   data <- read_lr_single_condiction(LRpaths,out_path,sep=',')
   # Obtaining the differential table
@@ -20,12 +20,15 @@ generate_report <- function(LRpaths,out_path,sep=','){
   # Generating the single condition report
   single <- system.file('templates','Single_Condition.Rmd', package = 'LRAnalytics')
   comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
+  sankey <- system.file('templates','SankeyPlots.Rmd', package = 'LRAnalytics')
+
   lrObj_path1 <- paste0(out_path,'LR_data.Rds')
   lrObj_path2 <- paste0(out_path,'LR_data_step2.Rds')
   param <- list(single=single,
                 comp = comp,
                 obj1 = lrObj_path1,
-                obj2 = lrObj_path2)
+                obj2 = lrObj_path2,
+                obj3 = genes)
   index <- system.file('templates','FinalReport.Rmd', package = 'LRAnalytics')
   rmarkdown::render(index,
                     output_format = 'html_document',
@@ -72,7 +75,7 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=','){
     freq = table(data1$cellpair)/sum(table(data1$cellpair))
     final$freq <- as.array(freq)[final$pair]
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
-    igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter <- final$freq*100 #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data[[conds[i]]] <- data1
@@ -184,7 +187,7 @@ create_diff_table <- function(data,out_path){
     freq = table(final_data$cellpair)/sum(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
-    igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter <- final$freq*100 #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1

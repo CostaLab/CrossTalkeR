@@ -32,7 +32,7 @@ for(i in 1:length(names(all_data@tables))){
       curr_net <- all_data@graphs[[curr]]
       plotLR_diff1(curr_net,
                  all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE)
+                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=0)
   }
 }
 ```

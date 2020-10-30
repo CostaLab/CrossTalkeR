@@ -1,0 +1,48 @@
+---
+title: "Report diferential analysis"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+params:
+  obj2: "path to obj"
+  obj3: "genelist"
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F, echo=FALSE}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(patchwork)
+require(stringr)
+require(LRAnalytics)
+require(ggraph)
+require(graphlayouts)
+require(pals)
+
+
+```
+
+## Genes Sankey Plot 
+
+```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+path <-params$obj2
+all_data <- readRDS(path)
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+      for(gene in params$obj3){
+        print(gene)
+        plot_sankey(all_data@tables[[curr]], 
+            gene,
+            unique(all_data@tables$IRI$Ligand.Cluster),
+            unique(all_data@tables$IRI$Receptor.Cluster),paste0(curr,' ',gene))
+      }
+  }
+}
+```
+

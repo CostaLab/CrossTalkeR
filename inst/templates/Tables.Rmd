@@ -1,0 +1,52 @@
+---
+title: "Tables"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+      self_contained: true
+params:
+  obj2: "path to obj"
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F, echo=FALSE}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(patchwork)
+require(stringr)
+require(LRAnalytics)
+require(ggraph)
+require(graphlayouts)
+require(pals)
+require(htmltools)
+require(DT)
+require(knitr)
+```
+
+
+
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
+path <-params$obj2
+out <- c()
+out1 <- list()
+all_data <- readRDS(path)
+for(i in 1:length(names(all_data@tables))){
+     curr <- names(all_data@tables)[i]
+     rmd_title <- paste0(curr,'_tbl')
+     knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE}
+                             \n\n
+                             datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'MeanLR')])
+                             \n\n```")
+     out <- c(out,knit_expanded)
+     out1[[curr]] <-knit_expanded
+}
+
+```
+
+`r paste(knit(text = out), collapse = '\n')`
+

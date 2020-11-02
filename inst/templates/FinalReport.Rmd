@@ -36,8 +36,14 @@ params:
 
 ```{r snkey, child='SankeyPlots.Rmd'}
 ```
-<!-- 
+
 # Table
+
+```{r tbl, child='Tables.Rmd'}
+```
+
+
+<!-- 
 
 ## CellPhoneDB  tables
 

@@ -21,6 +21,7 @@ generate_report <- function(LRpaths,genes,out_path,sep=','){
   single <- system.file('templates','Single_Condition.Rmd', package = 'LRAnalytics')
   comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
   sankey <- system.file('templates','SankeyPlots.Rmd', package = 'LRAnalytics')
+  tbl <- system.file('templates','Tables.Rmd', package = 'LRAnalytics')
 
   lrObj_path1 <- paste0(out_path,'LR_data.Rds')
   lrObj_path2 <- paste0(out_path,'LR_data_step2.Rds')

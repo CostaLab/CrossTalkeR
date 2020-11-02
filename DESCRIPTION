@@ -34,7 +34,9 @@ Imports:
     oce (>= 1.2),
     netdiffuseR (>= 1.22.0),
     ggalluvial (>= 0.12.2),
-    gprofiler2 (>= 0.2)
+    gprofiler2 (>= 0.2),
+    DT (>= 0.16),
+    htmltools (>= 0.5.0)
 Suggests: 
     knitr
 VignetteBuilder: knitr

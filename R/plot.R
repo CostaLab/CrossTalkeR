@@ -38,7 +38,7 @@ plotLR_diff1 <- function(ce,col,plt_name, coords,emax=NA,leg=FALSE,low=25,high=7
   }
   loop.angle<-ifelse(coords_scale[V(ce),1]>0,-atan(coords_scale[V(ce),2]/coords_scale[V(ce),1]),pi-atan(coords_scale[V(ce),2]/coords_scale[V(ce),1]))
   loop.angle<-0
-  igraph::V(ce)$size<-5
+  igraph::V(ce)$size<-10
   igraph::V(ce)$color<-col[as.numeric(igraph::V(ce))]
   igraph::V(ce)$label.color<-'black'
   igraph::V(ce)$label.cex<-1.5
@@ -97,7 +97,6 @@ plot_ggi<-function(graph,color){
     tidyr::separate(value, c("genes", "cluster"), "_")
   igraph::V(graph)$genes <- v_names$genes
   igraph::V(graph)$cluster <- v_names$cluster
-  igraph::V(graph)$lcolors <-color[V(graph)$cluster]
   ecolors <- rev(pals::coolwarm(25))[round(oce::rescale(E(graph)$MeanLR,xlow = min(E(graph)$MeanLR),rlow = 1, rhigh = 25))]
   igraph::E(graph)$colors <- ecolors
   cls <- names(color)
@@ -107,7 +106,7 @@ plot_ggi<-function(graph,color){
   print(ggraph::ggraph(graph,layout='stress')+
           ggraph::geom_edge_link0(ggplot2::aes(edge_width=ewidth,color=igraph::E(graph)$MeanLR),alpha=ewidth)+
           ggraph::scale_edge_color_gradient2(low=pals::coolwarm(25)[1],high=pals::coolwarm(25)[25])+
-          ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=V(graph)$lcolors))+
+          ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=V(graph)$cluster))+
           ggplot2::scale_colour_manual(values=color,labels=cls,name='Clusters')+
           ggraph::geom_node_text(ggplot2::aes(filter=deg>deg1[10],label=genes))+
           ggraph::scale_edge_width_continuous(range = c(0,1))+
@@ -129,7 +128,6 @@ plot_ggi<-function(graph,color){
 plot_articulation<-function(graph,color){
   deg <- igraph::degree(graph)
   deg1 <- deg[order(deg,decreasing = T)]
-  root <-names(deg1)[1]
   v_names <- igraph::V(graph)$name
   v_names <- tibble::as_tibble(v_names)
   v_names <-v_names %>%
@@ -146,7 +144,7 @@ plot_articulation<-function(graph,color){
   print(ggraph::ggraph(graph,layout='stress')+
           ggraph::geom_edge_link0(ggplot2::aes(edge_width=ewidth,color=igraph::E(graph)$MeanLR),alpha=ewidth)+
           ggraph::scale_edge_color_gradient2(low=pals::coolwarm(25)[1],high=pals::coolwarm(25)[25])+
-          ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=V(graph)$lcolors))+
+          ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=V(graph)$cluster))+
           ggplot2::scale_colour_manual(values=color,labels=cls,name='Clusters')+
           ggraph::geom_node_text(ggplot2::aes(filter=igraph::V(graph) %in% igraph::articulation.points(graph),label=genes))+
           ggraph::scale_edge_width_continuous(range = c(0,1))+
@@ -171,7 +169,7 @@ plot_articulation<-function(graph,color){
 #'@importFrom tidyr %>%
 #'@export
 plot_sankey<-function(LRObj_tbl,target,Ligand.Cluster, Receptor.Cluster,pltname){
-  data <- LRObj_tbl[grep(target, LRObj_tbl$allpair), ]
+  data <- LRObj_tbl[grep(paste(target,"_", sep=""), LRObj_tbl$allpair), ]
   data <- data[grep(paste(Ligand.Cluster, collapse='|'), data$Ligand.Cluster), ]
   data <- data[grep(paste(Receptor.Cluster, collapse='|'), data$Receptor.Cluster), ]
   data$Freq <- 1
@@ -187,7 +185,7 @@ plot_sankey<-function(LRObj_tbl,target,Ligand.Cluster, Receptor.Cluster,pltname)
       # geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 2) +
       ggplot2::geom_label(stat = "stratum", ggplot2::aes(label = ggplot2::after_stat(stratum)), size = 2) +
       ggplot2::scale_x_discrete(limits = c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster"), expand = c(.05, .05)) +
-      ggplot2::scale_fill_manual(values=pals::coolwarm(n=2),name='Upregulated')+
+      ggplot2::scale_fill_manual(values=if(sum(table(MeanLR > 0)) == 0 ,pals::coolwarm(n=2)[1],pals::coolwarm(n=2)),name='Upregulated')+
       ggplot2::ggtitle(pltname) +
       ggplot2::theme(
         text = element_text(size = 8)

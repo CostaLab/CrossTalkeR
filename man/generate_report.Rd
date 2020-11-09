@@ -4,7 +4,15 @@
 \alias{generate_report}
 \title{Run all LR Downstream analysis}
 \usage{
-generate_report(LRpaths, genes, out_path, sep = ",")
+generate_report(
+  LRpaths,
+  genes,
+  out_path,
+  sep = ",",
+  threshold = 50,
+  colors = NULL,
+  out_file = NULL
+)
 }
 \arguments{
 \item{LRpaths}{Paths of single condition LR data}

@@ -8,6 +8,7 @@ output:
       theme: simplex
 params:
   obj2: "path to obj"
+  thr: 'percentage edges to plot'
 
 ---
 
@@ -30,21 +31,34 @@ require(pals)
 
 ```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F}
 path <-params$obj2
+thresh <- params$thr
+low <- thresh/2
+high <- thresh+low
 all_data <- readRDS(path)
+tmp_max <- 0
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE)){
+      var <- abs(E(all_data@graphs[[curr]])$MeanLR)
+      if(max(var) > tmp_max){
+        tmp_max <- max(var)
+      }
+  }
+}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
     plotLR_diff1(curr_net,
                all_data@colors[V(curr_net)$name],
-               paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE)
+               paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=low,high = high,emax = tmp_max)
   }
 }
 ```
 
 ## Differential Cell Cell Ranking Sending(out-degree) Receiving (in-degree)
 
-```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
@@ -72,7 +86,7 @@ for(i in 1:length(names(all_data@tables))){
 
 ## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree*
 
-```{r fig.align='center', fig.height=8, fig.width=15,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=8, fig.width=16,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
@@ -84,7 +98,7 @@ for(i in 1:length(names(all_data@tables))){
 
 ## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Articulation point*
 
-```{r fig.align='center', fig.height=8, fig.width=15,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=8, fig.width=16,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
@@ -107,12 +121,18 @@ for(i in 1:length(names(all_data@tables))){
     in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
     out_deg <- igraph::degree(curr_net, mode = 'out')
     out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
-    p1 <- ggplot2::ggplot(dplyr::top_n(in_deg, 25, inter),ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+    in_deg_data <-dplyr::top_n(in_deg, 25, inter)
+    out_deg_data <- dplyr::top_n(out_deg, 25, inter)
+    l_in <- ifelse(dim(in_deg_data)[1] >= 25, 25, dim(in_deg_data)[1])
+    l_out <- ifelse(dim(out_deg_data)[1] >= 25, 25, dim(out_deg_data)[1])
+    in_deg_data <- in_deg_data[1:l_in,]
+    out_deg_data <- in_deg_data[1:l_out,]
+    p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
       ggplot2::geom_bar(stat="identity",fill='green3')+
       ggplot2::ggtitle('Receiving Interactions')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
-    p2 <- ggplot2::ggplot(dplyr::top_n(out_deg, 25, inter),ggplot2::aes(x=inter,y=reorder(cells,inter)))+
+    p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
       ggplot2::geom_bar(stat="identity",fill='green4')+
       ggplot2::ggtitle('Sending Interactions')+
       ggplot2::ylab('Cell')+

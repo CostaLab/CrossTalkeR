@@ -4,7 +4,7 @@
 \alias{read_lr_single_condiction}
 \title{Read single condition tables}
 \usage{
-read_lr_single_condiction(LRpaths, out_path, sep = ",")
+read_lr_single_condiction(LRpaths, out_path, sep = ",", colors = NULL)
 }
 \arguments{
 \item{LRpaths}{Paths of single condition LR data}

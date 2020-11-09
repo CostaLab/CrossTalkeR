@@ -36,11 +36,10 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
       for(gene in params$obj3){
-        print(gene)
         plot_sankey(all_data@tables[[curr]], 
             gene,
-            unique(all_data@tables$IRI$Ligand.Cluster),
-            unique(all_data@tables$IRI$Receptor.Cluster),paste0(curr,' ',gene))
+            unique(all_data@tables[[curr]]$Ligand.Cluster),
+            unique(all_data@tables[[curr]]$Receptor.Cluster),paste0(curr,' ',gene))
       }
   }
 }

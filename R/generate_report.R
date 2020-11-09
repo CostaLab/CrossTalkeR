@@ -10,33 +10,35 @@
 #'@importFrom tidyr %>%
 #'@export
 #'
-generate_report <- function(LRpaths,genes,out_path,sep=','){
+generate_report <- function(LRpaths,genes,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL){
   # Creating the single condition Object
-  data <- read_lr_single_condiction(LRpaths,out_path,sep=',')
+  message('Read Files')
+  data <- read_lr_single_condiction(LRpaths,out_path,sep=',',colors)
   # Obtaining the differential table
+  message('Create a Differential Table')
   if(length(LRpaths)>1){
     data <- create_diff_table(data,out_path)
   }
+  message('Defining templates')
   # Generating the single condition report
   single <- system.file('templates','Single_Condition.Rmd', package = 'LRAnalytics')
   comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
   sankey <- system.file('templates','SankeyPlots.Rmd', package = 'LRAnalytics')
   tbl <- system.file('templates','Tables.Rmd', package = 'LRAnalytics')
-
   lrObj_path1 <- paste0(out_path,'LR_data.Rds')
   lrObj_path2 <- paste0(out_path,'LR_data_step2.Rds')
   param <- list(single=single,
                 comp = comp,
                 obj1 = lrObj_path1,
                 obj2 = lrObj_path2,
-                obj3 = genes)
+                obj3 = genes,
+                thr = threshold)
   index <- system.file('templates','FinalReport.Rmd', package = 'LRAnalytics')
+  message('Generating Report')
   rmarkdown::render(index,
                     output_format = 'html_document',
-                    output_dir = out_path,params = param)
+                    output_dir = out_path,output_file = out_file,params = param)
 
-  #comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
-  #final <- system.file('templates','FinalReport.Rmd', package = 'LRAnalytics')
   return(data)
 }
 
@@ -52,26 +54,37 @@ generate_report <- function(LRpaths,genes,out_path,sep=','){
 #'@return LRObject
 #'@importFrom tidyr %>%
 #'@export
-read_lr_single_condiction <- function(LRpaths,out_path,sep=','){
+read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
   data <- list()
   graphs <- list()
+  load <- list()
   conds <- names(LRpaths)
   max <- 0
   max_nodes <- 0
+  unif_celltypes <- c()
   for(i in 1:length(LRpaths)){
+    print(LRpaths[i])
     data1 <- read.csv(LRpaths[i],sep=sep) # Reading csv
     data1 <- data1[, c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor', 'MeanLR')]
     data1$cellpair <- paste(data1$Ligand.Cluster,data1$Receptor.Cluster,sep='_')
     data1$ligpair <- paste(data1$Ligand,data1$Ligand.Cluster,sep='_')
     data1$recpair <- paste(data1$Receptor,data1$Receptor.Cluster,sep='_')
     data1$allpair <- paste(data1$ligpair,data1$recpair,sep='/')
+    unif_celltypes <- unique(c(data1$Ligand.Cluster, data1$Receptor.Cluster,unif_celltypes))
+
     data1 <- tibble::as_tibble(data1)
     final <- data1 %>%
       dplyr::group_by(cellpair) %>%
       dplyr::summarise(MeanLR = sum(MeanLR))
+    final2dosage <- data1 %>%
+      dplyr::group_by(cellpair) %>% remove_dosage()
+    load[[conds[i]]] <- final2dosage
     aux <- final$cellpair
     final <- final %>%
       tidyr::separate(cellpair, c("u", "v"), "_")
+    for(cnt in 1:dim(final)[1]){
+         final$MeanLR[cnt] =  final$MeanLR[cnt] - final2dosage[[final$u[cnt]]][[final$v[cnt]]]
+    }
     final$pair=aux
     freq = table(data1$cellpair)/sum(table(data1$cellpair))
     final$freq <- as.array(freq)[final$pair]
@@ -90,15 +103,26 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=','){
   }
   template <- igraph::make_full_graph(n=max_nodes, directed = T, loops=T)
   c <- igraph::layout.circle(template)
-  colors <- colorRampPalette(RColorBrewer::brewer.pal(12,"Paired"))(max_nodes)
-  names(colors) <- sort(igraph::V(graphs[[names(graphs)[1]]])$name)
+  if(is.null(colors)){
+    colors <- colorRampPalette(RColorBrewer::brewer.pal(12,"Paired"))(max_nodes)
+    names(colors) <- sort(igraph::V(graphs[[names(graphs)[1]]])$name)
+  }
+  for(g in names(graphs)){
+      sel = match(unif_celltypes,unique(igraph::V(graphs[[g]])$name), nomatch = F)==0
+      if(sum(sel)!=0){
+        nodes <- 1:length(unif_celltypes[sel])
+        names(nodes) <-unif_celltypes[sel]
+        graphs[[g]] <- igraph::add.vertices(graphs[[g]],length(nodes), attr=list(name=names(nodes)))
+      }
+  }
   rownames(c) <- sort(igraph::V(graphs[[names(graphs)[1]]])$name)
   LR <- new("LRObj",graphs=graphs,
             tables=data,
             max_iter=max,
             max_nodes=max_nodes,
             coords=c,
-            colors = colors)
+            colors = colors,
+            loadings=load)
   saveRDS(LR,paste0(out_path,'/LR_data.Rds'))
   return(LR)
 }
@@ -184,6 +208,12 @@ create_diff_table <- function(data,out_path){
     aux <- final$cellpair
     final <- final %>%
       tidyr::separate(cellpair, c("u", "v"), "_")
+    for(cnt in 1:dim(final)[1]){
+      exp_l <- ifelse(!is.null(data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
+      ctr_l <- ifelse(!is.null(data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
+      final$MeanLR[cnt]=final$MeanLR[cnt]-as.double(exp_l)-as.double(ctr_l)
+    }
+
     final$pair=aux
     freq = table(final_data$cellpair)/sum(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
@@ -204,6 +234,54 @@ create_diff_table <- function(data,out_path){
   return(data)
 }
 
+#'Count Gene Dosage
+#'
+#'@param list Paths of single condition LR data
+#'@return list
+#'@importFrom tidyr %>%
+#'@importFrom foreach %dopar%
+remove_dosage<-function(final){
+  #doParallel::registerDoParallel(core=4)
+  final <- final[final$MeanLR!=0,]
+  loadings <- list()
+  for(i in unique(final$Ligand.Cluster)){
+    print(i)
+    loadings[[i]] <- list()
+    sel_lig = match(final$Ligand.Cluster,i,nomatch = F) != F
+    for(j in unique(final$Receptor.Cluster[sel_lig])){
+      loadings[[i]][[j]] <- 0
+      sel = sel_lig &(match(final$Receptor.Cluster,j,nomatch = F) != F)
+      # Checking Ligands Dosage
+      for(k in unique(final$Ligand[sel])){
+        sel_lg = sel & (match(final$Ligand,k,nomatch = F)!=F)
+        sz = length(final$MeanLR[sel_lg])
+        if(sz >=2){
+          lr <- sum(final$MeanLR[sel_lg][1:2])
+          a <- final$MeanLR[sel_lg][1]
+          b <- final$MeanLR[sel_lg][2]
+          diff <- a-b
+          lig <- (lr-diff)/2
+          loadings[[i]][[j]] <- loadings[[i]][[j]]+lig*(sz-1)
+        }
+      }
+      #Checking Receptor Dosage
+      for(k in unique(final$Receptor[sel])){
+        sel_lg = sel & (match(final$Receptor,k,nomatch = F)!=F)
+        sz = length(final$MeanLR[sel_lg])
+        if(sz >=2){
+          lr <- sum(final$MeanLR[sel_lg][1:2])
+          a <- final$MeanLR[sel_lg][1]
+          b <- final$MeanLR[sel_lg][2]
+          diff <- a-b
+          lig <- (lr-diff)/2
+          loadings[[i]][[j]] <- loadings[[i]][[j]]+lig*(sz-1)
+        }
+      }
+      print(paste0('     ',j))
+    }
+  }
+  return(loadings)
+}
 
 
 #'
@@ -218,10 +296,12 @@ create_diff_table <- function(data,out_path){
 #'@slot max_nodes All Celltype in the experiment
 #'@slot coords  Cell Cell Interaction Plots
 #'@slot colors  Cell type colors
+#'@slot loadings  CCI values to remove multiple times genes
 LRObject <- setClass("LRObj", slots=list(graphs="list",
                                          graphs_ggi = "list",
                                          tables="list",
                                          max_iter="numeric",
                                          max_nodes="numeric",
                                          coords="array",
-                                         colors="character"))
+                                         colors="character",
+                                         loadings="list"))

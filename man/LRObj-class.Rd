@@ -24,5 +24,7 @@ measure
 \item{\code{coords}}{Cell Cell Interaction Plots}
 
 \item{\code{colors}}{Cell type colors}
+
+\item{\code{loadings}}{CCI values to remove multiple times genes}
 }}
 

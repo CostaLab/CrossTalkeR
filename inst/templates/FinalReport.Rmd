@@ -14,6 +14,7 @@ params:
   obj1: "single tables obj"
   obj2: "comparative tables obj"
   obj3: "sankey gene plot"
+  thr: 'percentage of disregarded edges'
    
 
 ---
@@ -28,18 +29,18 @@ params:
 
 # Differential Analysis
 
-```{r ccr, child='Comparative_Condition.Rmd'}
+```{r ccr, child='Comparative_Condition.Rmd',eval=TRUE}
 ```
 
 
 # Sankey Plot Visualization
 
-```{r snkey, child='SankeyPlots.Rmd'}
+```{r snkey, child='SankeyPlots.Rmd',eval=TRUE}
 ```
 
 # Table
 
-```{r tbl, child='Tables.Rmd'}
+```{r tbl, child='Tables.Rmd',eval=TRUE}
 ```
 
 

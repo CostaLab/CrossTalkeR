@@ -58,7 +58,7 @@ for(i in 1:length(names(all_data@tables))){
 
 ## Differential Cell Cell Ranking Sending(out-degree) Receiving (in-degree)
 
-```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE}
+```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE,echo=F}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
@@ -126,7 +126,7 @@ for(i in 1:length(names(all_data@tables))){
     l_in <- ifelse(dim(in_deg_data)[1] >= 25, 25, dim(in_deg_data)[1])
     l_out <- ifelse(dim(out_deg_data)[1] >= 25, 25, dim(out_deg_data)[1])
     in_deg_data <- in_deg_data[1:l_in,]
-    out_deg_data <- in_deg_data[1:l_out,]
+    out_deg_data <- out_deg_data[1:l_out,]
     p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
       ggplot2::geom_bar(stat="identity",fill='green3')+
       ggplot2::ggtitle('Receiving Interactions')+

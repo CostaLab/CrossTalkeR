@@ -48,7 +48,7 @@ plotLR_diff1 <- function(ce,col,plt_name, coords,emax=NA,leg=FALSE,low=25,high=7
   igraph::E(ce)$color <- col_pallet[we]
   aux <- E(ce)$inter
   aux <- ifelse(aux < high & aux > low, 0, aux)
-  igraph::E(ce)$arrow.width<- ifelse(aux < high & aux > low, 0, (aux/25)+1.5)
+  igraph::E(ce)$arrow.width<- ifelse(aux < high & aux > low, 0, (aux/(length(V(ce))*length(V(ce))))+1.5)
   igraph::E(ce)$color <- scales::alpha(igraph::E(ce)$color, aux)
   igraph::E(ce)$width <- aux#abs(E(ce)$weight)
   if(sum(edge.start[,2]==edge.start[,1])!=0){
@@ -169,13 +169,16 @@ plot_articulation<-function(graph,color){
 #'@importFrom tidyr %>%
 #'@export
 plot_sankey<-function(LRObj_tbl,target,Ligand.Cluster, Receptor.Cluster,pltname){
-  data <- LRObj_tbl[grep(paste(target,"_", sep=""), LRObj_tbl$allpair), ]
+  data <- LRObj_tbl[grepl(target, LRObj_tbl$allpair), ]
   data <- data[grep(paste(Ligand.Cluster, collapse='|'), data$Ligand.Cluster), ]
   data <- data[grep(paste(Receptor.Cluster, collapse='|'), data$Receptor.Cluster), ]
   data$Freq <- 1
+  colp <- pals::coolwarm(2)
+  names(colp) <- c('FALSE','TRUE')
   if(dim(data)[1] >= 1){
+    tmp <- top_n(data, ifelse(dim(data)[1] > 50, 50, dim(data)[1]), abs(MeanLR))
     print(ggplot2::ggplot(
-      top_n(data, ifelse(dim(data)[1] > 50, 50, dim(data)[1]), abs(MeanLR)),
+      tmp,
       aes(
         y = Freq,
         axis1 = Ligand.Cluster, axis2 = Ligand, axis3 = Receptor, axis4 = Receptor.Cluster)
@@ -185,7 +188,7 @@ plot_sankey<-function(LRObj_tbl,target,Ligand.Cluster, Receptor.Cluster,pltname)
       # geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 2) +
       ggplot2::geom_label(stat = "stratum", ggplot2::aes(label = ggplot2::after_stat(stratum)), size = 2) +
       ggplot2::scale_x_discrete(limits = c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster"), expand = c(.05, .05)) +
-      ggplot2::scale_fill_manual(values=if(sum(table(MeanLR > 0)) == 0 ,pals::coolwarm(n=2)[1],pals::coolwarm(n=2)),name='Upregulated')+
+      ggplot2::scale_fill_manual(values=colp,limits=names(colp),name='Upregulated')+
       ggplot2::ggtitle(pltname) +
       ggplot2::theme(
         text = element_text(size = 8)

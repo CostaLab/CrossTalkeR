@@ -80,11 +80,14 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
       dplyr::group_by(cellpair) %>% remove_dosage()
     load[[conds[i]]] <- final2dosage
     aux <- final$cellpair
+    clusters_num <- unique(c(unique(data1$Ligand.Cluster),unique(data1$Receptor.Cluster)))
+    print(length(clusters_num))
     final <- final %>%
       tidyr::separate(cellpair, c("u", "v"), "_")
-    for(cnt in 1:dim(final)[1]){
-         final$MeanLR[cnt] =  final$MeanLR[cnt] - final2dosage[[final$u[cnt]]][[final$v[cnt]]]
-    }
+    #for(cnt in 1:dim(final)[1]){
+    #     final$MeanLR[cnt] =  (final$MeanLR[cnt] + final2dosage[[final$u[cnt]]][[final$v[cnt]]])/(length(clusters_num)*length(clusters_num))
+    #     final$MeanLR[cnt] =  (final$MeanLR[cnt])/(length(clusters_num)*length(clusters_num))
+    #}
     final$pair=aux
     freq = table(data1$cellpair)/sum(table(data1$cellpair))
     final$freq <- as.array(freq)[final$pair]
@@ -208,13 +211,16 @@ create_diff_table <- function(data,out_path){
     aux <- final$cellpair
     final <- final %>%
       tidyr::separate(cellpair, c("u", "v"), "_")
-    for(cnt in 1:dim(final)[1]){
-      exp_l <- ifelse(!is.null(data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
-      ctr_l <- ifelse(!is.null(data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
-      final$MeanLR[cnt]=final$MeanLR[cnt]-as.double(exp_l)-as.double(ctr_l)
-    }
-
+    clusters_num <- unique(c(unique(final_data$Ligand.Cluster),unique(final_data$Receptor.Cluster)))
+    print(length(clusters_num))
+    #for(cnt in 1:dim(final)[1]){
+    # exp_l <- ifelse(!is.null(data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
+    # ctr_l <- ifelse(!is.null(data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
+    # final$MeanLR[cnt]=(final$MeanLR[cnt]+exp_l+ctr_l)/(length(clusters_num)*length(clusters_num))
+    # final$MeanLR[cnt]=(final$MeanLR[cnt])/(length(clusters_num)*length(clusters_num))
+    #}
     final$pair=aux
+    final_data <- final_data[final_data$MeanLR!=0,]
     freq = table(final_data$cellpair)/sum(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
@@ -250,31 +256,32 @@ remove_dosage<-function(final){
     sel_lig = match(final$Ligand.Cluster,i,nomatch = F) != F
     for(j in unique(final$Receptor.Cluster[sel_lig])){
       loadings[[i]][[j]] <- 0
-      sel = sel_lig &(match(final$Receptor.Cluster,j,nomatch = F) != F)
+      sel_cci = sel_lig &(match(final$Receptor.Cluster,j,nomatch = F) != F)
       # Checking Ligands Dosage
-      for(k in unique(final$Ligand[sel])){
-        sel_lg = sel & (match(final$Ligand,k,nomatch = F)!=F)
+      for(k in unique(final$Ligand[sel_cci])){
+        sel_lg = sel_cci & (match(final$Ligand,k,nomatch = F)!=F)
         sz = length(final$MeanLR[sel_lg])
         if(sz >=2){
           lr <- sum(final$MeanLR[sel_lg][1:2])
           a <- final$MeanLR[sel_lg][1]
           b <- final$MeanLR[sel_lg][2]
           diff <- a-b
-          lig <- (lr-diff)/2
-          loadings[[i]][[j]] <- loadings[[i]][[j]]+lig*(sz-1)
+          lig <- (lr-diff)
+          loadings[[i]][[j]] <- loadings[[i]][[j]]-(lig*(sz-1))
+
         }
       }
       #Checking Receptor Dosage
-      for(k in unique(final$Receptor[sel])){
-        sel_lg = sel & (match(final$Receptor,k,nomatch = F)!=F)
+      for(k in unique(final$Receptor[sel_cci])){
+        sel_lg = sel_cci & (match(final$Receptor,k,nomatch = F)!=F)
         sz = length(final$MeanLR[sel_lg])
         if(sz >=2){
           lr <- sum(final$MeanLR[sel_lg][1:2])
           a <- final$MeanLR[sel_lg][1]
           b <- final$MeanLR[sel_lg][2]
           diff <- a-b
-          lig <- (lr-diff)/2
-          loadings[[i]][[j]] <- loadings[[i]][[j]]+lig*(sz-1)
+          lig <- (lr-diff)
+          loadings[[i]][[j]] <- loadings[[i]][[j]]-(lig*(sz-1))
         }
       }
       print(paste0('     ',j))

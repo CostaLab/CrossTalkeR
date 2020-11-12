@@ -54,11 +54,13 @@ for(i in 1:length(names(all_data@tables))){
       ggplot2::ggtitle('Receiving Interactions')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
+    
     p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
       ggplot2::geom_bar(stat="identity",fill='green4')+
       ggplot2::ggtitle('Sending Interactions')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
+    
     print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }

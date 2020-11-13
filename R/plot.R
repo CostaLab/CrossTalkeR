@@ -20,7 +20,7 @@
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-plotLR_diff1 <- function(ce,col,plt_name, coords,emax=NA,leg=FALSE,low=25,high=75){
+plotLR_cci <- function(ce,col,plt_name, coords,emax=NA,leg=FALSE,low=25,high=75){
   if(is.na(emax)){
     emax <-max(abs(igraph::E(ce)$mean))
     emin <-min(abs(igraph::E(ce)$mean))
@@ -183,7 +183,7 @@ plot_sankey<-function(LRObj_tbl,target,Ligand.Cluster, Receptor.Cluster,pltname)
         y = Freq,
         axis1 = Ligand.Cluster, axis2 = Ligand, axis3 = Receptor, axis4 = Receptor.Cluster)
     ) +
-      ggalluvial::geom_alluvium(aes(fill = MeanLR > 0), width = 1/12) +
+      ggalluvial::geom_alluvium(aes(fill = MeanLR > 0), width = 1/12,discern=F) +
       ggalluvial::geom_stratum(width = 1/12) +
       # geom_text(stat = "stratum", aes(label = after_stat(stratum)), size = 2) +
       ggplot2::geom_label(stat = "stratum", ggplot2::aes(label = ggplot2::after_stat(stratum)), size = 2) +

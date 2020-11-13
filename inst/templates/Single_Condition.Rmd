@@ -30,38 +30,54 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(!str_detect(curr, '_x_', negate = FALSE)){
       curr_net <- all_data@graphs[[curr]]
-      plotLR_diff1(curr_net,
+      plotLR_cci(curr_net,
                  all_data@colors[V(curr_net)$name],
                  paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=0)
   }
 }
 ```
 
-## Single Condition Cell Cell Ranking Sending(out-degree) Receiving (in-degree)
+## Single Condition Cell Cell Frequency of Ligands and Receptors
 
-```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=15,message=FALSE, warning=FALSE, echo=F}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(!str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
-    in_deg <- igraph::degree(curr_net, mode = 'in')
+    in_deg <- table(all_data@tables[[curr]]$Ligand.Cluster)
     in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
-    out_deg <- igraph::degree(curr_net, mode = 'out')
+    out_deg <-table(all_data@tables[[curr]]$Receptor.Cluster)
     out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
-    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
-      ggplot2::geom_bar(stat="identity",fill='green3')+
-      ggplot2::ggtitle('Receiving Interactions')+
+    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
+      ggplot2::geom_bar(stat="identity")+
+      ggplot2::ggtitle('Ligands')+
+      ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
+      ggplot2::ylab('Cell')+
+      ggplot2::xlab('Number of interactions')
+    lig_order <- all_data@rankings[[curr]]$ligand_count[match(names(all_data@colors),in_deg$cells)]
+    rec_order <- all_data@rankings[[curr]]$receptor_count[match(names(all_data@colors),out_deg$cells)]
+    df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
+    df <- reshape2::melt(df)
+    levels(df$variable) <- 1:length(levels(df$variable))
+    df$variable <- as.numeric(df$variable)
+    p3 <- ggplot2::ggplot(df, ggplot2::aes(variable, value, color = nodes)) +
+          ggplot2::geom_line(aes(color = nodes), size = 2) +
+          ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
+          ggplot2::scale_x_discrete(name ="node features",limits=c(limits=c('ligand_frequency','receptor_frequency')))+
+          ggplot2::scale_y_continuous(name='rank',trans = "reverse", breaks = unique(df$value))+
+          ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
+          ggplot2::labs(title = "Cells LR Frequency")+ 
+          ggplot2::theme(legend.position = "none")+
+          ggplot2::theme_minimal()
+    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
+      ggplot2::geom_bar(stat="identity")+
+      ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
+      ggplot2::ggtitle('Receptors')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
     
-    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
-      ggplot2::geom_bar(stat="identity",fill='green4')+
-      ggplot2::ggtitle('Sending Interactions')+
-      ggplot2::ylab('Cell')+
-      ggplot2::xlab('Number of interactions')
-    
-    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
+    print((p1+p2+p3)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }
 ```

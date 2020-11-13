@@ -8,7 +8,7 @@ output:
       theme: simplex
       self_contained: true
 params:
-  obj2: "path to obj"
+  obj1: "path to obj"
 
 ---
 
@@ -31,7 +31,7 @@ require(knitr)
 
 
 ```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
-path <-params$obj2
+path <-params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)

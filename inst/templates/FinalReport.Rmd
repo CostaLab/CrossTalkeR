@@ -11,9 +11,8 @@ output:
 params:
   single: "path to single report template"
   comp: "path to comparative report template"
-  obj1: "single tables obj"
-  obj2: "comparative tables obj"
-  obj3: "sankey gene plot"
+  obj1: "LRobj"
+  obj2: "sankey gene plot"
   thr: 'percentage of disregarded edges'
    
 

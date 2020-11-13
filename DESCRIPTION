@@ -36,6 +36,7 @@ Imports:
     ggalluvial (>= 0.12.2),
     gprofiler2 (>= 0.2),
     DT (>= 0.16),
+    ggbump (>= 0.1.0),
     htmltools (>= 0.5.0)
 Suggests: 
     knitr

@@ -7,8 +7,8 @@ output:
       toc_depth: 3
       theme: simplex
 params:
-  obj2: "path to obj"
-  obj3: "genelist"
+  obj1: "path to obj"
+  obj2: "genelist"
 
 ---
 
@@ -30,12 +30,12 @@ require(pals)
 ## Genes Sankey Plot 
 
 ```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
-path <-params$obj2
+path <-params$obj1
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
-      for(gene in params$obj3){
+      for(gene in params$obj2){
         plot_sankey(all_data@tables[[curr]], 
             gene,
             unique(all_data@tables[[curr]]$Ligand.Cluster),

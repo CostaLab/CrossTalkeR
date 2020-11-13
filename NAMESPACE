@@ -2,7 +2,7 @@
 
 export(create_diff_table)
 export(generate_report)
-export(plotLR_diff1)
+export(plotLR_cci)
 export(plot_articulation)
 export(plot_ggi)
 export(plot_sankey)

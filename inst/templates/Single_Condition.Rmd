@@ -8,7 +8,8 @@ output:
       theme: simplex
 params:
   obj1: "path to obj"
-    
+  thr: 'cutoff'
+
 ---
 
 ```{r message=FALSE, warning=FALSE, echo=F, include=F}
@@ -19,21 +20,25 @@ require(tidyr)
 require(stringr)
 require(patchwork)
 require(LRAnalytics)
+
 ```
 
 ## Single Condition Cell Cell Interaction Plot (CCI)
 
-```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F,fig.keep = 'all'}
 path <-params$obj1
+thr <- params$thr
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(!str_detect(curr, '_x_', negate = FALSE)){
+      message(paste0('Printing CCI ',curr))
       curr_net <- all_data@graphs[[curr]]
+      low <- thr
       plotLR_cci(curr_net,
                  all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=0)
-  }
+                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100)
+   }
 }
 ```
 
@@ -55,28 +60,29 @@ for(i in 1:length(names(all_data@tables))){
       ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
-    lig_order <- all_data@rankings[[curr]]$ligand_count[match(names(all_data@colors),in_deg$cells)]
-    rec_order <- all_data@rankings[[curr]]$receptor_count[match(names(all_data@colors),out_deg$cells)]
-    df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
-    df <- reshape2::melt(df)
-    levels(df$variable) <- 1:length(levels(df$variable))
-    df$variable <- as.numeric(df$variable)
-    p3 <- ggplot2::ggplot(df, ggplot2::aes(variable, value, color = nodes)) +
-          ggplot2::geom_line(aes(color = nodes), size = 2) +
-          ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
-          ggplot2::scale_x_discrete(name ="node features",limits=c(limits=c('ligand_frequency','receptor_frequency')))+
-          ggplot2::scale_y_continuous(name='rank',trans = "reverse", breaks = unique(df$value))+
-          ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
-          ggplot2::labs(title = "Cells LR Frequency")+ 
-          ggplot2::theme(legend.position = "none")+
-          ggplot2::theme_minimal()
-    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
+   p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
       ggplot2::geom_bar(stat="identity")+
       ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
       ggplot2::ggtitle('Receptors')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
-    
+      lig_order <- all_data@rankings[[curr]]$ligand_count[names(all_data@colors)]
+      rec_order <- all_data@rankings[[curr]]$receptor_count[names(all_data@colors)]
+      df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
+      df <- reshape2::melt(df)
+      df$variable <- as.factor(df$variable)
+      levels(df$variable) <- c(1,2)
+      df$variable <- as.numeric(df$variable)
+      p3 <- ggplot2::ggplot(df, ggplot2::aes(x=variable, y=value, color = nodes)) +
+            ggplot2::geom_line(ggplot2::aes(color = nodes), size = 2) +
+            ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
+            ggplot2::scale_x_discrete(name ="variable",limits=c('ligand_frequency','receptor_frequency'))+
+            ggplot2::scale_y_continuous(name='value',trans = "reverse", breaks = unique(df$value))+
+            ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
+            ggplot2::labs(title = "Cells LR Frequency")+
+            ggplot2::theme(legend.position = "none")+
+            ggplot2::theme_minimal()
+      
     print((p1+p2+p3)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }

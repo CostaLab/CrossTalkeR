@@ -9,16 +9,12 @@
 #'@return Rmarkdown report all objects from each step
 #'@importFrom tidyr %>%
 #'@export
-#'
 generate_report <- function(LRpaths,genes=NULL,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL,report=TRUE){
   # Creating the single condition Object
-  single <- system.file('templates','Single_Condition.Rmd', package = 'LRAnalytics')
-  comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
-  sankey <- system.file('templates','SankeyPlots.Rmd', package = 'LRAnalytics')
-  tbl <- system.file('templates','Tables.Rmd', package = 'LRAnalytics')
+  index_single<-system.file('templates','FinalReport_Single.Rmd', package = 'LRAnalytics')
   index <- system.file('templates','FinalReport.Rmd', package = 'LRAnalytics')
-
-  message('Read Files')
+  comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
+  message('Reading Files')
   data <- read_lr_single_condiction(LRpaths,out_path,sep=',',colors)
   # Obtaining the differential table
   message('Create a Differential Table')
@@ -30,22 +26,24 @@ generate_report <- function(LRpaths,genes=NULL,out_path,sep=',',threshold=50,col
   lrObj_path1 <- paste0(out_path,'LR_data_final.Rds')
   data <- ranking_cci(data,out_path)
 
-  param <- list(single=single,
-                comp = comp,
-                obj1 = lrObj_path1,
-                obj2 = genes,
-                thr = threshold)
+  param_single <- list(single=single,
+                       obj1 = lrObj_path1,
+                       obj2 = genes,
+                       thr = threshold)
+  param_comp <- list(single=single,
+                     comp = comp,
+                     obj1 = lrObj_path1,
+                     obj2 = genes,
+                     thr = threshold)
   if(report){
-  message('Generating Report')
-  rmarkdown::render(index,
+    message('Generating Report')
+    rmarkdown::render(index_single,
                     output_format = 'html_document',
-                    output_dir = out_path,output_file = out_file,params = param)
+                    output_dir = out_path,output_file = paste0('Single_',out_file),params = param_single)
+    rmarkdown::render(index,
+                      output_format = 'html_document',
+                      output_dir = out_path,output_file =  paste0('Comparative_',out_file),params = param_comp)
+
   }
   return(data)
 }
-
-
-
-
-
-

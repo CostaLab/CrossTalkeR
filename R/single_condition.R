@@ -30,25 +30,25 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
 
     data1 <- tibble::as_tibble(data1)
     final <- data1 %>%
-      dplyr::group_by(cellpair) %>%
-      dplyr::summarise(MeanLR = sum(MeanLR))
+      dplyr::group_by(.data$cellpair) %>%
+      dplyr::summarise(MeanLR = sum(.data$MeanLR))
     final2dosage <- data1 %>%
-      dplyr::group_by(cellpair) %>% remove_dosage()
+      dplyr::group_by(.data$cellpair) %>% remove_dosage()
     load[[conds[i]]] <- final2dosage
     aux <- final$cellpair
     clusters_num <- unique(c(unique(data1$Ligand.Cluster),unique(data1$Receptor.Cluster)))
     print(length(clusters_num))
     final <- final %>%
-      tidyr::separate(cellpair, c("u", "v"), "_")
-    #for(cnt in 1:dim(final)[1]){
-    #     final$MeanLR[cnt] =  (final$MeanLR[cnt] + final2dosage[[final$u[cnt]]][[final$v[cnt]]])/(length(clusters_num)*length(clusters_num))
-    #     final$MeanLR[cnt] =  (final$MeanLR[cnt])/(length(clusters_num)*length(clusters_num))
-    #}
+      tidyr::separate(.data$cellpair, c("u", "v"), "_")
+            #for(cnt in 1:dim(final)[1]){
+            #     final$MeanLR[cnt] =  (final$MeanLR[cnt] + final2dosage[[final$u[cnt]]][[final$v[cnt]]])/(length(clusters_num)*length(clusters_num))
+            #     final$MeanLR[cnt] =  (final$MeanLR[cnt])/(length(clusters_num)*length(clusters_num))
+            #}
     final$pair=aux
-    freq = table(data1$cellpair)/sum(table(data1$cellpair))
+    freq = table(data1$cellpair)/max(table(data1$cellpair))
     final$freq <- as.array(freq)[final$pair]
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
-    igraph::E(graph1)$inter <- final$freq*100 #setting thickness and weight
+    igraph::E(graph1)$inter <- final$freq#setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data[[conds[i]]] <- data1

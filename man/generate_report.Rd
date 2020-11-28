@@ -6,12 +6,13 @@
 \usage{
 generate_report(
   LRpaths,
-  genes,
+  genes = NULL,
   out_path,
   sep = ",",
   threshold = 50,
   colors = NULL,
-  out_file = NULL
+  out_file = NULL,
+  report = TRUE
 )
 }
 \arguments{

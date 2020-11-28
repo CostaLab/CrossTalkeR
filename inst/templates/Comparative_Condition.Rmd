@@ -32,8 +32,6 @@ require(pals)
 ```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F}
 path <-params$obj1
 thresh <- params$thr
-low <- thresh/2
-high <- thresh+low
 all_data <- readRDS(path)
 tmp_max <- 0
 for(i in 1:length(names(all_data@tables))){
@@ -49,6 +47,8 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
+    low = (thresh/2)/100
+    high = 0.5 + low
     plotLR_cci(curr_net,
                all_data@colors[V(curr_net)$name],
                paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=low,high = high,emax = tmp_max)
@@ -75,19 +75,20 @@ for(i in 1:length(names(all_data@tables))){
       ggplot2::xlab('Interactions')+
       ggplot2::scale_fill_manual(values = data@colors, breaks = names(data@coords))+
       theme_minimal()
-    lig_order <- all_data@rankings[[curr]]$ligand_count[match(names(all_data@colors),in_deg$cells)]
-    rec_order <- all_data@rankings[[curr]]$receptor_count[match(names(all_data@colors),out_deg$cells)]
+    lig_order <- all_data@rankings[[curr]]$ligand_count[names(all_data@colors)]
+    rec_order <- all_data@rankings[[curr]]$receptor_count[names(all_data@colors)]
     df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
     df <- reshape2::melt(df)
-    levels(df$variable) <- 1:length(levels(df$variable))
+    df$variable <- as.factor(df$variable)
+    levels(df$variable) <- c(1,2)
     df$variable <- as.numeric(df$variable)
-    p3 <- ggplot2::ggplot(df, ggplot2::aes(variable, value, color = nodes)) +
-          ggplot2::geom_line(aes(color = nodes), size = 2) +
+    p3 <- ggplot2::ggplot(df, ggplot2::aes(x=variable, y=value, color = nodes)) +
+          ggplot2::geom_line(ggplot2::aes(color = nodes), size = 2) +
           ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
-          ggplot2::scale_x_discrete(name ="node features",limits=c(limits=c('ligand_frequency','receptor_frequency')))+
-          ggplot2::scale_y_continuous(name='rank',trans = "reverse", breaks = unique(df$value))+
+          ggplot2::scale_x_discrete(name ="variable",limits=c('ligand_frequency','receptor_frequency'))+
+          ggplot2::scale_y_continuous(name='value',trans = "reverse", breaks = unique(df$value))+
           ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
-          ggplot2::labs(title = "Cells LR Frequency")+ 
+          ggplot2::labs(title = "Cells LR Frequency")+
           ggplot2::theme(legend.position = "none")+
           ggplot2::theme_minimal()
     p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
@@ -103,26 +104,43 @@ for(i in 1:length(names(all_data@tables))){
 ```
 
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree*
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree from Largest Component*
 
-```{r fig.align='center', fig.height=8, fig.width=16,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=10, fig.width=16,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs_ggi[[curr]]
-    plot_ggi(curr_net,color = all_data@colors)
+    aux <- components(curr_net, mode='weak')
+    comp <- components(curr_net)
+    sel <- 1
+    for( j in 2:length(comp$csize)){
+      if(comp$csize[j] > comp$csize[sel]){
+        sel <- j
+      }
+    }
+    sel_graph <- induced.subgraph(curr_net, V(curr_net)[comp$membership==sel])
+    plot_ggi(sel_graph,color = all_data@colors)
   }
 }
 ```
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Articulation point*
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Articulation point from Largest Component*
 
-```{r fig.align='center', fig.height=8, fig.width=16,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=10, fig.width=16,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs_ggi[[curr]]
-    plot_articulation(curr_net,color = all_data@colors)
+    comp <- components(curr_net)
+    sel <- 1
+    for( j in 2:length(comp$csize)){
+      if(comp$csize[j] > comp$csize[sel]){
+        sel <- j
+      }
+    }
+    sel_graph <- induced.subgraph(curr_net, V(curr_net)[comp$membership==sel])
+    plot_articulation(sel_graph,color = all_data@colors)
   }
 }
 ```
@@ -156,18 +174,7 @@ for(i in 1:length(names(all_data@tables))){
       ggplot2::ggtitle('Sending Interactions')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')
-    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
+    print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }
 ```
-
-
-
-
-
-
-
-
-
-
-

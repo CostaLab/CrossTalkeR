@@ -13,12 +13,15 @@
 #'@slot colors  Cell type colors
 #'@slot rankings Ranking of cells and Genes
 #'@slot loadings  CCI values to remove multiple times genes
-LRObject <- setClass("LRObj", slots=list(graphs="list",
-                                         graphs_ggi = "list",
-                                         tables="list",
-                                         max_iter="numeric",
-                                         max_nodes="numeric",
-                                         coords="array",
-                                         colors="character",
-                                         rankings="list",
-                                         loadings="list"))
+lrbject <- setClass("LRObj",
+                    slots=list(graphs="list",
+                               graphs_ggi = "list",
+                               tables="list",
+                               max_iter="numeric",
+                               max_nodes="numeric",
+                               coords="array",
+                               colors="character",
+                               rankings="list",
+                               loadings="list"
+                               )
+                    )

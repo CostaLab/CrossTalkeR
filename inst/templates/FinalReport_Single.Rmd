@@ -10,7 +10,6 @@ output:
       theme: simplex
 params:
   single: "path to single report template"
-  comp: "path to comparative report template"
   obj1: "LRobj"
   obj2: "sankey gene plot"
   thr: 'percentage of disregarded edges'
@@ -21,24 +20,18 @@ params:
       div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
 
-# Differential Analysis
+# Single Condition Analysis
 
-```{r ccr, child='Comparative_Condition.Rmd',eval=TRUE}
-```
-
-
-# Sankey Plot Visualization
-
-```{r snkey, child='SankeyPlots.Rmd',eval=TRUE}
+```{r cci, child='Single_Condition.Rmd'}
 ```
 
 # Table
 
-```{r tbl, child='Tables.Rmd',eval=TRUE}
+```{r tbl, child='Tables_Single.Rmd',eval=TRUE}
 ```
 
 
-# Ranking CCI
+# Ranking
 
-```{r rkg, child='Ranking.Rmd',eval=TRUE}
+```{r rkg, child='Ranking_Single.Rmd',eval=TRUE}
 ```

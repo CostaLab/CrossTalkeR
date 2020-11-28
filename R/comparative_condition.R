@@ -1,3 +1,7 @@
+
+
+
+
 #'Read the LRObject and generate the comparative tables
 #'
 #'@param LRpaths Paths of single condition LR data
@@ -5,7 +9,6 @@
 #'@return LRObject
 #'@importFrom tidyr %>%
 #'@export
-
 create_diff_table <- function(data,out_path){
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
@@ -63,24 +66,23 @@ create_diff_table <- function(data,out_path){
         mlr[[m]] <- 0-ctr_table[idx_c,]$MeanLR
       }
     }
-    final_data <- tibble::tibble(Ligand.Cluster=unlist(lclust),
-                                 Receptor.Cluster=unlist(rclust),
-                                 Ligand=unlist(lgene),
-                                 Receptor=unlist(rgene),
-                                 cellpair=unlist(cpair),
-                                 ligpair=unlist(lpair),
-                                 recpair=unlist(rpair),
-                                 allpair=unlist(apair),
-                                 MeanLR=unlist(mlr))
+    final_data <- tibble::tibble('Ligand.Cluster'=unlist(lclust),
+                                 'Receptor.Cluster'=unlist(rclust),
+                                 'Ligand'=unlist(lgene),
+                                 'Receptor'=unlist(rgene),
+                                 'cellpair'=unlist(cpair),
+                                 'ligpair'=unlist(lpair),
+                                 'recpair'=unlist(rpair),
+                                 'allpair'=unlist(apair),
+                                 'MeanLR'=unlist(mlr))
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
-      dplyr::group_by(cellpair) %>%
-      dplyr::summarise(MeanLR = sum(MeanLR))
+      dplyr::group_by(.data$cellpair) %>%
+      dplyr::summarise(MeanLR=sum(.data$MeanLR))
     aux <- final$cellpair
     final <- final %>%
-      tidyr::separate(cellpair, c("u", "v"), "_")
-    clusters_num <- unique(c(unique(final_data$Ligand.Cluster),unique(final_data$Receptor.Cluster)))
-    print(length(clusters_num))
+      tidyr::separate(.data$cellpair, c("u", "v"), "_")
+    #clusters_num <- unique(c(unique(final_data$Ligand.Cluster),unique(final_data$Receptor.Cluster)))
     #for(cnt in 1:dim(final)[1]){
     # exp_l <- ifelse(!is.null(data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[exp_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
     # ctr_l <- ifelse(!is.null(data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]]),data@loadings[[ctr_name]][[final$u[cnt]]][[final$v[cnt]]], 0.0)
@@ -89,10 +91,10 @@ create_diff_table <- function(data,out_path){
     #}
     final$pair=aux
     final_data <- final_data[final_data$MeanLR!=0,]
-    freq = table(final_data$cellpair)/sum(table(final_data$cellpair))
+    freq = table(final_data$cellpair)/max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
-    igraph::E(graph1)$inter <- final$freq*100 #setting thickness and weight
+    igraph::E(graph1)$inter <- final$freq #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1
@@ -107,4 +109,3 @@ create_diff_table <- function(data,out_path){
 
   return(data)
 }
-

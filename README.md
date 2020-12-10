@@ -31,7 +31,7 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
      + Centrality (Degree, Eigenvector, Betweenness and Closeness)
      + PageRank
    - Gene Target based Sankey Plots
-## Features to be implemented
+## Ongoing Features
    - Gene Level topological measures based ranking 
         + Centrality (Degree, Eigenvector, Betweenness and Closeness)
         + PageRank

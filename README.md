@@ -28,11 +28,18 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking
    - Topology Measures Based Ranking (Cell Level)
-     > Centrality (Degree, Eigenvector, Betweenness and Closeness)
-     > PageRank
+     + Centrality (Degree, Eigenvector, Betweenness and Closeness)
+     + PageRank
    - Gene Target based Sankey Plots
 ## Features to be implemented
    - Gene Level topological measures based ranking 
+        + Centrality (Degree, Eigenvector, Betweenness and Closeness)
+        + PageRank
+   - Exclusive Ligand/Receptor Annotation
+   - Interactions curation based on OmniPath
+   
+   
+
 
 # References
 [2] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)

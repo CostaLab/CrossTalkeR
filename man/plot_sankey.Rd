@@ -4,7 +4,13 @@
 \alias{plot_sankey}
 \title{This function selected genes sankey plot}
 \usage{
-plot_sankey(LRObj_tbl, target, Ligand.Cluster, Receptor.Cluster, pltname)
+plot_sankey(
+  LRObj_tbl,
+  target = NULL,
+  Ligand.Cluster = NULL,
+  Receptor.Cluster = NULL,
+  pltname = NULL
+)
 }
 \arguments{
 \item{LRObj_tbl}{LRobject with all data}

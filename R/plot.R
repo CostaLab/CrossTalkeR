@@ -20,7 +20,7 @@
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-plotLR_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75,ignore_alpha=F,log=F){
+plot_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75,ignore_alpha=F,log=F){
   if(is.null(emax)){ # Check Maximal Weight
     emax <-max(abs(igraph::E(ce)$mean))
   }
@@ -46,16 +46,16 @@ plotLR_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75
   we <- round(oce::rescale(igraph::E(ce)$weight,xlow=(-emax),xhigh=emax,rlow=1,rhigh=200,clip=TRUE),0)
   igraph::E(ce)$color <- col_pallet[we]
   alpha <- ifelse((igraph::E(ce)$inter > low) & (igraph::E(ce)$inter < high), 0, igraph::E(ce)$inter)
-  subgraph <- igraph::delete.edges(ce, igraph::E(ce)[alpha==0])
+  subgraph <- igraph::delete.edges(ce, igraph::E(ce)[alpha==0 | is.na(alpha)])
   if(!ignore_alpha){
     igraph::E(ce)$color <- scales::alpha(igraph::E(ce)$color, alpha)
   }
   ## Thickness and arrow size
   igraph::V(ce)$size<-igraph::degree(subgraph,normalized = T)/max(igraph::degree(subgraph,normalized = T))*10
   if(log){
-        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,log2(1+igraph::E(ce)$inter),0)#abs(E(ce)$weight)
+        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,log2(1+igraph::E(ce)$inter),0)*5#abs(E(ce)$weight)
   }else{
-        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,igraph::E(ce)$inter,0)#abs(E(ce)$weight)
+        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,igraph::E(ce)$inter,0)*5#abs(E(ce)$weight)
   }
   igraph::E(ce)$arrow.size<-0.25
   igraph::E(ce)$arrow.width<-igraph::E(ce)$width+0.6
@@ -123,7 +123,7 @@ plot_ggi<-function(graph,color){
           ggraph::scale_edge_color_gradient2(low=pals::coolwarm(25)[1],high=pals::coolwarm(25)[25])+
           ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=igraph::V(graph)$cluster))+
           ggplot2::scale_colour_manual(values=color,labels=cls,name='Clusters')+
-          ggraph::geom_node_text(ggplot2::aes(filter=deg>deg[order(deg,decreasing = T)][10],label=igraph::V(graph)$genes))+
+          ggraph::geom_node_text(ggplot2::aes(filter=deg>deg[order(deg,decreasing = T)][ifelse(length(deg)>100, 100, length(deg))] & V(graph) %in% igraph::articulation.points(graph),label=igraph::V(graph)$genes))+
           ggraph::scale_edge_width_continuous(range = c(0,1))+
           #scale_size(range = c(1,6))+
           ggraph::theme_graph()+
@@ -182,19 +182,23 @@ plot_articulation<-function(graph,color){
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-plot_sankey<-function(LRObj_tbl,target=NULL,Ligand.Cluster, Receptor.Cluster,pltname){
+plot_sankey<-function(LRObj_tbl,target=NULL,Ligand.Cluster=NULL,Receptor.Cluster=NULL,pltname=NULL){
   data <- LRObj_tbl
   if(!is.null(target)){
     data <- LRObj_tbl[grepl(target, LRObj_tbl$allpair), ]
   }
-  data <- data[grep(paste(Ligand.Cluster, collapse='|'), data$Ligand.Cluster), ]
-  data <- data[grep(paste(Receptor.Cluster, collapse='|'), data$Receptor.Cluster), ]
+  if(!is.null(Ligand.Cluster)){
+    data <- data[match(data$Ligand.Cluster, Ligand.Cluster,nomatch = F)!=F,]
+  }
+  if(!is.null(Ligand.Cluster)){
+    data <- data[match(data$Receptor.Cluster, Receptor.Cluster,nomatch = F)!=F, ]
+  }
   data$Freq <- 1
   colp <- pals::coolwarm(2)
   names(colp) <- c('FALSE','TRUE')
   if(dim(data)[1] >= 1){
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > 50, 50, dim(data)[1]), abs(.data$MeanLR))
-    print(ggplot2::ggplot(tmp, aes(y = .data$Freq, axis1 = .data$Ligand.Cluster, axis2 = .data$Ligand, axis3 = .data$Receptor, axis4 = .data$Receptor.Cluster)) +
+    print(ggplot2::ggplot(tmp, aes(y = .data$Freq, axis1 = .data$Ligand.Cluster, axis2 = reorder(.data$Ligand,.data$MeanLR), axis3 = reorder(.data$Receptor,.data$MeanLR), axis4 = .data$Receptor.Cluster)) +
           ggalluvial::geom_alluvium(aes(fill = .data$MeanLR > 0), width = 1/12,discern=F) +
           ggalluvial::geom_stratum(width = 1/12) +
           # geom_text(stat = "stratum", aes(label = after_stat(.data$stratum)), size = 2) +
@@ -202,7 +206,8 @@ plot_sankey<-function(LRObj_tbl,target=NULL,Ligand.Cluster, Receptor.Cluster,plt
           ggplot2::scale_x_discrete(limits = c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster"), expand = c(.05, .05)) +
           ggplot2::scale_fill_manual(values=colp,limits=names(colp),name='Upregulated')+
           ggplot2::ggtitle(pltname) +
-          ggplot2::theme(text = element_text(size = 8))
+          ggplot2::theme(text = element_text(size = 8))+
+          ggplot2::theme_minimal()
           )
   }
   else{

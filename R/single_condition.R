@@ -60,11 +60,11 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
       max_nodes <- length(igraph::V(graph1))
     }
   }
-  template <- igraph::make_full_graph(n=max_nodes, directed = T, loops=T)
+  template <- igraph::make_full_graph(n=length(unif_celltypes), directed = T, loops=T)
   c <- igraph::layout.circle(template)
   if(is.null(colors)){
-    colors <- colorRampPalette(RColorBrewer::brewer.pal(12,"Paired"))(max_nodes)
-    names(colors) <- sort(igraph::V(graphs[[names(graphs)[1]]])$name)
+    colors <- colorRampPalette(RColorBrewer::brewer.pal(12,"Paired"))(length(unif_celltypes))
+    names(colors) <- sort(unif_celltypes)
   }
   for(g in names(graphs)){
     sel = match(unif_celltypes,unique(igraph::V(graphs[[g]])$name), nomatch = F)==0
@@ -74,7 +74,7 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
       graphs[[g]] <- igraph::add.vertices(graphs[[g]],length(nodes), attr=list(name=names(nodes)))
     }
   }
-  rownames(c) <- sort(igraph::V(graphs[[names(graphs)[1]]])$name)
+  rownames(c) <- sort(unif_celltypes)
   LR <- new("LRObj",graphs=graphs,
             tables=data,
             max_iter=max,

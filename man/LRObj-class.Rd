@@ -3,7 +3,7 @@
 \docType{class}
 \name{LRObj-class}
 \alias{LRObj-class}
-\alias{LRObject}
+\alias{lrbject}
 \title{Run and Generate all LR Downstream analysis}
 \description{
 This function loads the single conditions LR outputs and return the LR network based analysis.

@@ -4,21 +4,21 @@
 #'This function loads the single conditions LR outputs and return the LR network based analysis.
 #'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 #'measure
-#'@param LRpaths Paths of single condition LR data
+#'@param lrpaths Paths of single condition LR data
 #'@param sep character used on csv
 #'@return Rmarkdown report all objects from each step
 #'@importFrom tidyr %>%
 #'@export
-generate_report <- function(LRpaths,genes=NULL,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL,report=TRUE){
+generate_report <- function(lrpaths,genes=NULL,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL,report=TRUE){
   # Creating the single condition Object
-  index_single<-system.file('templates','FinalReport_Single.Rmd', package = 'LRAnalytics')
-  index <- system.file('templates','FinalReport.Rmd', package = 'LRAnalytics')
-  comp <- system.file('templates','Comparative_Condition.Rmd', package = 'LRAnalytics')
+  index_single<-system.file('templates','FinalReport_Single.Rmd', package = 'CrossTalkeR')
+  index <- system.file('templates','FinalReport.Rmd', package = 'CrossTalkeR')
+  comp <- system.file('templates','Comparative_Condition.Rmd', package = 'CrossTalkeR')
   message('Reading Files')
-  data <- read_lr_single_condiction(LRpaths,out_path,sep=',',colors)
+  data <- read_lr_single_condiction(lrpaths,out_path,sep=',',colors)
   # Obtaining the differential table
   message('Create a Differential Table')
-  if(length(LRpaths)>1){
+  if(length(lrpaths)>1){
     data <- create_diff_table(data,out_path)
   }
   message('Defining templates')

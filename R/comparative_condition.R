@@ -2,9 +2,9 @@
 
 
 
-#'Read the LRObject and generate the comparative tables
+#'Read the lrobject and generate the comparative tables
 #'
-#'@param LRpaths Paths of single condition LR data
+#'@param lrpaths Paths of single condition LR data
 #'@param sep character used on csv
 #'@return LRObject
 #'@importFrom tidyr %>%
@@ -90,9 +90,10 @@ create_diff_table <- function(data,out_path){
     # final$MeanLR[cnt]=(final$MeanLR[cnt])/(length(clusters_num)*length(clusters_num))
     #}
     final$pair=aux
-    final_data <- final_data[final_data$MeanLR!=0,]
+    final <- final[final$MeanLR!=0,]
     freq = table(final_data$cellpair)/max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
+    final <- dplyr::arrange(final, abs(final$MeanLR))
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR

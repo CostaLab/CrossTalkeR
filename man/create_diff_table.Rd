@@ -2,12 +2,12 @@
 % Please edit documentation in R/comparative_condition.R
 \name{create_diff_table}
 \alias{create_diff_table}
-\title{Read the LRObject and generate the comparative tables}
+\title{Read the lrobject and generate the comparative tables}
 \usage{
 create_diff_table(data, out_path)
 }
 \arguments{
-\item{LRpaths}{Paths of single condition LR data}
+\item{lrpaths}{Paths of single condition LR data}
 
 \item{sep}{character used on csv}
 }
@@ -15,5 +15,5 @@ create_diff_table(data, out_path)
 LRObject
 }
 \description{
-Read the LRObject and generate the comparative tables
+Read the lrobject and generate the comparative tables
 }

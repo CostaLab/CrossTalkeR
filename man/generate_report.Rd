@@ -5,7 +5,7 @@
 \title{Run all LR Downstream analysis}
 \usage{
 generate_report(
-  LRpaths,
+  lrpaths,
   genes = NULL,
   out_path,
   sep = ",",
@@ -16,7 +16,7 @@ generate_report(
 )
 }
 \arguments{
-\item{LRpaths}{Paths of single condition LR data}
+\item{lrpaths}{Paths of single condition LR data}
 
 \item{sep}{character used on csv}
 }

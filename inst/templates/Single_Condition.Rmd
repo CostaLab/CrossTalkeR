@@ -19,7 +19,7 @@ require(tibble)
 require(tidyr)
 require(stringr)
 require(patchwork)
-require(LRAnalytics)
+require(CrossTalkeR)
 
 ```
 
@@ -35,55 +35,52 @@ for(i in 1:length(names(all_data@tables))){
       message(paste0('Printing CCI ',curr))
       curr_net <- all_data@graphs[[curr]]
       low <- thr
-      plotLR_cci(curr_net,
+      plot_cci(curr_net,
                  all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100)
+                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100,log = T)
    }
 }
 ```
 
 ## Single Condition Cell Cell Frequency of Ligands and Receptors
 
-```{r fig.align='center', fig.height=5, fig.width=15,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE, echo=F}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(!str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
-    in_deg <- table(all_data@tables[[curr]]$Ligand.Cluster)
-    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
-    out_deg <-table(all_data@tables[[curr]]$Receptor.Cluster)
-    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
-    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
-      ggplot2::geom_bar(stat="identity")+
+    in_deg_up <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+    in_up <- tibble::tibble(as.data.frame(in_deg_up))
+    in_deg_down <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+    in_down <- tibble::tibble(as.data.frame(in_deg_down))
+    in_down$Freq <- 0-in_down$Freq
+    in_all <- dplyr::bind_rows(in_up,in_down)
+    in_all$Expression <- ifelse(in_all$Freq <0,'Downregulated','Upregulated')
+    out_deg_up <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+    out_up <- tibble::tibble(as.data.frame(out_deg_up))
+    out_deg_down <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+    out_down <- tibble::tibble(as.data.frame(out_deg_down))
+    out_down$Freq <- 0-out_down$Freq
+    out_all <- dplyr::bind_rows(out_up,out_down)
+    out_all$Expression <- ifelse(out_all$Freq <0,'Downregulated','Upregulated')
+    p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
       ggplot2::ggtitle('Ligands')+
-      ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Number of interactions')
-   p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
-      ggplot2::geom_bar(stat="identity")+
-      ggplot2::scale_fill_manual(values = all_data@colors, breaks = names(all_data@coords))+
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
+    p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
       ggplot2::ggtitle('Receptors')+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Number of interactions')
-      lig_order <- all_data@rankings[[curr]]$ligand_count[names(all_data@colors)]
-      rec_order <- all_data@rankings[[curr]]$receptor_count[names(all_data@colors)]
-      df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
-      df <- reshape2::melt(df)
-      df$variable <- as.factor(df$variable)
-      levels(df$variable) <- c(1,2)
-      df$variable <- as.numeric(df$variable)
-      p3 <- ggplot2::ggplot(df, ggplot2::aes(x=variable, y=value, color = nodes)) +
-            ggplot2::geom_line(ggplot2::aes(color = nodes), size = 2) +
-            ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
-            ggplot2::scale_x_discrete(name ="variable",limits=c('ligand_frequency','receptor_frequency'))+
-            ggplot2::scale_y_continuous(name='value',trans = "reverse", breaks = unique(df$value))+
-            ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
-            ggplot2::labs(title = "Cells LR Frequency")+
-            ggplot2::theme(legend.position = "none")+
-            ggplot2::theme_minimal()
-      
-    print((p1+p2+p3)+plot_annotation(title = curr,tag_levels = 'A'))
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
+    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }
 ```

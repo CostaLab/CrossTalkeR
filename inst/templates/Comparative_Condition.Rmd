@@ -19,7 +19,7 @@ require(tibble)
 require(tidyr)
 require(patchwork)
 require(stringr)
-require(LRAnalytics)
+require(CrossTalkeR)
 require(ggraph)
 require(graphlayouts)
 require(pals)
@@ -47,64 +47,67 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
-    low = (thresh/2)/100
-    high = 0.5 + low
-    plotLR_cci(curr_net,
+    if(thresh!=0){
+        low = (thresh/2)/100
+        high = 0.5 + low
+    }
+    else{
+        low = 0
+        high = 0
+      
+    }
+    plot_cci(curr_net,
                all_data@colors[V(curr_net)$name],
-               paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=low,high = high,emax = tmp_max)
+               paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=low,high = high,emax = tmp_max,log = T)
   }
 }
 ```
 
 ## Differential Cell Cell Frequency of Ligands and Receptors
 
-```{r fig.align='center', fig.height=5, fig.width=15,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE,echo=F}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs[[curr]]
-    in_deg <- table(all_data@tables[[curr]]$Ligand.Cluster)
-    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
-    out_deg <-table(all_data@tables[[curr]]$Receptor.Cluster)
-    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
-    p1 <- ggplot2::ggplot(in_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
-      ggplot2::geom_bar(stat="identity")+
-      ggplot2::ggtitle('Ligand')+
+    in_deg_up <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+    in_up <- tibble::tibble(as.data.frame(in_deg_up))
+    in_deg_down <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+    in_down <- tibble::tibble(as.data.frame(in_deg_down))
+    in_down$Freq <- 0-in_down$Freq
+    in_all <- dplyr::bind_rows(in_up,in_down)
+    in_all$Expression <- ifelse(in_all$Freq <0,'Downregulated','Upregulated')
+    out_deg_up <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+    out_up <- tibble::tibble(as.data.frame(out_deg_up))
+    out_deg_down <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+    out_down <- tibble::tibble(as.data.frame(out_deg_down))
+    out_down$Freq <- 0-out_down$Freq
+    out_all <- dplyr::bind_rows(out_up,out_down)
+    out_all$Expression <- ifelse(out_all$Freq <0,'Downregulated','Upregulated')
+    p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::ggtitle('Ligands')+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Interactions')+
-      ggplot2::scale_fill_manual(values = data@colors, breaks = names(data@coords))+
-      theme_minimal()
-    lig_order <- all_data@rankings[[curr]]$ligand_count[names(all_data@colors)]
-    rec_order <- all_data@rankings[[curr]]$receptor_count[names(all_data@colors)]
-    df <- tibble(nodes=names(all_data@colors),ligand_ranking=lig_order,receptor_ranking=rec_order)
-    df <- reshape2::melt(df)
-    df$variable <- as.factor(df$variable)
-    levels(df$variable) <- c(1,2)
-    df$variable <- as.numeric(df$variable)
-    p3 <- ggplot2::ggplot(df, ggplot2::aes(x=variable, y=value, color = nodes)) +
-          ggplot2::geom_line(ggplot2::aes(color = nodes), size = 2) +
-          ggplot2::geom_point(ggplot2::aes(color = nodes), size = 4) +
-          ggplot2::scale_x_discrete(name ="variable",limits=c('ligand_frequency','receptor_frequency'))+
-          ggplot2::scale_y_continuous(name='value',trans = "reverse", breaks = unique(df$value))+
-          ggplot2::scale_color_manual(values = data@colors, breaks = names(data@coords))+
-          ggplot2::labs(title = "Cells LR Frequency")+
-          ggplot2::theme(legend.position = "none")+
-          ggplot2::theme_minimal()
-    p2 <- ggplot2::ggplot(out_deg,ggplot2::aes(x=inter,y=reorder(cells,inter),fill=cells))+
-      ggplot2::geom_bar(stat="identity")+
-      ggplot2::ggtitle('Receptor')+
-      ggplot2::scale_fill_manual(values = data@colors, breaks = names(data@coords))+
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
+    p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::ggtitle('Receptors')+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Interactions')+
-      theme_minimal()
-    print((p1+p2+p3)+plot_annotation(title = curr,tag_levels = 'A'))
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
+    print((p1+p2)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }
 ```
 
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree from Largest Component*
+## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Highest degree connector candidate from Largest Component*
 
 ```{r fig.align='center', fig.height=10, fig.width=16,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
@@ -125,56 +128,52 @@ for(i in 1:length(names(all_data@tables))){
 }
 ```
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (GGI): *Articulation point from Largest Component*
-
-```{r fig.align='center', fig.height=10, fig.width=16,message=FALSE, warning=FALSE,echo=F}
-for(i in 1:length(names(all_data@tables))){
-  curr <- names(all_data@tables)[i]
-  if(str_detect(curr, '_x_', negate = FALSE)){
-    curr_net <- all_data@graphs_ggi[[curr]]
-    comp <- components(curr_net)
-    sel <- 1
-    for( j in 2:length(comp$csize)){
-      if(comp$csize[j] > comp$csize[sel]){
-        sel <- j
-      }
-    }
-    sel_graph <- induced.subgraph(curr_net, V(curr_net)[comp$membership==sel])
-    plot_articulation(sel_graph,color = all_data@colors)
-  }
-}
-```
 
 
 ## Differential Gene_Cell Gene_Cell Ranking Sending(out-degree) Receiving (in-degree)
 
 ```{r fig.align='center', fig.height=6, fig.width=10,message=FALSE, warning=FALSE,echo=F}
-
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
     curr_net <- all_data@graphs_ggi[[curr]]
-    in_deg <- igraph::degree(curr_net, mode = 'in')
-    in_deg <- tibble::tibble(cells=names(in_deg),inter=in_deg)
-    out_deg <- igraph::degree(curr_net, mode = 'out')
-    out_deg <- tibble::tibble(cells=names(out_deg),inter=out_deg)
-    in_deg_data <-dplyr::top_n(in_deg, 25, inter)
-    out_deg_data <- dplyr::top_n(out_deg, 25, inter)
-    l_in <- ifelse(dim(in_deg_data)[1] >= 25, 25, dim(in_deg_data)[1])
-    l_out <- ifelse(dim(out_deg_data)[1] >= 25, 25, dim(out_deg_data)[1])
-    in_deg_data <- in_deg_data[1:l_in,]
-    out_deg_data <- out_deg_data[1:l_out,]
-    p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
-      ggplot2::geom_bar(stat="identity",fill='green3')+
-      ggplot2::ggtitle('Receiving Interactions')+
+    up_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR > 0])
+    down_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR < 0])
+    in_deg_up <- igraph::degree(up_graph, mode = 'in')
+    in_deg_down <- igraph::degree(down_graph, mode = 'in')
+    in_up <- tibble::tibble(genes = names(in_deg_up), values=as.array(in_deg_up))
+    in_down <- tibble::tibble(genes = names(in_deg_down), values=as.array(in_deg_down))
+    in_deg_data_up <-dplyr::top_n(in_up, 15, values)
+    in_deg_data_down <- dplyr::top_n(in_down, 15, values)
+    in_deg_data_down$values <- 0 -in_deg_data_down$values
+    in_deg_data <- dplyr::bind_rows(in_deg_data_up,in_deg_data_down )
+    in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
+    p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::ggtitle('Receiving')+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Number of interactions')
-    p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=inter,y=reorder(cells,inter)))+
-      ggplot2::geom_bar(stat="identity",fill='green4')+
-      ggplot2::ggtitle('Sending Interactions')+
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
+    out_deg_up <- igraph::degree(up_graph, mode = 'out')
+    out_deg_down <- igraph::degree(down_graph, mode = 'out')
+    out_up <- tibble::tibble(genes = names(out_deg_up), values=as.array(out_deg_up))
+    out_down <- tibble::tibble(genes = names(out_deg_down), values=as.array(out_deg_down))
+    out_deg_data_up <-dplyr::top_n(out_up, 15, values)
+    out_deg_data_down <- dplyr::top_n(out_down, 15, values)
+    out_deg_data_down$values <- 0-out_deg_data_down$values
+    out_deg_data <- dplyr::bind_rows(out_deg_data_up,out_deg_data_down )
+    out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')
+    p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+      ggplot2::geom_bar(stat = 'identity',position = "identity")+
+      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::ggtitle('Sending')+
       ggplot2::ylab('Cell')+
-      ggplot2::xlab('Number of interactions')
+      ggplot2::xlab('Number of interactions')+
+      ggplot2::theme_minimal()
     print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
   }
 }
 ```
+
+

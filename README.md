@@ -33,6 +33,9 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
    - Gene Target based Sankey Plots
    - Signed based CCI and LSRR ranking
 ## Ongoing Features
+   - Implement disconnected components treatment
+   - Barplots plots methods
+   - Ligand/Receptor driven selection
    - Gene Level topological measures based ranking 
         + Centrality (Degree, Eigenvector, Betweenness and Closeness)
         + PageRank

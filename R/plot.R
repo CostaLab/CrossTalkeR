@@ -123,7 +123,11 @@ plot_ggi<-function(graph,color){
           ggraph::scale_edge_color_gradient2(low=pals::coolwarm(25)[1],high=pals::coolwarm(25)[25])+
           ggraph::geom_node_point(size=(deg/max(deg)*10),alpha=1,ggplot2::aes(color=igraph::V(graph)$cluster))+
           ggplot2::scale_colour_manual(values=color,labels=cls,name='Clusters')+
-          ggraph::geom_node_text(ggplot2::aes(filter=deg>deg[order(deg,decreasing = T)][ifelse(length(deg)>100, 100, length(deg))] & V(graph) %in% igraph::articulation.points(graph),label=igraph::V(graph)$genes))+
+          ggraph::geom_node_label(ggplot2::aes(filter=deg>deg[order(deg,decreasing = T)][ifelse(length(deg)>100, 100, length(deg))] & V(graph) %in% igraph::articulation.points(graph),
+                                               label=igraph::V(graph)$genes,color=igraph::V(graph)$cluster),
+                                 repel = TRUE,
+                                 fontface = "italic",
+                                 hjust = "inward",size = 5)+
           ggraph::scale_edge_width_continuous(range = c(0,1))+
           #scale_size(range = c(1,6))+
           ggraph::theme_graph()+

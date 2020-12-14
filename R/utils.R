@@ -48,6 +48,102 @@ remove_dosage<-function(final){
   return(loadings)
 }
 
+
+#'Ranking the most interactive gene (ligand or receptor)
+#'
+#'@param data lrobject
+#'@param out path to save the lrobject with ranking
+#'@return list
+#'@importFrom tidyr %>%
+#'@importFrom foreach %dopar%
+ranking<-function(data,out_path,slot='graphs_ggi'){
+      for(graph in names(slot(data,slot))){
+          if(grepl('_x_',graph)){  # Signed Analysis
+              up_graph <- igraph::subgraph.edges(slot(data,slot)[[graph]], E(slot(data,slot)[[graph]])[E(slot(data,slot)[[graph]])$MeanLR > 0])
+              down_graph <- igraph::subgraph.edges(slot(data,slot)[[graph]], E(slot(data,slot)[[graph]])[E(slot(data,slot)[[graph]])$MeanLR < 0])
+              comp <- igraph::components(up_graph)
+              all_up <- NULL
+              for(i in unique(comp$membership)){
+                 subgraph <- igraph::induced.subgraph(up_graph, igraph::V(up_graph)[comp$membership==i])
+                 if(is.null(all_up)){
+                     all_up <- ranking_net(subgraph)
+                 }else{
+                     tmp <- ranking_net(subgraph)
+                     tmp <- dplyr::bind_rows(all_up,tmp)
+                     all_up <-tmp
+                 }
+              }
+              comp <- igraph::components(down_graph)
+              all_down <- NULL
+              for(i in unique(comp$membership)){
+                 subgraph <- igraph::induced.subgraph(down_graph, igraph::V(down_graph)[comp$membership==i])
+                 if(is.null(all_down)){
+                    all_down <- ranking_net(subgraph)
+                 }else{
+                   tmp <- ranking_net(subgraph)
+                   tmp <- dplyr::bind_rows(all_down,tmp)
+                   all_down <-tmp
+                 }
+              }
+              if(grepl('_ggi',slot)){
+                data@rankings[[paste0(graph,'_ggi_up')]] <-  all_up
+                data@rankings[[paste0(graph,'_ggi_down')]] <-  all_down
+              }else{
+                data@rankings[[paste0(graph,'_up')]] <-  all_up
+                data@rankings[[paste0(graph,'_down')]] <-  all_down
+              }
+          }else{ # Unsigned
+              comp <- igraph::components(slot(data,slot)[[graph]])
+              all <- NULL
+              for(i in unique(comp$membership)){
+                 subgraph <- igraph::induced.subgraph(slot(data,slot)[[graph]], igraph::V(slot(data,slot)[[graph]])[comp$membership==i])
+                 if(is.null(all)){
+                    all <- ranking_net(subgraph)
+                 }else{
+                    tmp <- ranking_net(subgraph)
+                    tmp <- dplyr::bind_rows(all,tmp)
+                    all <-tmp
+                 }
+              }
+              if(grepl('_ggi',slot)){
+                data@rankings[[paste0(graph,'_ggi')]] <-  all
+              }else{
+                data@rankings[[graph]] <-  all
+              }
+          }
+      }
+  saveRDS(data,paste0(out_path,'/LR_data_final.Rds'))
+  return(data)
+}
+
+
+
+
+#' Network Ranking method
+#'
+#'@param data lrobject
+#'@param out path to save the lrobject with ranking
+#'@return list
+#'@importFrom tidyr %>%
+#'@importFrom foreach %dopar%
+ranking_net<-function(graph){
+    E(graph)$weight <- abs(E(graph)$weight)
+    bet <- igraph::betweenness(graph)
+    clo <- igraph::closeness(graph)
+    eigen <- igraph::eigen_centrality(graph)
+    pagerank <- igraph::page.rank(graph)
+    ac <- igraph::V(graph) %in% igraph::articulation.points(graph)
+    centrality_table <- tibble::tibble(nodes = names(bet),
+                                       betweenness=bet,
+                                       closeness=clo,
+                                       eigenvector=eigen$vector,
+                                       pagerank=pagerank$vector,
+                                       articulatio_ptn=ac)
+  return(centrality_table)
+}
+
+
+
 #'Ranking the most interactive cell type
 #'
 #'@param data lrobject

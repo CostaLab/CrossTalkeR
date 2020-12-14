@@ -1,6 +1,6 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
-Version: 0.6.0.0
+Version: 0.7.0.0
 Authors@R:
     person(given = "James",
            family = "Nagai",
@@ -36,8 +36,7 @@ Imports:
     ggalluvial (>= 0.12.2),
     gprofiler2 (>= 0.2),
     DT (>= 0.16),
-    ggbump (>= 0.1.0),
     htmltools (>= 0.5.0)
-Suggests: 
+Suggests:
     knitr
 VignetteBuilder: knitr

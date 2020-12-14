@@ -41,4 +41,5 @@ params:
 # Ranking CCI
 
 ```{r rkg, child='Ranking.Rmd',eval=TRUE}
+
 ```

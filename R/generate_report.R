@@ -24,7 +24,8 @@ generate_report <- function(lrpaths,genes=NULL,out_path,sep=',',threshold=50,col
   message('Defining templates')
   # Generating the single condition report
   lrObj_path1 <- paste0(out_path,'LR_data_final.Rds')
-  data <- ranking_cci(data,out_path)
+  data <- ranking(data,out_path,slot='graphs')
+  data <- ranking(data,out_path,slot='graphs_ggi')
 
   param_single <- list(single=single,
                        obj1 = lrObj_path1,

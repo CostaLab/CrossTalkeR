@@ -12,7 +12,8 @@ generate_report(
   threshold = 50,
   colors = NULL,
   out_file = NULL,
-  report = TRUE
+  report = TRUE,
+  output_fmt = "html_document"
 )
 }
 \arguments{

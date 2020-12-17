@@ -7,9 +7,7 @@
 ranking_net(graph)
 }
 \arguments{
-\item{data}{lrobject}
-
-\item{out}{path to save the lrobject with ranking}
+\item{graph}{lrobject}
 }
 \value{
 list

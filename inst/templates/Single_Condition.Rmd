@@ -67,7 +67,7 @@ for(i in 1:length(names(all_data@tables))){
     p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
       ggplot2::geom_bar(stat = 'identity',position = "identity")+
       ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::scale_fill_manual(values=rev(pals::coolwarm(2)))+
       ggplot2::ggtitle('Ligands')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')+
@@ -75,7 +75,7 @@ for(i in 1:length(names(all_data@tables))){
     p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,abs(Freq)),fill=Expression))+
       ggplot2::geom_bar(stat = 'identity',position = "identity")+
       ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-      ggplot2::scale_fill_manual(values=c('navy','red'))+
+      ggplot2::scale_fill_manual(values=rev(pals::coolwarm(2)))+
       ggplot2::ggtitle('Receptors')+
       ggplot2::ylab('Cell')+
       ggplot2::xlab('Number of interactions')+

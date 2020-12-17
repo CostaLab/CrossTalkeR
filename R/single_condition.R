@@ -47,6 +47,7 @@ read_lr_single_condiction <- function(LRpaths,out_path,sep=',',colors=NULL){
     final$pair=aux
     freq = table(data1$cellpair)/max(table(data1$cellpair))
     final$freq <- as.array(freq)[final$pair]
+    final <- dplyr::arrange(final, abs(final$MeanLR))
     graph1 <- igraph::graph_from_data_frame(final[,c('u','v',"MeanLR")])
     igraph::E(graph1)$inter <- final$freq#setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR

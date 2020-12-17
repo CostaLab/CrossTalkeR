@@ -14,7 +14,8 @@ plot_cci(
   low = 25,
   high = 75,
   ignore_alpha = F,
-  log = F
+  log = F,
+  efactor = 5
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plot_cci(
 \item{low}{Lower threshold: This parameter low and high defines the edges which will be filtered. Edges within the interval \link{low,high} are filtered.}
 
 \item{high}{Higher threshould}
+
+\item{efactor}{edge scale factor}
 }
 \value{
 R default plot

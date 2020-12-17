@@ -65,7 +65,7 @@ for(i in 1:length(names(all_data@tables))){
 
 ## Differential Cell Cell Frequency of Ligands and Receptors
 
-```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=7, fig.width=12,message=FALSE, warning=FALSE,echo=F}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
@@ -134,7 +134,7 @@ for(i in 1:length(names(all_data@tables))){
 
 ## Differential Gene_Cell Gene_Cell Ranking Sending(out-degree) Receiving (in-degree)
 
-```{r fig.align='center', fig.height=4, fig.width=10,message=FALSE, warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=6, fig.width=10,message=FALSE, warning=FALSE,echo=F}
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){

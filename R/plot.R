@@ -17,10 +17,11 @@
 #'@param leg Set color legend
 #'@param low Lower threshold: This parameter low and high defines the edges which will be filtered. Edges within the interval [low,high] are filtered.
 #'@param high Higher threshould
+#'@param efactor edge scale factor
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-plot_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75,ignore_alpha=F,log=F){
+plot_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75,ignore_alpha=F,log=F,efactor=5){
   if(is.null(emax)){ # Check Maximal Weight
     emax <-max(abs(igraph::E(ce)$mean))
   }
@@ -53,9 +54,9 @@ plot_cci <- function(ce,col,plt_name,coords,emax=NULL,leg=FALSE,low=25,high=75,i
   ## Thickness and arrow size
   igraph::V(ce)$size<-igraph::degree(subgraph,normalized = T)/max(igraph::degree(subgraph,normalized = T))*10
   if(log){
-        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,log2(1+igraph::E(ce)$inter),0)*5#abs(E(ce)$weight)
+        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,log2(1+igraph::E(ce)$inter),0)*efactor#abs(E(ce)$weight)
   }else{
-        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,igraph::E(ce)$inter,0)*5#abs(E(ce)$weight)
+        igraph::E(ce)$width <- ifelse(igraph::E(ce)$inter!=0,igraph::E(ce)$inter,0)*efactor#abs(E(ce)$weight)
   }
   igraph::E(ce)$arrow.size<-0.25
   igraph::E(ce)$arrow.width<-igraph::E(ce)$width+0.6
@@ -127,7 +128,7 @@ plot_ggi<-function(graph,color){
                                                label=igraph::V(graph)$genes,color=igraph::V(graph)$cluster),
                                  repel = TRUE,
                                  fontface = "italic",
-                                 hjust = "inward",size = 5)+
+                                 hjust = "inward",size =7,show_guide=F)+
           ggraph::scale_edge_width_continuous(range = c(0,1))+
           #scale_size(range = c(1,6))+
           ggraph::theme_graph()+

@@ -9,7 +9,7 @@
 #'@return Rmarkdown report all objects from each step
 #'@importFrom tidyr %>%
 #'@export
-generate_report <- function(lrpaths,genes=NULL,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL,report=TRUE){
+generate_report <- function(lrpaths,genes=NULL,out_path,sep=',',threshold=50,colors=NULL,out_file=NULL,report=TRUE,output_fmt='html_document'){
   # Creating the single condition Object
   index_single<-system.file('templates','FinalReport_Single.Rmd', package = 'CrossTalkeR')
   index <- system.file('templates','FinalReport.Rmd', package = 'CrossTalkeR')
@@ -39,10 +39,10 @@ generate_report <- function(lrpaths,genes=NULL,out_path,sep=',',threshold=50,col
   if(report){
     message('Generating Report')
     rmarkdown::render(index_single,
-                    output_format = 'html_document',
+                    output_format = output_fmt,
                     output_dir = out_path,output_file = paste0('Single_',out_file),params = param_single)
     rmarkdown::render(index,
-                      output_format = 'html_document',
+                      output_format = output_fmt,
                       output_dir = out_path,output_file =  paste0('Comparative_',out_file),params = param_comp)
 
   }

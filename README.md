@@ -3,7 +3,6 @@
 
 James S. Nagai<sup>1</sup>, 
 Nils B. Leimkühler<sup>2</sup>,
-Mingbo Cheng<sup>1</sup>, 
 Rebekka K. Schneider<sup>2,3,4</sup>,
 Ivan G. Costa<sup>1*</sup>
 

@@ -6,8 +6,8 @@
 \alias{lrbject}
 \title{Run and Generate all LR Downstream analysis}
 \description{
-This function loads the single conditions LR outputs and return the LR network based analysis.
-It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
+This function loads the single conditions LR outputs and return the LR network
+It assumes that the table present the following columns Ligand,
 measure
 }
 \section{Slots}{

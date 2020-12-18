@@ -5,7 +5,7 @@
 \title{Plot Cell Cell Interaction}
 \usage{
 plot_cci(
-  ce,
+  graph,
   col,
   plt_name,
   coords,
@@ -15,11 +15,12 @@ plot_cci(
   high = 75,
   ignore_alpha = F,
   log = F,
-  efactor = 5
+  efactor = 8,
+  vfactor = 12
 )
 }
 \arguments{
-\item{ce}{Paths of single condition LR data}
+\item{graph}{Paths of single condition LR data}
 
 \item{col}{Cluster coords according do desired layout default is circle layout}
 
@@ -34,6 +35,8 @@ plot_cci(
 \item{high}{Higher threshould}
 
 \item{efactor}{edge scale factor}
+
+\item{vfactor}{edge scale factor}
 }
 \value{
 R default plot

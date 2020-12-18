@@ -9,7 +9,7 @@ generate_report(
   genes = NULL,
   out_path,
   sep = ",",
-  threshold = 50,
+  threshold = 0,
   colors = NULL,
   out_file = NULL,
   report = TRUE,

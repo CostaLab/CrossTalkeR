@@ -4,20 +4,27 @@
 \alias{read_lr_single_condiction}
 \title{Read single condition tables}
 \usage{
-read_lr_single_condiction(LRpaths, out_path, sep = ",", colors = NULL)
+read_lr_single_condiction(
+  paths,
+  out_path = "/tmp/",
+  sep = ",",
+  colors = NULL,
+  measure = "MeanLR"
+)
 }
 \arguments{
-\item{LRpaths}{Paths of single condition LR data}
+\item{out_path}{Path to deposit the results}
 
-\item{sep}{character used on csv}
+\item{sep}{character used to divide the columns on input file}
+
+\item{LRpaths}{Named vector with the paths of each output}
 }
 \value{
 LRObject
 }
 \description{
-This function loads the single conditions LR outputs
-}
-\details{
-It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
+This function loads the single conditions LR outputs and use it to generate
+the report data and it`s object
+It assumes that the table presents the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 measure
 }

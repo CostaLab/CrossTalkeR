@@ -2,8 +2,10 @@
 #'
 #'Run and Generate all LR Downstream analysis
 #'
-#'This function loads the single conditions LR outputs and return the LR network based analysis.
-#'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
+#'This function loads the single conditions LR outputs and return the LR network
+#`based analysis.
+#'It assumes that the table present the following columns Ligand,
+#` Ligand.Cluster,Receptor,Receptor.Cluster and MeanLR/another
 #'measure
 #'@slot graphs All Cell Cell Interaction Networks
 #'@slot tables All tables from single condition
@@ -14,14 +16,14 @@
 #'@slot rankings Ranking of cells and Genes
 #'@slot loadings  CCI values to remove multiple times genes
 lrbject <- setClass("LRObj",
-                    slots=list(graphs="list",
+                    slots = list(graphs = "list",
                                graphs_ggi = "list",
-                               tables="list",
-                               max_iter="numeric",
-                               max_nodes="numeric",
-                               coords="array",
-                               colors="character",
-                               rankings="list",
-                               loadings="list"
+                               tables = "list",
+                               max_iter = "numeric",
+                               max_nodes = "numeric",
+                               coords = "array",
+                               colors = "character",
+                               rankings = "list",
+                               loadings = "list"
                                )
                     )

@@ -5,15 +5,15 @@
 \title{This function selected genes sankey plot}
 \usage{
 plot_sankey(
-  LRObj_tbl,
+  lrobj_tbl,
   target = NULL,
-  Ligand.Cluster = NULL,
-  Receptor.Cluster = NULL,
+  ligand_cluster = NULL,
+  receptor_cluster = NULL,
   pltname = NULL
 )
 }
 \arguments{
-\item{LRObj_tbl}{LRobject with all data}
+\item{lrobj_tbl}{LRobject with all data}
 
 \item{target}{gene}
 

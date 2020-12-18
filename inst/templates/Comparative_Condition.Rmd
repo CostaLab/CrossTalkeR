@@ -145,8 +145,8 @@ for(i in 1:length(names(all_data@tables))){
     in_deg_down <- igraph::degree(down_graph, mode = 'in')
     in_up <- tibble::tibble(genes = paste0(names(in_deg_up),'_up'), values=as.array(in_deg_up))
     in_down <- tibble::tibble(genes = paste0(names(in_deg_down),'_down'), values=as.array(in_deg_down))
-    in_deg_data_up <-dplyr::top_n(in_up, 5, values)
-    in_deg_data_down <- dplyr::top_n(in_down, 5, values)
+    in_deg_data_up <-dplyr::top_n(in_up, 10, values)
+    in_deg_data_down <- dplyr::top_n(in_down, 10, values)
     in_deg_data_down$values <- 0 -in_deg_data_down$values
     in_deg_data <- dplyr::bind_rows(in_deg_data_up,in_deg_data_down )
     in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
@@ -161,8 +161,8 @@ for(i in 1:length(names(all_data@tables))){
     out_deg_down <- igraph::degree(down_graph, mode = 'out')
     out_up <- tibble::tibble(genes = paste0(names(out_deg_up),'_up'), values=as.array(out_deg_up))
     out_down <- tibble::tibble(genes = paste0(names(out_deg_down),'_down'), values=as.array(out_deg_down))
-    out_deg_data_up <-dplyr::top_n(out_up, 5, values)
-    out_deg_data_down <- dplyr::top_n(out_down, 5, values)
+    out_deg_data_up <-dplyr::top_n(out_up, 10, values)
+    out_deg_data_down <- dplyr::top_n(out_down, 10, values)
     out_deg_data_down$values <- 0-out_deg_data_down$values
     out_deg_data <- dplyr::bind_rows(out_deg_data_up,out_deg_data_down )
     out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')

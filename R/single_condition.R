@@ -109,6 +109,6 @@ read_lr_single_condiction <- function(paths,
             coords = c,
             colors = colors,
             rankings = list())
-  saveRDS(lr, paste0(out_path, "/LR_data.Rds"))
+  saveRDS(lr, file.path(out_path, "LR_data.Rds"))
   return(lr)
 }

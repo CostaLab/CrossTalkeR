@@ -75,7 +75,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
               }
           }
       }
-  saveRDS(data, paste0(out_path, "/LR_data_final.Rds"))
+  saveRDS(data, file.path(out_path, "LR_data_final.Rds"))
   return(data)
 }
 

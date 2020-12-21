@@ -10,8 +10,8 @@
 #'@importFrom tidyr %>%
 #'@export
 generate_report <- function(lrpaths,
-                            genes = NULL,
                             out_path,
+                            genes = NULL,
                             sep = ",",
                             threshold = 0,
                             colors = NULL,

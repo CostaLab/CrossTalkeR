@@ -101,6 +101,6 @@ create_diff_table <- function(data, out_path) {
     data@graphs_ggi[[cmp_name]] <- graph1
 
   }
-  saveRDS(data,paste0(out_path, '/LR_data_step2.Rds'))
+  saveRDS(data,file.path(out_path, 'LR_data_step2.Rds'))
   return(data)
 }

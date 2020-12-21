@@ -7,13 +7,17 @@
 create_diff_table(data, out_path)
 }
 \arguments{
-\item{lrpaths}{Paths of single condition LR data}
+\item{data}{lrobject with single condition}
 
-\item{sep}{character used on csv}
+\item{out_path}{output path}
 }
 \value{
 LRObject
 }
 \description{
 Read the lrobject and generate the comparative tables
+}
+\examples{
+diff <- create_diff_table(data,
+                          out_path)
 }

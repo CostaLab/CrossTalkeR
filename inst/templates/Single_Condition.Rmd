@@ -12,7 +12,7 @@ params:
 
 ---
 
-```{r message=FALSE, warning=FALSE, echo=F, include=F}
+```{r message=FALSE, warning=FALSE, echo=FALSE, include=FALSE}
 require(igraph)
 require(dplyr)
 require(tibble)
@@ -25,7 +25,7 @@ require(CrossTalkeR)
 
 ## Single Condition Cell Cell Interaction Plot (CCI)
 
-```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=F,fig.keep = 'all'}
+```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
@@ -37,14 +37,14 @@ for(i in 1:length(names(all_data@tables))){
       low <- thr
       plot_cci(curr_net,
                  all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100,log = T)
+                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100,log = TRUE)
    }
 }
 ```
 
 ## Single Condition Cell Cell Frequency of Ligands and Receptors
 
-```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE, echo=FALSE}
 
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]

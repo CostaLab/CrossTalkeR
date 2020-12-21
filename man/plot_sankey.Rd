@@ -9,7 +9,7 @@ plot_sankey(
   target = NULL,
   ligand_cluster = NULL,
   receptor_cluster = NULL,
-  pltname = NULL
+  plt_name = NULL
 )
 }
 \arguments{
@@ -17,13 +17,24 @@ plot_sankey(
 
 \item{target}{gene}
 
-\item{lcls}{Ligand Clusters}
+\item{ligand_cluster}{Ligand Clusters}
 
-\item{rcls}{Receptor Clusters}
+\item{receptor_cluster}{Receptor Clusters}
+
+\item{plt_name}{plot title}
 }
 \value{
 R default plot
 }
 \description{
 This function selected genes sankey plot
+}
+\examples{
+data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
+plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
+           target = c("TGFB1"),
+           ligand_cluster = NULL,
+           receptor_cluster = NULL,
+           plt_name = "TGFB1")
+
 }

@@ -30,7 +30,7 @@ require(knitr)
 
 
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=FALSE}
 path <-params$obj1
 out <- c()
 out1 <- list()

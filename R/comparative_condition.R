@@ -4,11 +4,14 @@
 
 #'Read the lrobject and generate the comparative tables
 #'
-#'@param lrpaths Paths of single condition LR data
-#'@param sep character used on csv
+#'@param data lrobject with single condition
+#'@param out_path output path
 #'@return LRObject
 #'@importFrom tidyr %>%
 #'@export
+#'@examples
+#'diff <- create_diff_table(data,
+#'                           out_path)
 create_diff_table <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
@@ -101,6 +104,6 @@ create_diff_table <- function(data, out_path) {
     data@graphs_ggi[[cmp_name]] <- graph1
 
   }
-  saveRDS(data,file.path(out_path, 'LR_data_step2.Rds'))
+  saveRDS(data,file.path(out_path, "LR_data_step2.Rds"))
   return(data)
 }

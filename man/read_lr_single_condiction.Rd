@@ -5,7 +5,7 @@
 \title{Read single condition tables}
 \usage{
 read_lr_single_condiction(
-  paths,
+  lrpaths,
   out_path = "/tmp/",
   sep = ",",
   colors = NULL,
@@ -13,11 +13,15 @@ read_lr_single_condiction(
 )
 }
 \arguments{
+\item{lrpaths}{Named vector with the lrpaths of each output}
+
 \item{out_path}{Path to deposit the results}
 
 \item{sep}{character used to divide the columns on input file}
 
-\item{LRpaths}{Named vector with the paths of each output}
+\item{colors}{colorlist}
+
+\item{measure}{Measure columns name in the input data}
 }
 \value{
 LRObject
@@ -27,4 +31,11 @@ This function loads the single conditions LR outputs and use it to generate
 the report data and it`s object
 It assumes that the table presents the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 measure
+}
+\examples{
+single <- read_lr_single_condiction(lrpaths,
+                          out_path = "/tmp/",
+                          sep = ",",
+                          colors = NULL,
+                          measure = "MeanLR")
 }

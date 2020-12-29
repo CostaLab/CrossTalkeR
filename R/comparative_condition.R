@@ -1,5 +1,25 @@
 
 
+if(FALSE){
+  paths <- c(
+  	'CTR' = '/home/tmaie/Documents/data/ctr_filtered_corrected.csv',
+  	'EXP' = '/home/tmaie/Documents/data/exp_filtered_corrected.csv'
+  )
+
+  # source("R/single_condition.R")
+  # source("R/utils.R")
+
+  library("dplyr")
+  library(CrossTalkeR)
+  library("tictoc")
+
+  out_path='/home/tmaie/Documents/'
+  data = read_lr_single_condiction(paths = paths,out_path = out_path)
+
+  # DEBUG crashes R
+  igraph::eigen_centrality(igraph::make_ring(10))
+}
+
 
 
 #'Read the lrobject and generate the comparative tables
@@ -15,11 +35,13 @@
 create_diff_table <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
+  # tic("v3")
   for (i in 2:length(data@tables)) {
     exp_name <- names(data@tables)[i]
     cmp_name <- paste0(exp_name, "_x_", ctr_name)
     exp_table <- data@tables[[exp_name]]
-    tbl_len = max(length(ctr_table$allpair),length(exp_table$allpair))
+    possible_nodes = union(ctr_table$allpair,exp_table$allpair)
+    tbl_len = length(possible_nodes)
     lclust <- vector("character", length = tbl_len)
     rclust <- vector("character", length = tbl_len)
     lgene <- vector("character", length = tbl_len)
@@ -30,9 +52,8 @@ create_diff_table <- function(data, out_path) {
     apair <- vector("character", length = tbl_len)
     mlr <- vector("numeric", length = tbl_len)
 
-
-    for (k in 1:length(exp_table$allpair)) {
-      m = exp_table$allpair[k]
+    for(k in 1:tbl_len){
+      m=possible_nodes[k]
       if (m %in% ctr_table$allpair) {
         idx_e <- match(m, exp_table$allpair)
         idx_c <- match(m, ctr_table$allpair)
@@ -58,9 +79,6 @@ create_diff_table <- function(data, out_path) {
         apair[k] <- exp_table[idx_e, ]$allpair
         mlr[k] <- exp_table[idx_e, ]$MeanLR
       }
-    }
-    for (k in 1:length(ctr_table$allpair)) {
-      m = ctr_table$allpair[k]
       if (!m %in% exp_table$allpair) {
         idx_c <- match(m, ctr_table$allpair)
         lclust[k] <- ctr_table[idx_c, ]$Ligand.Cluster
@@ -111,6 +129,7 @@ create_diff_table <- function(data, out_path) {
     data@graphs_ggi[[cmp_name]] <- graph1
 
   }
+  # toc()
   saveRDS(data,file.path(out_path, "LR_data_step2.Rds"))
   return(data)
 }

@@ -5,13 +5,30 @@
 #'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 #'measure
 #'@param lrpaths Paths of single condition LR data
+#'@param genes list of genes to be considered in the sankey plots
+#'@param out_path output directory path
 #'@param sep character used on csv
-#'@return Rmarkdown report all objects from each step
+#'@param threshold percentage of edges to be pruned
+#'@param colors celltypes colorscheme
+#'@param out_file output file names
+#'@param report decide if a report is generated or not
+#'@param output_fmt rmarkdown render output format parameter
 #'@importFrom tidyr %>%
+#'@return Rmarkdown report all objects from each step
 #'@export
+#'@examples
+#'paths <- c('CTR' = file.path(curr_path,"ctr_filtered_corrected.csv"),
+#'           'EXP' = file.path(curr_path,"exp_filtered_corrected.csv"))
+#'genes <- c('TGFB1','PF4','PPBP')
+#'data <- generate_report(lrpaths = paths,
+#'                        genes = genes,
+#'                        out_path = curr_path,
+#'                        threshold = 0,
+#'                          out_file = "report.html")
+#'
 generate_report <- function(lrpaths,
-                            out_path,
                             genes = NULL,
+                            out_path,
                             sep = ",",
                             threshold = 0,
                             colors = NULL,
@@ -19,13 +36,13 @@ generate_report <- function(lrpaths,
                             report = TRUE,
                             output_fmt = "html_document") {
   # Creating the single condition Object
-  index_single <- system.file("templates",
+  index_single <- base::system.file("templates",
                               "FinalReport_Single.Rmd",
                               package = "CrossTalkeR")
-  index <- system.file("templates",
+  index <- base::system.file("templates",
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
-  comp <- system.file("templates",
+  comp <- base::system.file("templates",
                       "Comparative_Condition.Rmd",
                       package = "CrossTalkeR")
   message("Reading Files")

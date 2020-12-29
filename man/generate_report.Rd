@@ -19,7 +19,21 @@ generate_report(
 \arguments{
 \item{lrpaths}{Paths of single condition LR data}
 
+\item{genes}{list of genes to be considered in the sankey plots}
+
+\item{out_path}{output directory path}
+
 \item{sep}{character used on csv}
+
+\item{threshold}{percentage of edges to be pruned}
+
+\item{colors}{celltypes colorscheme}
+
+\item{out_file}{output file names}
+
+\item{report}{decide if a report is generated or not}
+
+\item{output_fmt}{rmarkdown render output format parameter}
 }
 \value{
 Rmarkdown report all objects from each step
@@ -28,4 +42,15 @@ Rmarkdown report all objects from each step
 This function loads the single conditions LR outputs and return the LR network based analysis.
 It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 measure
+}
+\examples{
+paths <- c('CTR' = file.path(curr_path,"ctr_filtered_corrected.csv"),
+          'EXP' = file.path(curr_path,"exp_filtered_corrected.csv"))
+genes <- c('TGFB1','PF4','PPBP')
+data <- generate_report(lrpaths = paths,
+                       genes = genes,
+                       out_path = curr_path,
+                       threshold = 0,
+                         out_file = "report.html")
+
 }

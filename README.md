@@ -1,7 +1,7 @@
 # CrossTalker
 
 
-James S. Nagai<sup>1</sup>, 
+James S. Nagai<sup>1</sup>,
 Nils B. Leimkühler<sup>2</sup>,
 Rebekka K. Schneider<sup>2,3,4</sup>,
 Ivan G. Costa<sup>1*</sup>
@@ -35,16 +35,15 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
    - Implement disconnected components treatment
    - Barplots plots methods
    - Ligand/Receptor driven selection
-   - Gene Level topological measures based ranking 
+   - Gene Level topological measures based ranking
         + Centrality (Degree, Eigenvector, Betweenness and Closeness)
         + PageRank
    - Exclusive Ligand/Receptor Annotation
    - Interactions curation based on OmniPath
-   
-   
+
+
 
 
 # References
 [2] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)
 [1]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
-

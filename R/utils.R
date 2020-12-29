@@ -1,10 +1,11 @@
 #'Ranking the most interactive gene (ligand or receptor)
 #'
 #'@param data lrobject
-#'@param out path to save the lrobject with ranking
+#'@param out_path to save the lrobject with ranking
+#'@param slot slot of the networks graphs_ggi to gene cell interaction and abs
+#' graphs to cell cell interaction
 #'@return list
 #'@importFrom tidyr %>%
-#'@importFrom foreach %dopar%
 ranking <- function(data, out_path, slot="graphs_ggi") {
       for (graph in names(slot(data, slot))) {
           if (grepl("_x_", graph)) {  # Signed Analysis
@@ -87,7 +88,6 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
 #'@param graph lrobject
 #'@return list
 #'@importFrom tidyr %>%
-#'@importFrom foreach %dopar%
 ranking_net <- function(graph) {
   igraph::E(graph)$weight <- abs(igraph::E(graph)$weight)
   bet <- igraph::betweenness(graph)
@@ -119,5 +119,5 @@ rkg_ties <- function(lista) {
   x2 <- lista
   rma <- rank(x2, ties.method = "max")  # as used classically
   rmi <- rank(x2, ties.method = "min")  # as in Sports
-  return(sort((rma + rmi) / 2, decreasing = T))
+  return(sort((rma + rmi) / 2, decreasing = TRUE))
 }

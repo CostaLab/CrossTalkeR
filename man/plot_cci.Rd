@@ -6,15 +6,15 @@
 \usage{
 plot_cci(
   graph,
-  col,
+  colors,
   plt_name,
   coords,
   emax = NULL,
   leg = FALSE,
   low = 25,
   high = 75,
-  ignore_alpha = F,
-  log = F,
+  ignore_alpha = FALSE,
+  log = FALSE,
   efactor = 8,
   vfactor = 12
 )
@@ -22,17 +22,25 @@ plot_cci(
 \arguments{
 \item{graph}{Paths of single condition LR data}
 
-\item{col}{Cluster coords according do desired layout default is circle layout}
+\item{colors}{Cell type (Cluster) Colors}
 
 \item{plt_name}{Plot Name (Title)}
 
-\item{emax}{Max MeanLR across the all inputs, if its not defined, the method going to consider the max find within a sample}
+\item{coords}{object coordinates}
+
+\item{emax}{Max MeanLR across the all inputs, if its not defined,
+the method going to consider the max find within a sample}
 
 \item{leg}{Set color legend}
 
-\item{low}{Lower threshold: This parameter low and high defines the edges which will be filtered. Edges within the interval \link{low,high} are filtered.}
+\item{low}{Lower threshold: This parameter low and high defines the edges}
 
-\item{high}{Higher threshould}
+\item{high}{Higher threshould
+which will be filtered. Edges within the interval [low\,high] are filtered.}
+
+\item{ignore_alpha}{not include transparency on the plot}
+
+\item{log}{logscale the interactions}
 
 \item{efactor}{edge scale factor}
 
@@ -43,4 +51,19 @@ R default plot
 }
 \description{
 This function do a CCI plot
+}
+\examples{
+data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
+plot_cci(graph = data@graphs$CTR,
+       colors = data@colors,
+       plt_name = 'Example 1',
+       coords = data@coords[V(data@graphs$CTR)$name,],
+       emax = NULL,
+       leg = FALSE,
+       low = 0,
+       high = 0,
+       ignore_alpha = FALSE,
+       log = FALSE,
+       efactor = 8,
+       vfactor = 12)
 }

@@ -6,20 +6,28 @@
 #'measure
 #'
 #'
-#'@param LRpaths Named vector with the paths of each output
-#'@param sep character used to divide the columns on input file
+#'@param lrpaths Named vector with the lrpaths of each output
 #'@param out_path Path to deposit the results
-#'@return LRObject
+#'@param sep character used to divide the columns on input file
+#'@param colors colorlist
+#'@param measure Measure columns name in the input data
 #'@importFrom tidyr %>%
 #'@export
-read_lr_single_condiction <- function(paths,
+#'@return LRObject
+#'@examples
+#' single <- read_lr_single_condiction(lrpaths,
+#'                           out_path = "/tmp/",
+#'                           sep = ",",
+#'                           colors = NULL,
+#'                           measure = "MeanLR")
+read_lr_single_condiction <- function(lrpaths,
                                       out_path = "/tmp/",
                                       sep = ",",
                                       colors = NULL,
                                       measure = "MeanLR") {
   data <- list()
   graphs <- list()
-  conds <- names(paths)
+  conds <- names(lrpaths)
   max <- 0
   max_nodes <- 0
   unif_celltypes <- c()
@@ -28,9 +36,9 @@ read_lr_single_condiction <- function(paths,
                    "Ligand",
                    "Receptor",
                    measure)
-  for (i in seq_len(length(paths))) {
-    print(paths[i])
-    data1 <- read.csv(paths[i], sep = sep) # Reading csv
+  for (i in seq_len(length(lrpaths))) {
+    print(lrpaths[i])
+    data1 <- utils::read.csv(lrpaths[i], sep = sep) # Reading csv
     data1 <- data1[, sel_columns]
     data1$cellpair <- paste(data1$Ligand.Cluster,
                             data1$Receptor.Cluster,
@@ -79,18 +87,18 @@ read_lr_single_condiction <- function(paths,
     }
   }
   template <- igraph::make_full_graph(n = length(unif_celltypes),
-                                      directed = T,
-                                      loops = T)
+                                      directed = TRUE,
+                                      loops = TRUE)
   c <- igraph::layout.circle(template)
   if (is.null(colors)) {
-    colors <- colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))
+    colors <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))
     colors <- colors(length(unif_celltypes))
     names(colors) <- sort(unif_celltypes)
   }
   for (g in names(graphs)) {
     sel <- match(unif_celltypes,
                  unique(igraph::V(graphs[[g]])$name),
-                 nomatch = F)
+                 nomatch = FALSE)
     sel <- sel == 0
     if (sum(sel) != 0) {
       nodes <- seq_len(length(unif_celltypes[sel]))
@@ -109,6 +117,6 @@ read_lr_single_condiction <- function(paths,
             coords = c,
             colors = colors,
             rankings = list())
-  saveRDS(lr, file.path(out_path, "LR_data.Rds"))
+  saveRDS(lr,file.path(out_path, "LR_data.Rds"))
   return(lr)
 }

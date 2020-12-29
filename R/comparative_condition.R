@@ -117,7 +117,7 @@ create_diff_table <- function(data, out_path) {
 #'@importFrom tidyr %>%
 #'@export
 #'@examples
-#'diff <- create_diff_table(data,
+#'diff <- create_diff_table_wip(data,
 #'                           out_path)
 create_diff_table_wip <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]

@@ -16,65 +16,71 @@ create_diff_table <- function(data, out_path) {
     exp_name <- names(data@tables)[i]
     cmp_name <- paste0(exp_name, "_x_", ctr_name)
     exp_table <- data@tables[[exp_name]]
-    lclust <- list()
-    rclust <- list()
-    lgene <- list()
-    rgene <- list()
-    lpair <- list()
-    cpair <- list()
-    rpair <- list()
-    apair <- list()
-    mlr <- list()
-    for (m in exp_table$allpair) {
+    exp_tbl_len = length(exp_table$allpair)
+    lclust <- vector("character", length = exp_tbl_len)
+    rclust <- vector("character", length = exp_tbl_len)
+    lgene <- vector("character", length = exp_tbl_len)
+    rgene <- vector("character", length = exp_tbl_len)
+    lpair <- vector("character", length = exp_tbl_len)
+    cpair <- vector("character", length = exp_tbl_len)
+    rpair <- vector("character", length = exp_tbl_len)
+    apair <- vector("character", length = exp_tbl_len)
+    mlr <- vector("numeric", length = exp_tbl_len)
+
+
+    for (i in 1:length(exp_table$allpair)) {
+      m = exp_table$allpair[i]
       if (m %in% ctr_table$allpair) {
         idx_e <- match(m, exp_table$allpair)
         idx_c <- match(m, ctr_table$allpair)
-        lclust[[m]] <- exp_table[idx_e, ]$Ligand.Cluster
-        rclust[[m]] <- exp_table[idx_e, ]$Receptor.Cluster
-        lgene[[m]] <- exp_table[idx_e, ]$Ligand
-        rgene[[m]] <- exp_table[idx_e, ]$Receptor
-        lpair[[m]] <- exp_table[idx_e, ]$ligpair
-        cpair[[m]] <- exp_table[idx_e, ]$cellpair
-        rpair[[m]] <- exp_table[idx_e, ]$recpair
-        apair[[m]] <- exp_table[idx_e, ]$allpair
-        mlr[[m]] <- exp_table[idx_e, ]$MeanLR - ctr_table[idx_c, ]$MeanLR
+        lclust[i] <- exp_table[idx_e, ]$Ligand.Cluster
+        rclust[i] <- exp_table[idx_e, ]$Receptor.Cluster
+        lgene[i] <- exp_table[idx_e, ]$Ligand
+        rgene[i] <- exp_table[idx_e, ]$Receptor
+        lpair[i] <- exp_table[idx_e, ]$ligpair
+        cpair[i] <- exp_table[idx_e, ]$cellpair
+        rpair[i] <- exp_table[idx_e, ]$recpair
+        apair[i] <- exp_table[idx_e, ]$allpair
+        mlr[i] <- exp_table[idx_e, ]$MeanLR - ctr_table[idx_c, ]$MeanLR
       }
       else{
         idx_e <- match(m, exp_table$allpair)
-        lclust[[m]] <- exp_table[idx_e, ]$Ligand.Cluster
-        rclust[[m]] <- exp_table[idx_e, ]$Receptor.Cluster
-        lgene[[m]] <- exp_table[idx_e, ]$Ligand
-        rgene[[m]] <- exp_table[idx_e, ]$Receptor
-        lpair[[m]] <- exp_table[idx_e, ]$ligpair
-        cpair[[m]] <- exp_table[idx_e, ]$cellpair
-        rpair[[m]] <- exp_table[idx_e, ]$recpair
-        apair[[m]] <- exp_table[idx_e, ]$allpair
-        mlr[[m]] <- exp_table[idx_e, ]$MeanLR
+        lclust[i] <- exp_table[idx_e, ]$Ligand.Cluster
+        rclust[i] <- exp_table[idx_e, ]$Receptor.Cluster
+        lgene[i] <- exp_table[idx_e, ]$Ligand
+        rgene[i] <- exp_table[idx_e, ]$Receptor
+        lpair[i] <- exp_table[idx_e, ]$ligpair
+        cpair[i] <- exp_table[idx_e, ]$cellpair
+        rpair[i] <- exp_table[idx_e, ]$recpair
+        apair[i] <- exp_table[idx_e, ]$allpair
+        mlr[i] <- exp_table[idx_e, ]$MeanLR
       }
     }
     for (m in ctr_table$allpair) {
       if (!m %in% exp_table$allpair) {
         idx_c <- match(m, ctr_table$allpair)
-        lclust[[m]] <- ctr_table[idx_c, ]$Ligand.Cluster
-        rclust[[m]] <- ctr_table[idx_c, ]$Receptor.Cluster
-        lgene[[m]] <- ctr_table[idx_c, ]$Ligand
-        rgene[[m]] <- ctr_table[idx_c, ]$Receptor
-        lpair[[m]] <- ctr_table[idx_c, ]$ligpair
-        cpair[[m]] <- ctr_table[idx_c, ]$cellpair
-        rpair[[m]] <- ctr_table[idx_c, ]$recpair
-        apair[[m]] <- ctr_table[idx_c, ]$allpair
-        mlr[[m]] <- 0 - ctr_table[idx_c, ]$MeanLR
+        lclust[i] <- ctr_table[idx_c, ]$Ligand.Cluster
+        rclust[i] <- ctr_table[idx_c, ]$Receptor.Cluster
+        lgene[i] <- ctr_table[idx_c, ]$Ligand
+        rgene[i] <- ctr_table[idx_c, ]$Receptor
+        lpair[i] <- ctr_table[idx_c, ]$ligpair
+        cpair[i] <- ctr_table[idx_c, ]$cellpair
+        rpair[i] <- ctr_table[idx_c, ]$recpair
+        apair[i] <- ctr_table[idx_c, ]$allpair
+        mlr[i] <- 0 - ctr_table[idx_c, ]$MeanLR
       }
     }
-    final_data <- tibble::tibble("Ligand.Cluster" = unlist(lclust),
-                                 "Receptor.Cluster" = unlist(rclust),
-                                 "Ligand" = unlist(lgene),
-                                 "Receptor" = unlist(rgene),
-                                 "cellpair" = unlist(cpair),
-                                 "ligpair" = unlist(lpair),
-                                 "recpair" = unlist(rpair),
-                                 "allpair" = unlist(apair),
-                                 "MeanLR" = unlist(mlr))
+    final_data <- tibble::tibble(
+      "Ligand.Cluster" = lclust,
+      "Receptor.Cluster" = rclust,
+      "Ligand" = lgene,
+      "Receptor" = rgene,
+      "cellpair" = cpair,
+      "ligpair" = lpair,
+      "recpair" = rpair,
+      "allpair" = apair,
+      "MeanLR" = mlr
+    )
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
       dplyr::group_by(.data$cellpair) %>%

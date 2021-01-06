@@ -10,11 +10,14 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
       for (graph in names(slot(data, slot))) {
           if (grepl("_x_", graph)) {  # Signed Analysis
               tmp_g <- slot(data, slot)[[graph]]
-              up_graph <- igraph::subgraph.edges(tmp_g,
-                                                 E(tmp_g)[E(tmp_g)$MeanLR > 0])
-              d_graph <- igraph::subgraph.edges(tmp_g,
-                                                   E(tmp_g)[E(tmp_g)$MeanLR < 0]
-                                                  )
+              up_graph <- igraph::subgraph.edges(
+                tmp_g,
+                igraph::E(tmp_g)[igraph::E(tmp_g)$MeanLR > 0]
+              )
+              d_graph <- igraph::subgraph.edges(
+                tmp_g,
+                igraph::E(tmp_g)[igraph::E(tmp_g)$MeanLR < 0]
+              )
               comp <- igraph::components(up_graph)
               all_up <- NULL
               for (i in unique(comp$membership)) {
@@ -92,6 +95,7 @@ ranking_net <- function(graph) {
   igraph::E(graph)$weight <- abs(igraph::E(graph)$weight)
   bet <- igraph::betweenness(graph)
   clo <- igraph::closeness(graph)
+  # DEBUG Fortran runtime error: Insufficient number of elements in TARRAY.
   eigen <- igraph::eigen_centrality(graph)$vector
   pagerank <- igraph::page.rank(graph)$vector
   deg_in <- igraph::degree(graph, mode = "in")

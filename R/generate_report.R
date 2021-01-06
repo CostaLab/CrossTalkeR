@@ -36,13 +36,13 @@ generate_report <- function(lrpaths,
                             report = TRUE,
                             output_fmt = "html_document") {
   # Creating the single condition Object
-  index_single <- base::system.file("templates",
+  index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",
                               package = "CrossTalkeR")
-  index <- base::system.file("templates",
+  index <- system.file("templates",
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
-  comp <- base::system.file("templates",
+  comp <- system.file("templates",
                       "Comparative_Condition.Rmd",
                       package = "CrossTalkeR")
   message("Reading Files")
@@ -53,7 +53,7 @@ generate_report <- function(lrpaths,
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table(data, out_path)
+    data <- create_diff_table_wip(data, out_path)
   }
   message("Defining templates")
   # Generating the single condition report
@@ -75,13 +75,14 @@ generate_report <- function(lrpaths,
     rmarkdown::render(index_single,
                     output_format = output_fmt,
                     output_dir = out_path,
-                    output_file = paste0("Single_",
-                    out_file),
+                    output_file = paste0("Single_",out_file),
+                    intermediates_dir	= out_path,
                     params = param_single)
     rmarkdown::render(index,
                       output_format = output_fmt,
                       output_dir = out_path,
                       output_file =  paste0("Comparative_", out_file),
+                      intermediates_dir	= out_path,
                       params = param_comp)
 
   }

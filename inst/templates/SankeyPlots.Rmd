@@ -27,7 +27,7 @@ require(pals)
 
 ```
 
-## Genes Sankey Plot 
+## Genes Sankey Plot
 
 ```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
 path <-params$obj1
@@ -36,12 +36,11 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
       for(gene in params$obj2){
-        plot_sankey(all_data@tables[[curr]], 
+        plot_sankey(all_data@tables[[curr]],
             gene,
-            unique(all_data@tables[[curr]]$Ligand.Cluster),
-            unique(all_data@tables[[curr]]$Receptor.Cluster),paste0(curr,' ',gene))
+            NULL,
+            NULL,paste0(curr,' ',gene))
       }
   }
 }
 ```
-

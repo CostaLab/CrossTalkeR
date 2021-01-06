@@ -302,7 +302,6 @@ plot_articulation <- function(graph, color) {
 #'@import ggplot2
 #'@import dplyr
 #'@import ggalluvial
-#'@importFrom ggalluvial StatStratum
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
@@ -321,7 +320,6 @@ plot_sankey <- function(lrobj_tbl,
                         receptor_cluster = NULL,
                         plt_name = NULL) {
   data <- lrobj_tbl
-  StatStratum <- ggalluvial::StatStratum
   if (!is.null(target)) {
     data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
   }
@@ -353,9 +351,9 @@ plot_sankey <- function(lrobj_tbl,
                                     width = 1 / 12,
                                     discern = FALSE) +
           ggalluvial::geom_stratum(width = 1 / 12) +
-          ggplot2::geom_label(stat = "stratum",
+          ggplot2::geom_label(stat = ggalluvial::StatStratum,
                               ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
-                              size = 2) +
+                              size = 4) +
           ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
           ggplot2::scale_fill_manual(values = colp,
                                      limits = names(colp),

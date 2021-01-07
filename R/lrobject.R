@@ -24,6 +24,7 @@ lrbject <- setClass("LRObj",
                                coords = "array",
                                colors = "character",
                                rankings = "list",
-                               loadings = "list"
+                               loadings = "list",
+                               pca = "list"
                                )
                     )

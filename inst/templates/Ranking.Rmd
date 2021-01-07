@@ -26,24 +26,43 @@ require(pals)
 require(htmltools)
 require(DT)
 require(knitr)
+require(factoextra)
 ```
 
 
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=FALSE}
+```{r fig.align='center',warning=FALSE,echo=FALSE}
 path <-params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@rankings))){
-     curr <- names(all_data@rankings)[i]
+for(i in 1:length(names(all_data@pca))){
+     curr <- names(all_data@pca)[i]
      if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, '_ggi', negate = FALSE)){
      rmd_title <- paste0(curr,'_tbl')
-     knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE, warning=FALSE}
-                             \n\n                          datatable(all_data@rankings[['",curr,"']],caption='",curr,"', extensions = 'Buttons', options = list(
-    dom = 'Bfrtip',
-    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
-     out <- c(out,knit_expanded)
+     rmd_title1 <- paste0(curr,'_pca1')
+     knit_expanded1 <- paste0("```{r , echo=FALSE, warning=FALSE,fig.width=8,fig.height=8,fig.align = 'center'}\n\n
+     fviz_pca_var(all_data@pca[['",curr,"']],
+                    axes = c(1,2),
+                    col.var='contrib',
+                    gradient.cols = c('#00AFBB', '#E7B800', '#FC4E07'),
+                    repel = TRUE)+labs(title='",curr,"')\n
+
+     ```")
+     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
+         datatable(all_data@pca[['",curr,"']]$x,
+                 caption='",curr,"',
+                 extensions = 'Buttons',
+                 options = list(dom = 'Bfrtip',
+                                buttons = c('copy',
+                                            'csv',
+                                            'excel',
+                                            'pdf', 'print')
+                               )
+                )
+
+     ```")
+     out <- c(out,knit_expanded1,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
@@ -52,26 +71,43 @@ for(i in 1:length(names(all_data@rankings))){
 
 `r paste(knit(text = out), collapse = '\n')`
 
-# Ranking GCI
+# PCA GCI
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=FALSE}
+```{r fig.align='center',warning=FALSE,echo=FALSE}
 path <-params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@rankings))){
-     curr <- names(all_data@rankings)[i]
+for(i in 1:length(names(all_data@pca))){
+     curr <- names(all_data@pca)[i]
      if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
      rmd_title <- paste0(curr,'_tbl')
-     knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE, warning=FALSE}
-                             \n\n                          datatable(all_data@rankings[['",curr,"']],caption='",curr,"', extensions = 'Buttons', options = list(
-    dom = 'Bfrtip',
-    buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
-     out <- c(out,knit_expanded)
+     rmd_title1 <- paste0(curr,'_pca')
+     knit_expanded1 <- paste0("```{r , echo=FALSE, warning=FALSE,fig.width=8,fig.height=8,fig.align = 'center'}\n\n
+     fviz_pca_var(all_data@pca[['",curr,"']],
+                    axes = c(1,2),
+                    col.var='contrib',
+                    gradient.cols = c('#00AFBB', '#E7B800', '#FC4E07'),
+                    repel = TRUE)+labs(title='",curr,"')\n
+
+     ```")
+     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
+         datatable(all_data@pca[['",curr,"']]$x,
+                 caption='",curr,"',
+                 extensions = 'Buttons',
+                 options = list(dom = 'Bfrtip',
+                                buttons = c('copy',
+                                            'csv',
+                                            'excel',
+                                            'pdf', 'print')
+                               )
+                )
+
+     ```")
+     out <- c(out,knit_expanded1,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
 
 ```
-
 `r paste(knit(text = out), collapse = '\n')`

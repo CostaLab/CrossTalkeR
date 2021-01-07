@@ -74,7 +74,7 @@ create_diff_table <- function(data, out_path) {
                                  "recpair" = unlist(rpair),
                                  "allpair" = unlist(apair),
                                  "MeanLR" = unlist(mlr))
-    data@tables[[cmp_name]] <- final_data
+    data@tables[[cmp_name]] <- final_data[final_data$MeanLR!=0,]
     final <- final_data %>%
       dplyr::group_by(.data$cellpair) %>%
       dplyr::summarise(MeanLR = sum(.data$MeanLR))
@@ -82,7 +82,6 @@ create_diff_table <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
-    final <- final[final$MeanLR != 0, ]
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
@@ -181,6 +180,7 @@ create_diff_table_wip <- function(data, out_path) {
       "allpair" = apair,
       "MeanLR" = mlr
     )
+    final_data <- final_data[final_data$MeanLR!=0,]
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
       dplyr::group_by(.data$cellpair) %>%
@@ -189,7 +189,6 @@ create_diff_table_wip <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
-    final <- final[final$MeanLR != 0, ]
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))

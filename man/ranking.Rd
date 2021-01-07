@@ -12,7 +12,7 @@ ranking(data, out_path, slot = "graphs_ggi")
 \item{out_path}{to save the lrobject with ranking}
 
 \item{slot}{slot of the networks graphs_ggi to gene cell interaction and abs
-graphs to cell cell interaction}
+graphs to cell cell interactions}
 }
 \value{
 list

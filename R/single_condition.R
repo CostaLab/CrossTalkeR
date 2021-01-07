@@ -116,7 +116,8 @@ read_lr_single_condiction <- function(lrpaths,
             max_nodes = max_nodes,
             coords = c,
             colors = colors,
-            rankings = list())
+            rankings = list(),
+            pca = list())
   saveRDS(lr,file.path(out_path, "LR_data.Rds"))
   return(lr)
 }

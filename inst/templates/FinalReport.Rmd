@@ -38,7 +38,7 @@ params:
 ```
 
 
-# Ranking CCI
+# PCA CCI
 
 ```{r rkg, child='Ranking.Rmd',eval=TRUE}
 

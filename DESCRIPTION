@@ -1,25 +1,25 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
 Version: 0.99.6
-Authors@R:
+Authors@R:c(
     person(given = "James Shiniti",
            family = "Nagai",
            role = c("aut", "cre"),
            email = "james.nagai@gmail.com",
-           comment = c(ORCID = "0000-0002-7655-7206"))
+           comment = c(ORCID = "0000-0002-7655-7206")),
     person(given = "Nils",
                   family = "Leimkühler",
                   role = c("aut"),
-                  comment = c(ORCID = ""))
+                  comment = c(ORCID = "")),
     person(given = "Rebekka",
          family = "Schneider",
          role = c("aut"),
-         comment = c(ORCID = "0000-0002-0749-1565"))
+         comment = c(ORCID = "0000-0002-0749-1565")),
    person(given = " Ivan Costa",
             family = "Gesteira",
-            role = c("aut", "cre"),
+            role = c("aut"),
             email = "ivan.costa@rwth-aachen.de",
-            comment = c(ORCID = "0000-0003-2890-8697"))
+            comment = c(ORCID = "0000-0003-2890-8697")))
 Description: This Package allows the network based analysis over ligand receptor network infered data.
 URL: https://github.com/CostaLab/CrossTalkeR
 BugReports: https://github.com/CostaLab/CrossTalkeR/issues

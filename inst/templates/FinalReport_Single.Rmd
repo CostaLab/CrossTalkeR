@@ -31,7 +31,7 @@ params:
 ```
 
 
-# Ranking
+# PCA
 
 ```{r rkg, child='Ranking_Single.Rmd',eval=TRUE}
 ```

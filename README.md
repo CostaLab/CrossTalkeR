@@ -22,23 +22,13 @@ Ivan G. Costa<sup>1*</sup>
 CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk through ligand receptor networks. It use as input the Ligand Receptor Inference Tool Results to build a sharable report with main network based analysis
 
 
-## Current Features v0.6.9
+## Current Features v0.9.6
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking
-   - Topology Measures Based Ranking (Cell Level)
-     + Centrality (Degree, Eigenvector, Betweenness and Closeness)
-     + PageRank
    - Gene Target based Sankey Plots
-   - Signed based CCI and LSRR ranking
+   - Signed based CCI and GCI PCA ranking
 ## Ongoing Features
-   - Implement disconnected components treatment
-   - Barplots plots methods
-   - Ligand/Receptor driven selection
-   - Gene Level topological measures based ranking
-        + Centrality (Degree, Eigenvector, Betweenness and Closeness)
-        + PageRank
-   - Exclusive Ligand/Receptor Annotation
    - Interactions curation based on OmniPath
 
 

@@ -18,16 +18,18 @@ Ivan G. Costa<sup>1*</sup>
 
 
 
-
 CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk through ligand receptor networks. It use as input the Ligand Receptor Inference Tool Results to build a sharable report with main network based analysis
 
 
-## Current Features v0.9.6
+## Current Features v0.9.7
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking
    - Gene Target based Sankey Plots
-   - Signed based CCI and GCI PCA ranking
+   - CCI and GCI PCA ranking
+      - All measures and PC table
+      - PC1 and PC2 based barplot
+   - Leimkühler data were added to the package
 ## Ongoing Features
    - Interactions curation based on OmniPath
 
@@ -35,5 +37,7 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
 
 
 # References
-[2] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)
+
 [1]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
+
+[2] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)

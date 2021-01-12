@@ -10,44 +10,6 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
       for (graph in names(slot(data, slot))) {
           if (grepl("_x_", graph)) {  # Signed Analysis
               tmp_g <- slot(data, slot)[[graph]]
-              up_graph <- igraph::subgraph.edges(
-                tmp_g,
-                igraph::E(tmp_g)[igraph::E(tmp_g)$MeanLR > 0]
-              )
-              d_graph <- igraph::subgraph.edges(
-                tmp_g,
-                igraph::E(tmp_g)[igraph::E(tmp_g)$MeanLR < 0]
-              )
-              comp <- igraph::components(up_graph)
-              all_up <- NULL
-              for (i in unique(comp$membership)) {
-                 tmp_m <- comp$membership == i
-                 subgraph <- igraph::induced.subgraph(up_graph,
-                                                      igraph::V(up_graph)[tmp_m]
-                                                     )
-                 if (is.null(all_up)) {
-                     all_up <- ranking_net(subgraph)
-                 }else{
-                     tmp <- ranking_net(subgraph)
-                     tmp <- dplyr::bind_rows(all_up, tmp)
-                     all_up <- tmp
-                 }
-              }
-              comp <- igraph::components(d_graph)
-              all_down <- NULL
-              for (i in unique(comp$membership)) {
-                 tmp_m <- comp$membership == i
-                 subgraph <- igraph::induced.subgraph(d_graph,
-                                                      igraph::V(d_graph)[tmp_m]
-                                                     )
-                 if (is.null(all_down)) {
-                    all_down <- ranking_net(subgraph)
-                 }else{
-                   tmp <- ranking_net(subgraph)
-                   tmp <- dplyr::bind_rows(all_down, tmp)
-                   all_down <- tmp
-                 }
-              }
               comp <- igraph::components(tmp_g)
               all_both <- NULL
               for (i in unique(comp$membership)) {
@@ -64,23 +26,8 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                  }
               }
               if (grepl("_ggi", slot)) {
-                data@rankings[[paste0(graph, "_ggi_up")]] <-  all_up
-                data@rankings[[paste0(graph, "_ggi_down")]] <-  all_down
                 data@rankings[[paste0(graph, "_ggi_both")]] <-  all_both
-
-                data@pca[[paste0(graph, "_ggi_up")]] <- prcomp(all_up[,c("indegree",
-                                                                  "outdegree",
-                                                                  "betweenness",
-                                                                  "closeness",
-                                                                  "eigenvector",
-                                                                  "pagerank")],scale=T)
-               data@pca[[paste0(graph, "_ggi_down")]] <- prcomp(all_down[,c("indegree",
-                                                                  "outdegree",
-                                                                  "betweenness",
-                                                                  "closeness",
-                                                                  "eigenvector",
-                                                                  "pagerank")],scale=T)
-              all_both <- all_both[,c("indegree",
+                all_both <- all_both[,c("indegree",
                            "outdegree",
                            "betweenness",
                            "closeness",
@@ -89,38 +36,25 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
               all_both <- all_both[,which(colSums(all_both)!=0)]
               all_both <- all_both[,which(colSums(all_both)/dim(all_both)[1]!=dim(all_both)[1])]
               data@pca[[paste0(graph, "_ggi_both")]] <- prcomp(all_both,scale=T)
-              rownames(data@pca[[paste0(graph, "_ggi_up")]]$x) <- all_up$nodes
-              rownames(data@pca[[paste0(graph, "_ggi_down")]]$x) <- all_down$nodes
               rownames(data@pca[[paste0(graph, "_ggi_both")]]$x) <- data@rankings[[paste0(graph, "_ggi_both")]]$nodes
+              data@pca[[paste0(graph, "_ggi_both")]]$x <- -data@pca[[paste0(graph, "_ggi_both")]]$x
+              data@pca[[paste0(graph, "_ggi_both")]]$rotation <- -data@pca[[paste0(graph, "_ggi_both")]]$rotation
+
 
               }else{
-                data@rankings[[paste0(graph, "_up")]] <-  all_up
-                data@rankings[[paste0(graph, "_down")]] <-  all_down
                 data@rankings[[paste0(graph, "_both")]] <-  all_both
-                data@pca[[paste0(graph, "_up")]] <- prcomp(all_up[,c("indegree",
-                                                                  "outdegree",
-                                                                  "betweenness",
-                                                                  "closeness",
-                                                                  "eigenvector",
-                                                                  "pagerank")],scale=T)
-               data@pca[[paste0(graph, "_down")]] <- prcomp(all_down[,c("indegree",
-                                                                  "outdegree",
-                                                                  "betweenness",
-                                                                  "closeness",
-                                                                  "eigenvector",
-                                                                  "pagerank")],scale=T)
-              all_both <- all_both[,c("indegree",
-                           "outdegree",
-                           "betweenness",
-                           "closeness",
-                           "eigenvector",
-                           "pagerank")]
-              all_both <- all_both[,which(colSums(all_both)!=0)]
-              all_both <- all_both[,which(colSums(all_both)/dim(all_both)[1]!=dim(all_both)[1])]
-              data@pca[[paste0(graph, "_both")]] <- prcomp(all_both,scale=T)
-              rownames(data@pca[[paste0(graph, "_up")]]$x) <- all_up$nodes
-              rownames(data@pca[[paste0(graph, "_down")]]$x) <- all_down$nodes
-             rownames(data@pca[[paste0(graph, "_both")]]$x) <- data@rankings[[paste0(graph, "_both")]]$nodes
+                all_both <- all_both[,c("indegree",
+                             "outdegree",
+                             "betweenness",
+                             "closeness",
+                             "eigenvector",
+                             "pagerank")]
+                all_both <- all_both[,which(colSums(all_both)!=0)]
+                all_both <- all_both[,which(colSums(all_both)/dim(all_both)[1]!=dim(all_both)[1])]
+                data@pca[[paste0(graph, "_both")]] <- prcomp(all_both,scale=T)
+                rownames(data@pca[[paste0(graph, "_both")]]$x) <- data@rankings[[paste0(graph, "_both")]]$nodes
+                data@pca[[paste0(graph, "_both")]]$x <- -data@pca[[paste0(graph, "_both")]]$x
+                data@pca[[paste0(graph, "_both")]]$rotation <- -data@pca[[paste0(graph, "_both")]]$rotation
 
               }
           }else{ # Unsigned
@@ -188,12 +122,12 @@ ranking_net <- function(graph) {
   deg_in <- igraph::degree(graph, mode = "in")
   deg_out <- igraph::degree(graph, mode = "out")
   centrality_table <- tibble::tibble(nodes = names(bet),
-                                     indegree = deg_in,
-                                     outdegree = deg_out,
-                                     betweenness = bet,
-                                     closeness = clo,
-                                     eigenvector = eigen,
-                                     pagerank = pagerank,
+                                     indegree = round(deg_in,6),
+                                     outdegree = round(deg_out,6),
+                                     betweenness = round(bet,6),
+                                     closeness = round(clo,6),
+                                     eigenvector = round(eigen,6),
+                                     pagerank = round(pagerank,6),
                                      combined_ranking = rkg_ties(indegree) +
                                                         rkg_ties(outdegree) +
                                                         rkg_ties(bet) +
@@ -204,6 +138,8 @@ ranking_net <- function(graph) {
   return(centrality_table)
 }
 
+#'This function treat ties
+#'
 #'@param  list
 #'@return combined ranking with ties.method
 rkg_ties <- function(list) {

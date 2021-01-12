@@ -50,14 +50,19 @@ for(i in 1:length(names(all_data@pca))){
 
      ```")
      knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
-         datatable(all_data@pca[['",curr,"']]$x,
+         pca <- all_data@pca[['",curr,"']]$x[,1:2]
+         pca[,1] <- round(pca[,1],6)
+         pca[,2] <- round(pca[,2],6)
+         ranking <- cbind(all_data@rankings[['",curr,"']][,2:dim(all_data@rankings[['",curr,"']])[2]],pca[all_data@rankings[['",curr,"']]$nodes,])
+         datatable(ranking,
                  caption='",curr,"',
                  extensions = 'Buttons',
                  options = list(dom = 'Bfrtip',
                                 buttons = c('copy',
                                             'csv',
                                             'excel',
-                                            'pdf', 'print')
+                                            'pdf', 'print'),
+                               autoWidth = FALSE
                                )
                 )
 

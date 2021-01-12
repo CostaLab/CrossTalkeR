@@ -13,7 +13,7 @@ plot_sankey(
 )
 }
 \arguments{
-\item{lrobj_tbl}{LRobject with all data}
+\item{lrobj_tbl}{LRobject table with all data}
 
 \item{target}{gene}
 

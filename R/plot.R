@@ -101,7 +101,7 @@ plot_cci <- function(graph,
                                          0) * efactor
   }
   igraph::E(graph)$arrow.size <- 0.25
-  igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.6
+  igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.8
   if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
     igraph::E(graph)$loop.angle[which(edge_start[,2]==edge_start[,1])]<-loop_angle[edge_start[which(edge_start[,2]==edge_start[,1]),1]]
     igraph::E(graph)$loop.angle[which(edge_start[,2]!=edge_start[,1])]<-0
@@ -182,7 +182,7 @@ plot_cci <- function(graph,
 #'@examples
 #'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
 #'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-#'         colors = data@colors)
+#'         color = data@colors)
 plot_ggi <- function(graph, color) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
@@ -294,7 +294,7 @@ plot_articulation <- function(graph, color) {
 
 #'This function selected genes sankey plot
 #'
-#'@param lrobj_tbl LRobject with all data
+#'@param lrobj_tbl LRobject table with all data
 #'@param target gene
 #'@param ligand_cluster Ligand Clusters
 #'@param receptor_cluster Receptor Clusters
@@ -324,16 +324,11 @@ plot_sankey <- function(lrobj_tbl,
     data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
   }
   if (!is.null(ligand_cluster)) {
-    tmp_sel <- match(data$Ligand.Cluster,
-                     ligand_cluster,
-                     nomatch = FALSE)
-    tmp_sel <- tmp_sel != FALSE
+    tmp_sel <- grepl(ligand_cluster, data$Ligand.Cluster)
     data <- data[tmp_sel, ]
   }
   if (!is.null(receptor_cluster)) {
-    tmp_sel <- match(data$Receptor.Cluster,
-                     receptor_cluster,
-                     nomatch = FALSE)
+    tmp_sel <- grepl(receptor_cluster, data$Receptor.Cluster)
     data <- data[tmp_sel, ]
   }
   data$freq <- 1
@@ -367,4 +362,81 @@ plot_sankey <- function(lrobj_tbl,
       print(paste0("Gene->", target, "Not Found"))
 
   }
+}
+
+
+
+
+#'This function pca PC1 and PC2 ranking barplot
+#'
+#'@param pca_l LRobject pca_slot
+#'@param lrobj_table LRobject table slcot
+#'@import ggplot2
+#'@import dplyr
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
+#'plot_pca(lrobj_tbl = data@tables$EXP_x_CTR,
+#'            target = c("TGFB1"),
+#'            ligand_cluster = NULL,
+#'            receptor_cluster = NULL,
+#'            plt_name = "TGFB1")
+#'
+plot_pca <- function(pca_l = lrobj_pca,lrobj_table,pc=1) {
+  lig_up <- unique(lrobj_table$ligpair[lrobj_table$MeanLR > 0])
+  pca_l_up <- as.tibble(pca_l[lig_up, ])
+  pca_l_up$ligname <- rownames(pca_l[lig_up, ])
+  pca_l_up$up <- rep('Upregulated', dim(pca_l_up)[1])
+  lig_down <- unique(lrobj_table$ligpair[lrobj_table$MeanLR < 0])
+  pca_l_down <- as.tibble(pca_l[lig_down, ])
+  pca_l_down$ligname <- rownames(pca_l[lig_down, ])
+  pca_l_down$up <- rep('Downregulated', dim(pca_l_down)[1])
+  pca_l_up$PC <- pca_l_up[[pc]]
+  pca_l_down$PC <- pca_l_down[[pc]]
+  s1 <- dplyr::top_n(pca_l_up, 20,PC)
+  s2 <- dplyr::top_n(pca_l_down, 20,PC)
+  rec_up <- unique(lrobj_table$recpair[lrobj_table$MeanLR > 0])
+  pca_l_up <- as.tibble(pca_l[rec_up, ])
+  pca_l_up$recname <- rownames(pca_l[rec_up, ])
+  pca_l_up$up <- rep('Upregulated', dim(pca_l_up)[1])
+  rec_down <- unique(lrobj_table$recpair[lrobj_table$MeanLR < 0])
+  pca_l_down <- as.tibble(pca_l[rec_down, ])
+  pca_l_down$recname <- rownames(pca_l[rec_down, ])
+  pca_l_down$up <- rep('Downregulated', dim(pca_l_down)[1])
+  pca_l_up$PC <- pca_l_up[[pc]]
+  pca_l_down$PC <- pca_l_down[[pc]]
+  r1 <- dplyr::top_n(pca_l_up, 20,PC)
+  r2 <- dplyr::top_n(pca_l_down, 20,PC)
+  p1 <- ggplot2::ggplot(s1,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::ggtitle('Ligands Upregulated')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('PC Score')+
+    ggplot2::theme_minimal()
+  p2 <- ggplot2::ggplot(r1,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::ggtitle('Receptor Upregulated')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('PC Score')+
+    ggplot2::theme_minimal()
+  p3 <- ggplot2::ggplot(s2,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::ggtitle('Ligands Downregulated')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('PC Score')+
+    ggplot2::theme_minimal()
+  p4 <- ggplot2::ggplot(r2,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::ggtitle('Receptor Downregulated')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('PC Score')+
+    ggplot2::theme_minimal()
+    print((p1+p2)/(p3+p4)+plot_annotation(title = paste0('PC ', pc),tag_levels = 'A'))
 }

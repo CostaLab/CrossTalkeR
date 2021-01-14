@@ -1,10 +1,12 @@
 # CrossTalker
+[![DOI](https://zenodo.org/badge/329572127.svg)](https://zenodo.org/badge/latestdoi/329572127)
 
 
 James S. Nagai<sup>1</sup>,
 Nils B. Leimkühler<sup>2</sup>,
 Rebekka K. Schneider<sup>2,3,4</sup>,
 Ivan G. Costa<sup>1*</sup>
+
 
 
 <sup>1</sup>Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany

@@ -41,6 +41,7 @@ for(i in 1:length(names(all_data@pca))){
      curr <- names(all_data@pca)[i]
      if(!str_detect(curr, '_x_', negate = FALSE)){
      rmd_title <- paste0(curr,'_tbl')
+     title1 <- paste0('\n\n## PCA CCI ',curr)
      knit_expanded1 <- paste0("```{r , echo=FALSE, warning=FALSE,fig.width=8,fig.height=8,fig.align = 'center'}\n\n
      fviz_pca_var(all_data@pca[['",curr,"']],
                     axes = c(1,2),
@@ -49,6 +50,7 @@ for(i in 1:length(names(all_data@pca))){
                     repel = TRUE)+labs(title='",curr,"')\n
 
      ```")
+     title2 <- paste0('\n\n## Table PCA CCI ',curr)
      knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
          pca <- all_data@pca[['",curr,"']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
@@ -67,7 +69,7 @@ for(i in 1:length(names(all_data@pca))){
                 )
 
      ```")
-     out <- c(out,knit_expanded1,knit_expanded)
+     out <- c(out,title1,knit_expanded1,title2,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }

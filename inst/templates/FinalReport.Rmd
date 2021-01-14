@@ -1,6 +1,5 @@
 ---
 title: "LR_Report"
-author: "Nagai"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -32,13 +31,13 @@ params:
 ```{r snkey, child='SankeyPlots.Rmd',eval=TRUE}
 ```
 
-# Table
+# Ligand Receptor Interaction Table
 
 ```{r tbl, child='Tables.Rmd',eval=TRUE}
 ```
 
 
-# PCA CCI
+# PCA
 
 ```{r rkg, child='Ranking.Rmd',eval=TRUE}
 

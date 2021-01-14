@@ -27,7 +27,7 @@ require(pals)
 
 ```
 
-## Differential Cell Cell Interaction Plot (CCI)
+## Cell Cell Interaction Plot (CCI)
 
 ```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=FALSE}
 path <-params$obj1
@@ -63,7 +63,7 @@ for(i in 1:length(names(all_data@tables))){
 }
 ```
 
-## Differential Cell Cell Frequency of Ligands and Receptors
+##  Frequency of Ligands and Receptors on CCI
 
 ```{r fig.align='center', fig.height=7, fig.width=12,message=FALSE, warning=FALSE,echo=FALSE}
 
@@ -109,7 +109,9 @@ for(i in 1:length(names(all_data@tables))){
 ```
 
 
-## Differential Gene_Cell Gene_Cell Interaction Plot (CGI): *Highest degree connector candidate from the Largest Component*
+## Cell Gene Interaction Plot (CGI):
+
+*Highest degree connector candidate from the Largest Component*
 
 ```{r fig.align='center', fig.height=10, fig.width=10,message=FALSE, warning=FALSE,echo=FALSE}
 for(i in 1:length(names(all_data@tables))){
@@ -132,7 +134,7 @@ for(i in 1:length(names(all_data@tables))){
 
 
 
-## Differential Gene_Cell Gene_Cell Ranking Sending(out-degree) Receiving (in-degree)
+## Frequency of Sending(out-degree) Receiving (in-degree) genes of GCI
 
 ```{r fig.align='center', fig.height=6, fig.width=10,message=FALSE, warning=FALSE,echo=FALSE}
 for(i in 1:length(names(all_data@tables))){

@@ -1,6 +1,5 @@
 ---
 title: "LR_Report"
-author: "Nagai"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -25,7 +24,7 @@ params:
 ```{r cci, child='Single_Condition.Rmd'}
 ```
 
-# Table
+# Single Condition Ligand Receptor Interaction Table
 
 ```{r tbl, child='Tables_Single.Rmd',eval=TRUE}
 ```

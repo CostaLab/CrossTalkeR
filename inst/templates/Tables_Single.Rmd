@@ -37,7 +37,6 @@ out1 <- list()
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
      curr <- names(all_data@tables)[i]
-     print(curr)
      if(!str_detect(curr, '_x_', negate = FALSE)){
 
          rmd_title <- paste0(curr,'_tbl')

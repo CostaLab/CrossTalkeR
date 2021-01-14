@@ -30,6 +30,7 @@ require(factoextra)
 ```
 
 
+## PCA CCI
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
 path <-params$obj1
@@ -49,7 +50,8 @@ for(i in 1:length(names(all_data@pca))){
                     repel = TRUE)+labs(title='",curr,"')\n
 
      ```")
-     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
+     title <- paste0('\n\n## Table PCA CCI ',curr)
+     knit_expanded <- paste0("\n\n```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
          pca <- all_data@pca[['",curr,"']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
          pca[,2] <- round(pca[,2],6)
@@ -67,7 +69,7 @@ for(i in 1:length(names(all_data@pca))){
                 )
 
      ```")
-     out <- c(out,knit_expanded1,knit_expanded)
+     out <- c(out,knit_expanded1,title,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
@@ -76,7 +78,7 @@ for(i in 1:length(names(all_data@pca))){
 
 `r paste(knit(text = out), collapse = '\n')`
 
-# PCA GCI
+## PCA GCI
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
 path <-params$obj1
@@ -96,6 +98,7 @@ for(i in 1:length(names(all_data@pca))){
                     repel = TRUE)+labs(title='",curr,"')\n
 
      ```")
+     title <- paste0('\n\n## Table PCA CGI ',curr)
      knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
          pca <- all_data@pca[['",curr,"']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
@@ -114,7 +117,7 @@ for(i in 1:length(names(all_data@pca))){
                 )
 
      ```")
-     out <- c(out,knit_expanded1,knit_expanded)
+     out <- c(out,knit_expanded1,title,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
@@ -123,7 +126,7 @@ for(i in 1:length(names(all_data@pca))){
 `r paste(knit(text = out), collapse = '\n')`
 
 
-# PCA GCI barplot
+## PCA GCI barplot
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
 path <-params$obj1

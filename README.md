@@ -32,8 +32,7 @@ CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk
       - All measures and PC table
       - PC1 and PC2 based barplot
    - Leimkühler data were added to the package
-## Ongoing Features
-   - Interactions curation based on OmniPath
+
 
 
 

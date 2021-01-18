@@ -137,6 +137,35 @@ def cpdb2df(data,clsmapping):
                 df_data['MeanLR'].append(data.iloc[i,j+12])
                 data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
                 return(data_final)
+            
+def cpdb2df_nocls(data):
+    '''
+   		When the cluster name is used on CPDB
+    '''
+    data = data.fillna(0)
+    df_data = {}
+    df_data['Ligand'] = []
+    df_data['Receptor'] = []
+    df_data['Ligand.Cluster'] = []
+    df_data['Receptor.Cluster'] = []
+    df_data['isReceptor_fst'] = []
+    df_data['isReceptor_scn'] = []
+    df_data['MeanLR'] = []
+    for i in range(data.shape[0]):
+        pair = list(data['interacting_pair'])[i].split('_')
+        for j in range(data.iloc[:,12:].shape[1]):
+            c_pair = list(data.columns)[j+12].split('|')
+            if int(data.iloc[i,j+12]) !=0.0:
+                df_data['Ligand'].append(pair[0])
+                df_data['Receptor'].append(pair[1])
+                df_data['Ligand.Cluster'].append(c_pair[0])
+                df_data['Receptor.Cluster'].append(c_pair[1])
+                df_data['isReceptor_fst'].append(list(data['receptor_a'])[i])
+                df_data['isReceptor_scn'].append(list(data['receptor_b'])[i])
+                df_data['MeanLR'].append(data.iloc[i,j+12])
+                data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
+                return(data_final)
+            
 s1 = pd.read_csv('./s1/significant_means.txt',sep='\t')
 s2 = pd.read_csv('./s2/ significant_means.txt',sep='\t')
 #dict with the mapping
@@ -156,10 +185,10 @@ s2_filtered.to_csv('s2_filtered_corrected.csv')
 
 ```
 
-### CrossTalk 
+### CrossTalkeR
 
 ````R
-library('LRAnalytics')
+library('CrossTalkeR')
 
 # the method always consider the first path as control: the multiple control case will be handle soon
 paths <- c('CTR' = 's1_filtered_corrected.csv', 

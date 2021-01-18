@@ -37,10 +37,25 @@ devtools::install_github("https://github.com/CostaLab/CrossTalkeR")
 require(CrossTalkeR)
 ```
 
-## Running CrossTalkeR
+## CrossTalkeR Plots examples and vignette
 
 ```{r}
 vignette('CrossTalkeR')
+```
+
+## Hands-on  Leimkühler et. al. [2] Human Data
+
+```{r}
+require(CrossTalkeR)
+paths <- c('CTR' = system.file("extdata",
+                                "ctr_nils_bm_human.csv",
+                                package = "CrossTalkeR"),
+            'EXP' = system.file("extdata",
+                                "exp_nils_bm_human.csv",
+                                package = "CrossTalkeR"))
+
+genes <- c('TGFB1','PF4','PPBP')
+data <- generate_report(paths,genes,out_path='~/Documents/',threshold=0,out_file = 'Nils_pca.html')
 ```
 
 ## RoadMap CellPhoneDB to CrossTalkeR
@@ -56,7 +71,7 @@ vignette('CrossTalkeR')
    - CCI and GCI PCA ranking
       - All measures and PC table
       - PC1 and PC2 based barplot
-   - Leimkühler et. al. [1] data were added to the package
+   - Leimkühler et. al. [2] data were added to the package
 
 
 
@@ -64,6 +79,8 @@ vignette('CrossTalkeR')
 
 # References
 
-[1]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
+[1] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)
 
-[2] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)
+[2]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
+
+

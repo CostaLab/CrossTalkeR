@@ -45,7 +45,7 @@ vignette('CrossTalkeR')
 
 ## RoadMap CellPhoneDB to CrossTalkeR
 
-[CellPhoneDB Tutorial.md](./CellPhoneDB Tutorial.md)
+[CellPhoneDB Tutorial.md](CellPhoneDB Tutorial.md)
 
 
 ## Current Features v1.0.0

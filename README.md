@@ -22,7 +22,10 @@ Ivan G. Costa<sup>1*</sup>
 
 ![scheme](./CrossTalkeR_only_A.png)
 
+
+
 **Motivation:** Ligand-receptor (LR) analysis allows the characterization of cellular crosstalk from single cell RNA-seq data. However, current LR methods provide limited approaches for prioritization of cell types, ligands or receptors or characterizing changes in crosstalk between two biological conditions. 
+
 **Results:** CrossTalkeR is a framework for network analysis and visualisation of LR networks. CrossTalkeR identifies relevant ligands, receptors and cell types contributing to changes in cell communication when contrasting two biological states: disease vs. homeostasis. A case study on scRNA-seq of human myeloproliferative neoplasms reinforces the strengths of CrossTalkeR for characterisation of changes in cellular crosstalk in disease state.
 
 ## Install 
@@ -42,7 +45,7 @@ vignette('CrossTalkeR')
 
 ## RoadMap CellPhoneDB to CrossTalkeR
 
-[CellPhoneDB Tutorial.md](CellPhoneDB Tutorial.md)
+[CellPhoneDB Tutorial.md](./CellPhoneDB Tutorial.md)
 
 
 ## Current Features v1.0.0

@@ -34,7 +34,7 @@ require(CrossTalkeR)
 CrossTalkNet aims to provide a user friendly way to visualize cellular crosstalk through ligand receptor networks. It use as input the Ligand Receptor Inference Tool Results to build a sharable report with main network based analysis
 
 
-## Current Features v0.9.7
+## Current Features v1.0.0
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking

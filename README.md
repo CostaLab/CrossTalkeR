@@ -27,7 +27,7 @@ Ivan G. Costa<sup>1*</sup>
 
 ```{r}
 install.packages("devtools")
-devtools::install_github("https://github.com/CostaLab/CrossTalkeR%22)
+devtools::install_github("https://github.com/CostaLab/CrossTalkeR")
 require(CrossTalkeR)
 ```
 

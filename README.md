@@ -47,22 +47,8 @@ We provide in our vignette examples on how to analyse cell interactions from a h
 vignette('CrossTalkeR')
 ```
 
-## Hands-on  Leimkühler et. al. [2] Human Data
 
-```{r}
-require(CrossTalkeR)
-paths <- c('CTR' = system.file("extdata",
-                                "ctr_nils_bm_human.csv",
-                                package = "CrossTalkeR"),
-            'EXP' = system.file("extdata",
-                                "exp_nils_bm_human.csv",
-                                package = "CrossTalkeR"))
-
-genes <- c('TGFB1','PF4','PPBP')
-data <- generate_report(paths,genes,out_path='~/Documents/',threshold=0,out_file = 'Nils_pca.html')
-```
-
-## RoadMap CellPhoneDB to CrossTalkeR
+## Integration of CellPhoneDB with CrossTalkeR
 
 We provide here a tutorial on how to integrate preditions from CellPhoneDB into Crosstalker. 
 
@@ -78,8 +64,6 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
       - All measures and PC table
       - PC1 and PC2 based barplot
    - Leimkühler et. al. [2] data were added to the package
-
-
 
 
 

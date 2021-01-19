@@ -30,6 +30,8 @@ Ivan G. Costa<sup>1*</sup>
 
 ## Install 
 
+You can install CrossTalkeR with the simple comands below:
+
 
 ```{r}
 install.packages("devtools")
@@ -38,6 +40,8 @@ require(CrossTalkeR)
 ```
 
 ## CrossTalkeR Plots examples and vignette
+
+We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq. 
 
 ```{r}
 vignette('CrossTalkeR')
@@ -60,6 +64,8 @@ data <- generate_report(paths,genes,out_path='~/Documents/',threshold=0,out_file
 
 ## RoadMap CellPhoneDB to CrossTalkeR
 
+We provide here a tutorial on how to integrate preditions from CellPhoneDB into Crosstalker. 
+
 [CellPhoneDB Tutorial.md](https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md)
 
 
@@ -79,7 +85,7 @@ data <- generate_report(paths,genes,out_path='~/Documents/',threshold=0,out_file
 
 # References
 
-[1] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (ongoing work)
+[1] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (in preparation)
 
 [2]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
 

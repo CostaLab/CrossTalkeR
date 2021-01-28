@@ -51,4 +51,4 @@ for(i in 1:length(names(all_data@tables))){
 
 ```
 
-`r paste(knit(text = out), collapse = '\n')`
+`r paste(knitr::knit(text = out), collapse = '\n')`

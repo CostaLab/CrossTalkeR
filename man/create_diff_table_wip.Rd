@@ -7,7 +7,7 @@
 create_diff_table_wip(data, out_path)
 }
 \arguments{
-\item{data}{lrobject with single condition}
+\item{data}{LRObj with single condition}
 
 \item{out_path}{output path}
 }

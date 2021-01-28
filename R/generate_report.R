@@ -42,9 +42,6 @@ generate_report <- function(lrpaths,
   index <- system.file("templates",
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
-  comp <- system.file("templates",
-                      "Comparative_Condition.Rmd",
-                      package = "CrossTalkeR")
   message("Reading Files")
   data <- read_lr_single_condiction(lrpaths,
                                     out_path,
@@ -61,30 +58,35 @@ generate_report <- function(lrpaths,
   data <- ranking(data, out_path, slot = "graphs")
   data <- ranking(data, out_path, slot = "graphs_ggi")
 
-  param_single <- list(single = single,
-                       obj1 = lrobj_path1,
+  param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,
                        thr = threshold)
-  param_comp <- list(single = single,
-                     comp = comp,
-                     obj1 = lrobj_path1,
+  param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
                      thr = threshold)
   if (report) {
     message("Generating Report")
-    rmarkdown::render(index_single,
-                    output_format = output_fmt,
-                    output_dir = out_path,
-                    output_file = paste0("Single_",out_file),
-                    intermediates_dir	= out_path,
-                    params = param_single)
-    rmarkdown::render(index,
+    if (length(lrpaths) > 1) {
+        rmarkdown::render(index_single,
                       output_format = output_fmt,
                       output_dir = out_path,
-                      output_file =  paste0("Comparative_", out_file),
+                      output_file = paste0("Single_",out_file),
                       intermediates_dir	= out_path,
-                      params = param_comp)
-
+                      params = param_single)
+        rmarkdown::render(index,
+                          output_format = output_fmt,
+                          output_dir = out_path,
+                          output_file =  paste0("Comparative_", out_file),
+                          intermediates_dir	= out_path,
+                          params = param_comp)
+    }else{
+      rmarkdown::render(index_single,
+                      output_format = output_fmt,
+                      output_dir = out_path,
+                      output_file = paste0("Single_",out_file),
+                      intermediates_dir	= out_path,
+                      params = param_single)
+    }
   }
   return(data)
 }

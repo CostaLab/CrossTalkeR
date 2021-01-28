@@ -100,7 +100,7 @@ plot_cci <- function(graph,
                                          igraph::E(graph)$inter,
                                          0) * efactor
   }
-  igraph::E(graph)$arrow.size <- 0.25
+  igraph::E(graph)$arrow.size <- 0.6
   igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.8
   if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
     igraph::E(graph)$loop.angle[which(edge_start[,2]==edge_start[,1])]<-loop_angle[edge_start[which(edge_start[,2]==edge_start[,1]),1]]
@@ -373,6 +373,7 @@ plot_sankey <- function(lrobj_tbl,
 #'@param lrobj_table LRobject table slcot
 #'@import ggplot2
 #'@import dplyr
+#'@import tibble
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
@@ -385,7 +386,7 @@ plot_sankey <- function(lrobj_tbl,
 #'            receptor_cluster = NULL,
 #'            plt_name = "TGFB1")
 #'
-plot_pca <- function(pca_l = lrobj_pca,lrobj_table,pc=1) {
+plot_pca <- function(pca_l,lrobj_table,pc=1) {
   lig_up <- unique(lrobj_table$ligpair[lrobj_table$MeanLR > 0])
   pca_l_up <- as.tibble(pca_l[lig_up, ])
   pca_l_up$ligname <- rownames(pca_l[lig_up, ])
@@ -439,4 +440,122 @@ plot_pca <- function(pca_l = lrobj_pca,lrobj_table,pc=1) {
     ggplot2::xlab('PC Score')+
     ggplot2::theme_minimal()
     print((p1+p2)/(p3+p4)+plot_annotation(title = paste0('PC ', pc),tag_levels = 'A'))
+}
+
+
+
+#'This function signed sending and receiving barplot
+#'
+#'@param pca_l LRobject pca_slot
+#'@param lrobj_table LRobject table slcot
+#'@import ggplot2
+#'@import dplyr
+#'@import patchwork
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
+#'plot_pca(lrobj_tbl = data@tables$EXP_x_CTR,
+#'            target = c("TGFB1"),
+#'            ligand_cluster = NULL,
+#'            receptor_cluster = NULL,
+#'            plt_name = "TGFB1")
+#'
+plot_signedbar <- function(all_data,curr) {
+   curr_net <- all_data@graphs[[curr]]
+   in_deg_up <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+   in_up <- tibble::tibble(as.data.frame(in_deg_up))
+   in_deg_down <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+   in_down <- tibble::tibble(as.data.frame(in_deg_down))
+   in_down$Freq <- 0-in_down$Freq
+   in_all <- dplyr::bind_rows(in_up,in_down)
+   in_all$Expression <- ifelse(in_all$Freq<0,'Downregulated','Upregulated')
+   in_all$rank <- ifelse(in_all$Freq<0,0,1)
+   out_deg_up <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR > 0])
+   out_up <- tibble::tibble(as.data.frame(out_deg_up))
+   out_deg_down <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR < 0])
+   out_down <- tibble::tibble(as.data.frame(out_deg_down))
+   out_down$Freq <- 0-out_down$Freq
+   out_all <- dplyr::bind_rows(out_up,out_down)
+   out_all$Expression <- ifelse(out_all$Freq<0,'Downregulated','Upregulated')
+   out_all$rank <- ifelse(out_all$Freq<0,0,1)
+   p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
+     ggplot2::geom_bar(stat = 'identity',position = "identity")+
+     ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+     ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+     ggplot2::ggtitle('Ligands')+
+     ggplot2::ylab('Cell')+
+     ggplot2::xlab('Number of interactions')+
+     ggplot2::theme_minimal()
+   p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
+     ggplot2::geom_bar(stat = 'identity',position = "identity")+
+     ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
+     ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+     ggplot2::ggtitle('Receptors')+
+     ggplot2::ylab('Cell')+
+     ggplot2::xlab('Number of interactions')+
+     ggplot2::theme_minimal()
+   print((p1+p2)+patchwork::plot_annotation(title = curr,tag_levels = 'A'))
+}
+
+
+
+#'This function signed sending and receiving barplot
+#'
+#'@param pca_l LRobject pca_slot
+#'@param lrobj_table LRobject table slcot
+#'@import ggplot2
+#'@import dplyr
+#'@import patchwork
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
+#'plot_pca(lrobj_tbl = data@tables$EXP_x_CTR,
+#'            target = c("TGFB1"),
+#'            ligand_cluster = NULL,
+#'            receptor_cluster = NULL,
+#'            plt_name = "TGFB1")
+#'
+plot_signedbar_ggi <- function(all_data,curr) {
+  curr_net <- all_data@graphs_ggi[[curr]]
+  up_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR > 0])
+  down_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR < 0])
+  in_deg_up <- igraph::degree(up_graph, mode = 'in')
+  in_deg_down <- igraph::degree(down_graph, mode = 'in')
+  in_up <- tibble::tibble(genes = paste0(names(in_deg_up),'_up'), values=as.array(in_deg_up))
+  in_down <- tibble::tibble(genes = paste0(names(in_deg_down),'_down'), values=as.array(in_deg_down))
+  in_deg_data_up <-dplyr::top_n(in_up, 10, values)
+  in_deg_data_down <- dplyr::top_n(in_down, 10, values)
+  in_deg_data_down$values <- 0 -in_deg_data_down$values
+  in_deg_data <- dplyr::bind_rows(in_deg_data_up,in_deg_data_down )
+  in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
+  p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+    ggplot2::ggtitle('Receiving')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('Number of interactions')+
+    ggplot2::theme_minimal()
+  out_deg_up <- igraph::degree(up_graph, mode = 'out')
+  out_deg_down <- igraph::degree(down_graph, mode = 'out')
+  out_up <- tibble::tibble(genes = paste0(names(out_deg_up),'_up'), values=as.array(out_deg_up))
+  out_down <- tibble::tibble(genes = paste0(names(out_deg_down),'_down'), values=as.array(out_deg_down))
+  out_deg_data_up <-dplyr::top_n(out_up, 10, values)
+  out_deg_data_down <- dplyr::top_n(out_down, 10, values)
+  out_deg_data_down$values <- 0-out_deg_data_down$values
+  out_deg_data <- dplyr::bind_rows(out_deg_data_up,out_deg_data_down )
+  out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')
+  p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+    ggplot2::geom_bar(stat = 'identity',position = "identity")+
+    ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+    ggplot2::ggtitle('Sending')+
+    ggplot2::ylab('Cell')+
+    ggplot2::xlab('Number of interactions')+
+    ggplot2::theme_minimal()
+  print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
 }

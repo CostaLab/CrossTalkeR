@@ -8,7 +8,6 @@ output:
       number_sections: true
       theme: simplex
 params:
-  single: "path to single report template"
   obj1: "LRobj"
   obj2: "sankey gene plot"
   thr: 'percentage of disregarded edges'
@@ -26,11 +25,11 @@ params:
 
 # Single Condition Ligand Receptor Interaction Table
 
-```{r tbl, child='Tables_Single.Rmd',eval=TRUE}
+```{r tbl, child='Tables_Single.Rmd',eval=F}
 ```
 
 
 # PCA
 
-```{r rkg, child='Ranking_Single.Rmd',eval=TRUE}
+```{r rkg, child='Ranking_Single.Rmd',eval=F}
 ```

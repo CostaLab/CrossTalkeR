@@ -76,7 +76,7 @@ for(i in 1:length(names(all_data@pca))){
 
 ```
 
-`r paste(knit(text = out), collapse = '\n')`
+`r paste(knitr::knit(text = out), collapse = '\n')`
 
 ## PCA GCI
 
@@ -123,7 +123,7 @@ for(i in 1:length(names(all_data@pca))){
 }
 
 ```
-`r paste(knit(text = out), collapse = '\n')`
+`r paste(knitr::knit(text = out), collapse = '\n')`
 
 
 ## PCA GCI barplot
@@ -150,4 +150,4 @@ for(i in 1:length(names(all_data@pca))){
 }
 
 ```
-`r paste(knit(text = out), collapse = '\n')`
+`r paste(knitr::knit(text = out), collapse = '\n')`

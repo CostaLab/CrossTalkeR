@@ -106,9 +106,10 @@ create_diff_table <- function(data, out_path) {
 
 #'Read the lrobject and generate the comparative tables
 #'
-#'@param data lrobject with single condition
+#'@param data LRObj with single condition
 #'@param out_path output path
 #'@return LRObject
+
 #'@importFrom tidyr %>%
 #'@export
 #'@examples

@@ -1,4 +1,5 @@
 import pandas as pd
+
 def correct_lr(data):
     '''
     Invert the RL to LR and R1R2 to r2>r1
@@ -17,6 +18,7 @@ def correct_lr(data):
             v['Ligand.Cluster'],v['Receptor.Cluster'] = swap(v['Ligand.Cluster'],v['Receptor.Cluster'])
     res_df = pd.DataFrame.from_dict(data,orient='index')
     return (res_df)
+
 def cpdb2df(data):
     data = data.fillna(0)
     df_data = {}
@@ -31,7 +33,7 @@ def cpdb2df(data):
         pair = list(data['interacting_pair'])[i].split('_')
         for j in range(data.iloc[:,12:].shape[1]):
             c_pair = list(data.columns)[j+12].split('|')
-            if int(data.iloc[i,j+12]) !=0.0:
+            if float(data.iloc[i,j+12]) != 0.0:
                 df_data['Ligand'].append(pair[0])
                 df_data['Receptor'].append(pair[1])
                 df_data['Ligand.Cluster'].append(c_pair[0])

@@ -127,7 +127,7 @@ def cpdb2df(data,clsmapping):
         pair = list(data['interacting_pair'])[i].split('_')
         for j in range(data.iloc[:,12:].shape[1]):
             c_pair = list(data.columns)[j+12].split('|')
-            if int(data.iloc[i,j+12]) !=0.0:
+            if float(data.iloc[i,j+12]) !=0.0:
                 df_data['Ligand'].append(pair[0])
                 df_data['Receptor'].append(pair[1])
                 df_data['Ligand.Cluster'].append(clsmapping[c_pair[0]])
@@ -135,8 +135,8 @@ def cpdb2df(data,clsmapping):
                 df_data['isReceptor_fst'].append(list(data['receptor_a'])[i])
                 df_data['isReceptor_scn'].append(list(data['receptor_b'])[i])
                 df_data['MeanLR'].append(data.iloc[i,j+12])
-                data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
-                return(data_final)
+    data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
+    return(data_final)
             
 def cpdb2df_nocls(data):
     '''
@@ -155,7 +155,7 @@ def cpdb2df_nocls(data):
         pair = list(data['interacting_pair'])[i].split('_')
         for j in range(data.iloc[:,12:].shape[1]):
             c_pair = list(data.columns)[j+12].split('|')
-            if int(data.iloc[i,j+12]) !=0.0:
+            if float(data.iloc[i,j+12]) !=0.0:
                 df_data['Ligand'].append(pair[0])
                 df_data['Receptor'].append(pair[1])
                 df_data['Ligand.Cluster'].append(c_pair[0])
@@ -163,8 +163,8 @@ def cpdb2df_nocls(data):
                 df_data['isReceptor_fst'].append(list(data['receptor_a'])[i])
                 df_data['isReceptor_scn'].append(list(data['receptor_b'])[i])
                 df_data['MeanLR'].append(data.iloc[i,j+12])
-                data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
-                return(data_final)
+    data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
+    return(data_final)
             
 s1 = pd.read_csv('./s1/significant_means.txt',sep='\t')
 s2 = pd.read_csv('./s2/ significant_means.txt',sep='\t')

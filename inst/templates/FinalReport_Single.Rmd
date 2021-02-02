@@ -25,11 +25,11 @@ params:
 
 # Single Condition Ligand Receptor Interaction Table
 
-```{r tbl, child='Tables_Single.Rmd',eval=F}
+```{r tbl, child='Tables_Single.Rmd'}
 ```
 
 
 # PCA
 
-```{r rkg, child='Ranking_Single.Rmd',eval=F}
+```{r rkg, child='Ranking_Single.Rmd'}
 ```

@@ -2,27 +2,23 @@
 % Please edit documentation in R/plot.R
 \name{plot_signedbar_ggi}
 \alias{plot_signedbar_ggi}
-\title{This function signed sending and receiving barplot}
+\title{This function signed sending and receiving barplot (GGI)}
 \usage{
 plot_signedbar_ggi(all_data, curr)
 }
 \arguments{
-\item{pca_l}{LRobject pca_slot}
+\item{all_data}{LRobject}
 
-\item{lrobj_table}{LRobject table slcot}
+\item{curr}{condition}
 }
 \value{
 R default plot
 }
 \description{
-This function signed sending and receiving barplot
+This function signed sending and receiving barplot (GGI)
 }
 \examples{
 data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-plot_pca(lrobj_tbl = data@tables$EXP_x_CTR,
-           target = c("TGFB1"),
-           ligand_cluster = NULL,
-           receptor_cluster = NULL,
-           plt_name = "TGFB1")
+plot_signedbar_ggi <- function(data,'CTR_x_EXP')
 
 }

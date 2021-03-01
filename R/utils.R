@@ -160,7 +160,7 @@ rkg_ties <- function(list) {
 #'@import clusterProfiler
 #'@import org.Hs.eg.db
 #'@importFrom tidyr %>%
-kegg_annotation <- function(data, slot,database=org.Hs.eg.db::org.Hs.eg.db, org='hsa') {
+kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg.db, org='hsa') {
   tables = slot(data,slot)
   for(i in names(tables)){
       table = tables[[i]]
@@ -207,5 +207,6 @@ kegg_annotation <- function(data, slot,database=org.Hs.eg.db::org.Hs.eg.db, org=
 
       }
   }
+  saveRDS(data,file.path(out_path, "LR_data_step2.Rds"))
   return(data)
 }

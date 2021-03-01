@@ -52,7 +52,7 @@ generate_report <- function(lrpaths,
   if (length(lrpaths) > 1) {
     data <- create_diff_table_wip(data, out_path)
     data <- kegg_annotation(data=data,
-                            slot='tables')
+                            slot='tables',out_path=out_path)
 
   }
   message("Defining templates")

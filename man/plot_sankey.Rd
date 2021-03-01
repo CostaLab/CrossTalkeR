@@ -9,7 +9,8 @@ plot_sankey(
   target = NULL,
   ligand_cluster = NULL,
   receptor_cluster = NULL,
-  plt_name = NULL
+  plt_name = NULL,
+  threshold = 50
 )
 }
 \arguments{

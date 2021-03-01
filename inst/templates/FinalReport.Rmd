@@ -47,3 +47,10 @@ always_allow_html: true
 ```{r rkg, child='Ranking.Rmd',eval=TRUE}
 
 ```
+
+# KEGG Annotation
+
+
+```{r annot, child='Annotation.Rmd',eval=TRUE}
+
+```

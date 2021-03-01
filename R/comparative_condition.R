@@ -82,11 +82,14 @@ create_diff_table <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
+    raw_inter <- table(final_data$cellpair)
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
     graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
+
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$pair] #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1
@@ -190,11 +193,13 @@ create_diff_table_wip <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
+    raw_inter <- table(final_data$cellpair)
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
     graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$pair] #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1

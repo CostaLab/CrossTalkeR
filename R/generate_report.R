@@ -51,6 +51,9 @@ generate_report <- function(lrpaths,
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
     data <- create_diff_table_wip(data, out_path)
+    data <- kegg_annotation(data=data,
+                            slot='tables')
+
   }
   message("Defining templates")
   # Generating the single condition report

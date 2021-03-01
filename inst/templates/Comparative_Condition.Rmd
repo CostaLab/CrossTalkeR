@@ -6,6 +6,7 @@ output:
       toc: yes
       toc_depth: 3
       theme: simplex
+    
 params:
   obj1: "path to obj"
   thr: 'percentage edges to plot'
@@ -23,7 +24,8 @@ require(CrossTalkeR)
 require(ggraph)
 require(graphlayouts)
 require(pals)
-
+require(extrafont)
+extrafont::loadfonts()
 
 ```
 

@@ -222,7 +222,6 @@ plot_ggi <- function(graph, color) {
                                              color = igraph::V(graph)$cluster
                                             ),
                                repel = TRUE,
-                               fontface = "italic",
                                hjust = "inward",
                                size = 7,
                                show.legend = FALSE) +
@@ -318,7 +317,8 @@ plot_sankey <- function(lrobj_tbl,
                         target = NULL,
                         ligand_cluster = NULL,
                         receptor_cluster = NULL,
-                        plt_name = NULL) {
+                        plt_name = NULL,
+                        threshold=50) {
   data <- lrobj_tbl
   if (!is.null(target)) {
     data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
@@ -336,7 +336,7 @@ plot_sankey <- function(lrobj_tbl,
   tmp_cols <- c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster")
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
-    tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > 50, 50,
+    tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                         dim(data)[1]), abs(.data$MeanLR))
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
                                    axis2 = stats::reorder(.data$Ligand, .data$MeanLR),

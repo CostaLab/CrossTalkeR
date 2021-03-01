@@ -148,3 +148,64 @@ rkg_ties <- function(list) {
   rmi <- rank(x2, ties.method = "min")  # as in Sports
   return(sort((rma + rmi) / 2, decreasing = TRUE))
 }
+
+
+#'Annotate Exclusive LR pairs (ligand or receptor)
+#'
+#'@param data lrobject
+#'@param slot table fields
+#'@param subslot table
+#'@param database complex heatmap database
+#'@param org organism to be considered
+#'@import clusterProfiler
+#'@import org.Hs.eg.db
+#'@importFrom tidyr %>%
+kegg_annotation <- function(data, slot,database=org.Hs.eg.db::org.Hs.eg.db, org='hsa') {
+  tables = slot(data,slot)
+  for(i in names(tables)){
+      table = tables[[i]]
+      if(grepl("_x_", i)){
+          up <- table[table$MeanLR > 0,]
+          down <-table[table$MeanLR < 0,]
+          genes_up <- up$Ligand[match(up$Ligand, down$Ligand,nomatch = -1)==-1]
+          genes_down <- down$Ligand[match(down$Ligand, up$Ligand,nomatch = -1)==-1]
+          genes_up <- clusterProfiler::bitr(genes_up, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+          genes_dw <- clusterProfiler::bitr(genes_down, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+          enrich_up <- clusterProfiler::enrichKEGG(genes_up$ENTREZID, organism = org)
+          enrich_dw <- clusterProfiler::enrichKEGG(genes_dw$ENTREZID, organism = org)
+          enrich_up <- enrich_up@result
+          enrich_dw <- enrich_dw@result
+          enrich_up$type <-'Ligand up'
+          enrich_dw$type <-'Ligand down'
+          final <- dplyr::bind_rows(enrich_up,enrich_dw)
+          genes_up <- up$Receptor[match(up$Receptor, down$Receptor,nomatch = -1)==-1]
+          genes_down <- down$Receptor[match(down$Receptor, up$Receptor,nomatch = -1)==-1]
+          genes_up <- clusterProfiler::bitr(genes_up, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+          genes_dw <- clusterProfiler::bitr(genes_down, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+          enrich_up <- clusterProfiler::enrichKEGG(genes_up$ENTREZID, organism = 'hsa')
+          enrich_dw <- clusterProfiler::enrichKEGG(genes_dw$ENTREZID, organism = 'hsa')
+          enrich_up <- enrich_up@result
+          enrich_dw <- enrich_dw@result
+          enrich_up$type <-'Receptor up'
+          enrich_dw$type <-'Receptor down'
+          final1 <- dplyr::bind_rows(enrich_up,enrich_dw)
+          data@annot[[i]] <- bind_rows(final,final1)
+      }
+      else{
+        up <- table
+        genes_up <- up$Ligand[match(up$Ligand, down$Ligand,nomatch = -1)==-1]
+        genes_up <- clusterProfiler::bitr(genes_up, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+        enrich_up <- clusterProfiler::enrichKEGG(genes_up$ENTREZID, organism = org)
+        enrich_up <- enrich_up@result
+        enrich_up$type <-'Ligand'
+        genes_up1 <- up$Receptor[match(up$Receptor, down$Receptor,nomatch = -1)==-1]
+        genes_up1 <- clusterProfiler::bitr(genes_up1, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb=org.Hs.eg.db)
+        enrich_up1 <- clusterProfiler::enrichKEGG(genes_up1$ENTREZID, organism = 'hsa')
+        enrich_up1 <- enrich_up1@result
+        enrich_up1$type <-'Receptor'
+        data@annot[[i]] <- dplyr::bind_rows(enrich_up,enrich_up1)
+
+      }
+  }
+  return(data)
+}

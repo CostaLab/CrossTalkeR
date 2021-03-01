@@ -7,10 +7,15 @@ output:
       toc_float: true
       number_sections: true
       theme: simplex
+  pdf_document:
+    latex_engine: xelatex
+    dev: cairo_pdf
+
 params:
   obj1: "LRobj"
   obj2: "sankey gene plot"
   thr: 'percentage of disregarded edges'
+always_allow_html: true
 
 
 ---

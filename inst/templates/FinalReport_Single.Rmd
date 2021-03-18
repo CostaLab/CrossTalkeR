@@ -19,22 +19,27 @@ always_allow_html: true
 
 
 ---
+
+```{r, echo=FALSE}
+imgpath <- system.file("figures","logo_40.png",package = "CrossTalkeR")
+htmltools::img(src = knitr::image_uri(imgpath),
+               alt = 'logo',
+               style = 'position:absolute; top:0; right:0; padding:10px;;width:100;height:100')
+```
+
 <style>
       div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
 
 # Single Condition Analysis
 
-```{r cci, child='Single_Condition.Rmd'}
+## CCI - Cell Cell Interaction
+
+```{r cci, child='Single_Condition_cci.Rmd'}
 ```
 
-# Single Condition Ligand Receptor Interaction Table
-
-```{r tbl, child='Tables_Single.Rmd'}
-```
+## GCI - Gene Cell Interaction
 
 
-# PCA
-
-```{r rkg, child='Ranking_Single.Rmd'}
+```{r cci, child='Single_Condition_cgi.Rmd'}
 ```

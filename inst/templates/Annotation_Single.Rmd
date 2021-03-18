@@ -1,0 +1,55 @@
+---
+title: "Annotation"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+      self_contained: true
+params:
+  obj1: "path to obj"
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(patchwork)
+require(stringr)
+require(CrossTalkeR)
+require(ggraph)
+require(graphlayouts)
+require(pals)
+require(htmltools)
+require(DT)
+require(knitr)
+require(org.Hs.eg.db)
+require(clusterProfiler)
+require(ComplexHeatmap)
+require(colorBlindness)
+
+```
+
+## TOP 100 per topological measure
+
+```{r annotsingle, fig.align='center', fig.height=10,fig.width=5,warning=FALSE,echo=F}
+path <-params$obj1
+out <- c()
+out1 <- list()
+all_data <- readRDS(path)
+plots <- list()
+paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
+for(i in names(all_data@annot)){
+  if(grepl('_ggi$',i)){
+    filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
+    filtered <- filtered[filtered$p.adjust<=0.05,]
+    mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
+    mat[is.na(mat)]=1
+    p1<-Heatmap(-log10(mat), col = Green2Magenta16Steps[8:16])
+    draw(p1)
+  }
+}
+```

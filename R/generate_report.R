@@ -51,15 +51,15 @@ generate_report <- function(lrpaths,
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
     data <- create_diff_table_wip(data, out_path)
-    data <- kegg_annotation(data=data,
-                            slot='tables',out_path=out_path)
-
   }
   message("Defining templates")
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
   data <- ranking(data, out_path, slot = "graphs")
   data <- ranking(data, out_path, slot = "graphs_ggi")
+  data <- kegg_annotation(data=data,
+                          slot='rankings',out_path=out_path)
+
 
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,

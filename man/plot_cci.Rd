@@ -16,7 +16,8 @@ plot_cci(
   ignore_alpha = FALSE,
   log = FALSE,
   efactor = 8,
-  vfactor = 12
+  vfactor = 12,
+  pg = NULL
 )
 }
 \arguments{

@@ -17,6 +17,7 @@
 #'@param efactor edge scale factor
 #'@param vfactor edge scale factor
 #'@importFrom tidyr %>%
+#'@import colorBlindness
 #'@return R default plot
 #'@export
 #'@examples
@@ -44,14 +45,17 @@ plot_cci <- function(graph,
                     ignore_alpha = FALSE,
                     log = FALSE,
                     efactor = 8,
-                    vfactor = 12) {
+                    vfactor = 12,
+                    pg = NULL) {
+
   # Check Maximal Weight
   if (is.null(emax)) {
     emax <- max(abs(igraph::E(graph)$mean))
   }
   # Using color pallet to up and down regulation
-  col_pallet <- pals::coolwarm(9)
+  col_pallet <- colorBlindness::Blue2DarkOrange18Steps
   # Expanding the pallet range
+  col_pallet[10] <- '#FFFFFF'
   col_pallet <- grDevices::colorRampPalette(col_pallet)(201)
   # Checking looops
   edge_start <- igraph::ends(graph,
@@ -88,9 +92,13 @@ plot_cci <- function(graph,
     igraph::E(graph)$color <- scales::alpha(igraph::E(graph)$color, alpha)
   }
   ## Thickness and arrow size
-  max_deg <- max(igraph::degree(subgraph, normalized = TRUE))
-  igraph::V(graph)$size <- (igraph::degree(subgraph, normalized = TRUE) / max_deg)
-  igraph::V(graph)$size <- igraph::V(graph)$size * vfactor
+  if(is.null(pg)){
+    igraph::V(graph)$size <-  oce::rescale(igraph::page.rank(graph, weights = abs(igraph::E(graph)$weight),directed=T)$vector,rlow = 0, rhigh = 60)
+  }
+  else{
+    igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 75)
+  }
+
   if (log) {
         igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
                                          log2(1 + igraph::E(graph)$inter),
@@ -106,10 +114,13 @@ plot_cci <- function(graph,
     igraph::E(graph)$loop.angle[which(edge_start[,2]==edge_start[,1])]<-loop_angle[edge_start[which(edge_start[,2]==edge_start[,1]),1]]
     igraph::E(graph)$loop.angle[which(edge_start[,2]!=edge_start[,1])]<-0
   }
+  coords_scale[,1] <- scales::rescale(coords_scale[,1],from=c(-1,1),to=c(-2,2))
+  coords_scale[,2] <- scales::rescale(coords_scale[,2],from=c(-1,1),to=c(-2,2))
   plot(graph,
        layout = coords_scale,
-       xlim = c(-1.5, 1.5),
-       ylim = c(-1.5, 1.5),
+       xlim = c(-4, 4),
+       ylim = c(-4, 4),
+       rescale=F,
        edge.curved = 0.5,
        vertex.label = NA,
        vertex.shape = "circle",
@@ -154,15 +165,28 @@ plot_cci <- function(graph,
   }
   if (leg) {
       # Edge Colormap
-      netdiffuseR::drawColorKey(seq(1, 200),
-                                tick.marks = c(1, 200),
-                                color.palette = col_pallet,
-                                labels = c(-round(emax, 3), round(emax, 3)),
-                                nlevels = 200,
-                                main = "Weights",
-                                pos = 2,
-                                key.pos = c(0.98, 1.0, 0.0, 0.2),
-                                border = "transparent")
+      if(min(igraph::E(graph)$mean) < 0){
+        netdiffuseR::drawColorKey(seq(1, 200),
+                                  tick.marks = c(1, 200),
+                                  color.palette = col_pallet,
+                                  labels = c(-round(emax, 3), round(emax, 3)),
+                                  nlevels = 200,
+                                  main = "Weights",
+                                  pos = 2,
+                                  key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                  border = "transparent")
+      }
+      else{
+        netdiffuseR::drawColorKey(seq(100, 200),
+                                  tick.marks = c(100, 200),
+                                  color.palette = col_pallet[100:201],
+                                  labels = c(0, round(emax, 3)),
+                                  nlevels =100,
+                                  main = "Weights",
+                                  pos = 2,
+                                  key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                  border = "transparent")
+      }
   }
 }
 
@@ -175,6 +199,7 @@ plot_cci <- function(graph,
 #'@import ggplot2
 #'@import ggraph
 #'@import igraph
+#'@import colorBlindness
 #'@import graphlayouts
 #'@return R default plot
 #'@importFrom tidyr %>%
@@ -183,7 +208,7 @@ plot_cci <- function(graph,
 #'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
 #'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
 #'         color = data@colors)
-plot_ggi <- function(graph, color) {
+plot_ggi <- function(graph,color,name) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
   v_names <- tibble::as_tibble(v_names)
@@ -197,7 +222,7 @@ plot_ggi <- function(graph, color) {
                                rhigh = 25
                                )
                   )
-  ecolors <- rev(pals::coolwarm(25))[lr2col]
+  ecolors <- rev(colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[lr2col]
   igraph::E(graph)$colors <- ecolors
   cls <- names(color)
   names(color) <- NULL
@@ -208,8 +233,8 @@ plot_ggi <- function(graph, color) {
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
                                              color = igraph::E(graph)$MeanLR),
                                              alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = pals::coolwarm(25)[1],
-                                           high = pals::coolwarm(25)[25]) +
+        ggraph::scale_edge_color_gradient2(low = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
+                                           high = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
         ggraph::geom_node_point(size = ((deg / max(deg)) * 10),
                                 alpha = 1,
                                 ggplot2::aes(color = igraph::V(graph)$cluster)
@@ -226,6 +251,7 @@ plot_ggi <- function(graph, color) {
                                size = 7,
                                show.legend = FALSE) +
         ggraph::scale_edge_width_continuous(range = c(0, 1)) +
+        ggplot2::ggtitle(name)+
         #scale_size(range = c(1,6))+
         ggraph::theme_graph() +
         ggplot2::theme(legend.position = "left"))
@@ -240,6 +266,7 @@ plot_ggi <- function(graph, color) {
 #'@import ggplot2
 #'@import ggraph
 #'@import graphlayouts
+#'@import colorBlindness
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
@@ -255,7 +282,7 @@ plot_articulation <- function(graph, color) {
     tidyr::separate(.data$value, c("genes", "cluster"), "/")
   igraph::V(graph)$genes <- v_names$genes
   igraph::V(graph)$cluster <- v_names$cluster
-  ecolors <- rev(pals::coolwarm(25))[round(oce::rescale(igraph::E(graph)$MeanLR,
+  ecolors <- rev(colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[round(oce::rescale(igraph::E(graph)$MeanLR,
                                            xlow = min(igraph::E(graph)$MeanLR),
                                            rlow = 1,
                                            rhigh = 25))]
@@ -270,8 +297,8 @@ plot_articulation <- function(graph, color) {
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
                                              color = igraph::E(graph)$MeanLR),
                                 alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = pals::coolwarm(25)[1],
-                                           high = pals::coolwarm(25)[25]) +
+        ggraph::scale_edge_color_gradient2(low = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
+                                           high = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
         ggraph::geom_node_point(size = (deg / max(deg) * 10),
                                 alpha = 1,
                                 ggplot2::aes(color = igraph::V(graph)$cluster)
@@ -300,6 +327,7 @@ plot_articulation <- function(graph, color) {
 #'@param plt_name plot title
 #'@import ggplot2
 #'@import dplyr
+#'@import colorBlindness
 #'@import ggalluvial
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
@@ -332,7 +360,7 @@ plot_sankey <- function(lrobj_tbl,
     data <- data[tmp_sel, ]
   }
   data$freq <- 1
-  colp <- pals::coolwarm(2)
+  colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
   tmp_cols <- c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster")
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
@@ -374,6 +402,7 @@ plot_sankey <- function(lrobj_tbl,
 #'@import ggplot2
 #'@import dplyr
 #'@import tibble
+#'@import colorBlindness
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
@@ -386,7 +415,7 @@ plot_sankey <- function(lrobj_tbl,
 #'            receptor_cluster = NULL,
 #'            plt_name = "TGFB1")
 #'
-plot_pca <- function(pca_l,lrobj_table,pc=1) {
+plot_pca_barplor <- function(pca_l,lrobj_table,pc=1) {
   lig_up <- unique(lrobj_table$ligpair[lrobj_table$MeanLR > 0])
   pca_l_up <- as.tibble(pca_l[lig_up, ])
   pca_l_up$ligname <- rownames(pca_l[lig_up, ])
@@ -413,28 +442,28 @@ plot_pca <- function(pca_l,lrobj_table,pc=1) {
   r2 <- dplyr::top_n(pca_l_down, 20,PC)
   p1 <- ggplot2::ggplot(s1,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
     ggplot2::ggtitle('Ligands Upregulated')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('PC Score')+
     ggplot2::theme_minimal()
   p2 <- ggplot2::ggplot(r1,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
     ggplot2::ggtitle('Receptor Upregulated')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('PC Score')+
     ggplot2::theme_minimal()
   p3 <- ggplot2::ggplot(s2,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
     ggplot2::ggtitle('Ligands Downregulated')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('PC Score')+
     ggplot2::theme_minimal()
   p4 <- ggplot2::ggplot(r2,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"="red", "Downregulated"="navy"))+
+    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
     ggplot2::ggtitle('Receptor Downregulated')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('PC Score')+
@@ -451,6 +480,7 @@ plot_pca <- function(pca_l,lrobj_table,pc=1) {
 #'@import ggplot2
 #'@import dplyr
 #'@import patchwork
+#'@import colorBlindness
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
@@ -480,7 +510,7 @@ plot_signedbar <- function(all_data,curr) {
    p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
      ggplot2::geom_bar(stat = 'identity',position = "identity")+
      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+     ggplot2::scale_fill_manual(values=colorRampPalette(colorBlindness::Green2Magenta16Steps)(2))+
      ggplot2::ggtitle('Ligands')+
      ggplot2::ylab('Cell')+
      ggplot2::xlab('Number of interactions')+
@@ -488,7 +518,7 @@ plot_signedbar <- function(all_data,curr) {
    p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
      ggplot2::geom_bar(stat = 'identity',position = "identity")+
      ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+     ggplot2::scale_fill_manual(values=colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(2))+
      ggplot2::ggtitle('Receptors')+
      ggplot2::ylab('Cell')+
      ggplot2::xlab('Number of interactions')+
@@ -505,6 +535,7 @@ plot_signedbar <- function(all_data,curr) {
 #'@import ggplot2
 #'@import dplyr
 #'@import patchwork
+#'@import colorBlindness
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
@@ -528,7 +559,7 @@ plot_signedbar_ggi <- function(all_data,curr) {
   in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
   p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+    ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
     ggplot2::ggtitle('Receiving')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('Number of interactions')+
@@ -544,10 +575,45 @@ plot_signedbar_ggi <- function(all_data,curr) {
   out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')
   p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values=pals::coolwarm(2))+
+    ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
     ggplot2::ggtitle('Sending')+
     ggplot2::ylab('Cell')+
     ggplot2::xlab('Number of interactions')+
     ggplot2::theme_minimal()
   print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
+}
+
+#'This function signed sending and receiving barplot (GGI)
+#'
+#'@param PCA LRobject
+#'@import ggplot2
+#'@import dplyr
+#'@import patchwork
+#'@import colorBlindness
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'PCbiplot(data@pca[['CTR_ggi']])
+PCbiplot <- function(PC, x="PC1", y="PC2") {
+    # PC being a prcomp object
+    data <- data.frame(obsnames=row.names(PC$x), PC$x)
+    plot <- ggplot(data, aes_string(x=x, y=y)) + geom_text(alpha=1, size=5, aes(label=obsnames))
+    datapc <- data.frame(varnames=rownames(PC$rotation), PC$rotation)
+    mult <- min(
+        (max(data[,y]) - min(data[,y])/(max(datapc[,y])-min(datapc[,y]))),
+        (max(data[,x]) - min(data[,x])/(max(datapc[,x])-min(datapc[,x])))
+        )
+    datapc <- transform(datapc,
+            v1 = .7 * mult * (get(x)),
+            v2 = .7 * mult * (get(y))
+            )
+    plot <- plot + coord_equal() + geom_text(data=datapc, aes(x=v1, y=v2, label=varnames), size = 5, vjust=1, color="red")
+    plot <- plot + geom_segment(data=datapc, aes(x=0, y=0, xend=v1, yend=v2), arrow=arrow(length=unit(0.2,"cm")), alpha=0.75, color="red")
+    plot <- plot+theme_minimal() +
+                xlim(-max(abs(data[,x]))+5, max(abs(data[,x]))+5)+
+                ylim(-max(abs(data[,y]))+5, max(abs(data[,y]))+5)
+
+    print(plot)
 }

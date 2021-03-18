@@ -21,36 +21,25 @@ always_allow_html: true
 
 
 ---
+```{r, echo=FALSE}
+imgpath <- system.file("figures","logo_40.png",package = "CrossTalkeR")
+htmltools::img(src = knitr::image_uri(imgpath),
+               alt = 'logo',
+               style = 'position:absolute; top:0; right:0; padding:10px;width:40;height:40')
+```
+
 <style>
       div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
 
 # Differential Analysis
 
-```{r ccr, child='Comparative_Condition.Rmd',eval=TRUE}
+## CCI - Cell Cell Interaction
+
+```{r ccr, child='Comparative_Condition_cci.Rmd',eval=TRUE}
 ```
 
+## CGI - Gene Cell Interaction
 
-# Sankey Plot Visualization
-
-```{r snkey, child='SankeyPlots.Rmd',eval=TRUE}
-```
-
-# Ligand Receptor Interaction Table
-
-```{r tbl, child='Tables.Rmd',eval=TRUE}
-```
-
-
-# PCA
-
-```{r rkg, child='Ranking.Rmd',eval=TRUE}
-
-```
-
-# KEGG Annotation
-
-
-```{r annot, child='Annotation.Rmd',eval=TRUE}
-
+```{r ccr, child='Comparative_Condition_cgi.Rmd',eval=TRUE}
 ```

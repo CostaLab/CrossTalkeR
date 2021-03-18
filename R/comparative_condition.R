@@ -86,7 +86,7 @@ create_diff_table <- function(data, out_path) {
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
-    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
+    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")],directed=TRUE)
 
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
     igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$pair] #setting thickness and weight
@@ -96,7 +96,7 @@ create_diff_table <- function(data, out_path) {
     data@tables[[cmp_name]] <- final_data
     graph1 <- igraph::graph_from_data_frame(final_data[, c("ligpair",
                                                            "recpair",
-                                                           "MeanLR")])
+                                                           "MeanLR")],directed=TRUE)
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs_ggi[[cmp_name]] <- graph1

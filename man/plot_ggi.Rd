@@ -4,7 +4,7 @@
 \alias{plot_ggi}
 \title{This function do a ggi plot and higest degree nodes}
 \usage{
-plot_ggi(graph, color)
+plot_ggi(graph, color, name)
 }
 \arguments{
 \item{graph}{graph}

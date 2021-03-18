@@ -45,6 +45,10 @@ vignette: |
 # Version Info
 ```{r vignete0}
 suppressPackageStartupMessages({require(CrossTalkeR)})
+suppressPackageStartupMessages({require(igraph)})
+suppressPackageStartupMessages({require(ggraph)})
+suppressPackageStartupMessages({require(ggplot2)})
+
 ```
 
 **R version**: `r R.version.string`
@@ -67,7 +71,8 @@ data <- generate_report(paths,
                         out_path='~/Documents/',
                         threshold=0,
                         out_file = 'vignettes_example.html',
-                        output_fmt = "html_document")
+                        output_fmt = "html_document",
+                        report = FALSE)
 ```
 
 # Individual Visualization
@@ -91,7 +96,7 @@ plot_cci(graph = data@graphs$CTR,
 ## GCI
 ```{r vignete3, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=15}
 plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-         color = data@colors)
+         color = data@colors,name="EXP_x_CTR")
 
 ```
 
@@ -103,4 +108,11 @@ plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
             receptor_cluster = NULL,
             plt_name = "TGFB1")
 
+```
+
+
+# Session information {.unnumbered}
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
 ```

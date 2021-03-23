@@ -8,6 +8,7 @@
 #'@param out_path output path
 #'@return LRObject
 #'@importFrom tidyr %>%
+#'@import methods
 create_diff_table <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
@@ -112,12 +113,8 @@ create_diff_table <- function(data, out_path) {
 #'@param data LRObj with single condition
 #'@param out_path output path
 #'@return LRObject
-
 #'@importFrom tidyr %>%
 #'@export
-#'@examples
-#'diff <- create_diff_table_wip(data,
-#'                           out_path)
 create_diff_table_wip <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]

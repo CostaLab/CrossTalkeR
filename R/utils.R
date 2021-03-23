@@ -8,6 +8,7 @@
 #'@import dplyr
 #'@return list
 #'@importFrom tidyr %>%
+#'@importFrom stats prcomp
 ranking <- function(data, out_path, slot="graphs_ggi") {
       for (graph in names(slot(data, slot))) {
           if (grepl("_x_", graph)) {  # Signed Analysis
@@ -97,7 +98,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 all <- all[,-1]
                 all <- all[,which(colSums(all)!=0)]
                 all <- all[,which(colSums(all)/dim(all)[1]!=dim(all)[1])]
-                data@pca[[paste0(graph, "_ggi")]] <- prcomp(all, center = TRUE, scale = TRUE)
+                data@pca[[paste0(graph, "_ggi")]] <- stats::prcomp(all, center = TRUE, scale = TRUE)
                 rownames(data@pca[[paste0(graph, "_ggi")]]$x) <- data@rankings[[paste0(graph, "_ggi")]]$nodes
               }else{
                 pg <- igraph::page.rank(slot(data, slot)[[graph]],weights=igraph::E(slot(data, slot)[[graph]])$MeanLR)
@@ -106,7 +107,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 all <- all[,-1]
                 all <- all[,which(colSums(all)!=0)]
                 all <- all[,which(colSums(all)/dim(all)[1]!=dim(all)[1])]
-                data@pca[[graph]] <- prcomp(all, center = TRUE, scale = TRUE)
+                data@pca[[graph]] <- stats::prcomp(all, center = TRUE, scale = TRUE)
                rownames(data@pca[[graph]]$x) <- data@rankings[[graph]]$nodes
               }
           }
@@ -122,13 +123,14 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
 #'
 #'@param graph lrobject
 #'@return list
+#'@import igraph
 #'@importFrom tidyr %>%
 ranking_net <- function(graph,mode=TRUE) {
   if(!mode){
-        sub_graph <- igraph::subgraph.edges(graph, E(graph)[E(graph)$weight>0])
+        sub_graph <- igraph::subgraph.edges(graph, igraph::E(graph)[igraph::E(graph)$weight>0])
         deg_in_pos <- igraph::degree(sub_graph, mode = "in")
         deg_out_pos <- igraph::degree(sub_graph, mode = "out")
-        sub_graph <- igraph::subgraph.edges(graph, E(graph)[E(graph)$weight<0])
+        sub_graph <- igraph::subgraph.edges(graph, igraph::E(graph)[igraph::E(graph)$weight<0])
         igraph::E(graph)$weight <- abs(E(graph)$weight)
         deg_in_neg <- igraph::degree(sub_graph, mode = "in")
         deg_out_neg <- igraph::degree(sub_graph, mode = "out")
@@ -169,16 +171,6 @@ ranking_net <- function(graph,mode=TRUE) {
   return(centrality_table)
 }
 
-#'This function treat ties
-#'
-#'@param  list
-#'@return combined ranking with ties.method
-rkg_ties <- function(list) {
-  x2 <- list
-  rma <- rank(x2, ties.method = "max")  # as used classically
-  rmi <- rank(x2, ties.method = "min")  # as in Sports
-  return(sort((rma + rmi) / 2, decreasing = TRUE))
-}
 
 
 #'Annotate Exclusive LR pairs (ligand or receptor)

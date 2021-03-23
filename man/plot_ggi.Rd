@@ -17,8 +17,3 @@ R default plot
 \description{
 This function do a ggi plot and higest degree nodes
 }
-\examples{
-data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-        color = data@colors)
-}

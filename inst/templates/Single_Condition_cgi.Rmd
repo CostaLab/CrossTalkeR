@@ -23,6 +23,7 @@ require(CrossTalkeR)
 require(factoextra)
 require(ComplexHeatmap)
 require("DT")
+require(ggrepel)
 
 ```
 
@@ -30,6 +31,8 @@ require("DT")
 ### PCA GCI
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
+path <-params$obj1
+all_data <- readRDS(path)
 out <- c()
 out1 <- list()
 for(i in 1:length(names(all_data@pca))){
@@ -45,9 +48,9 @@ for(i in 1:length(names(all_data@pca))){
      ver_zy <- ifelse(abs(z_y)>2*sd(data@pca[[curr]]$x[,2]),1,0)
      print(fviz_pca_biplot(data@pca[[curr]],
                     axes = c(1,2),
-                    pointshape = 21, pointsize = 0.5,
-                    repel = TRUE,max.overlaps=100,label='none')+
-                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(data@pca[[curr]]$x),NA)),hjust=0, vjust=0)+
+                    pointshape = 21, pointsize = 0.5,labelsize = 12,
+                    repel = TRUE,max.overlaps=100,label='var')+
+                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(curr)+
@@ -102,10 +105,8 @@ for(i in 1:length(names(all_data@pca))){
 ### TOP 100 per topological measure
 
 ```{r annotsingle, fig.align='center', fig.height=7,fig.width=10,warning=FALSE,echo=F}
-path <-params$obj1
 out <- c()
 out1 <- list()
-all_data <- readRDS(path)
 plots <- list()
 paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
 for(i in names(all_data@annot)){
@@ -124,10 +125,8 @@ for(i in names(all_data@annot)){
 
 
 ```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
-path <-params$obj1
 out <- c()
 out1 <- list()
-all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
      curr <- names(all_data@tables)[i]
      if(!str_detect(curr, '_x_', negate = FALSE)){

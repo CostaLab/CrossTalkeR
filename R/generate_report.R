@@ -17,12 +17,17 @@
 #'@return Rmarkdown report all objects from each step
 #'@export
 #'@examples
-#'paths <- c('CTR' = file.path(curr_path,"ctr_filtered_corrected.csv"),
-#'           'EXP' = file.path(curr_path,"exp_filtered_corrected.csv"))
-#'genes <- c('TGFB1','PF4','PPBP')
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
 #'data <- generate_report(lrpaths = paths,
 #'                        genes = genes,
-#'                        out_path = curr_path,
+#'                        out_path = paste0(output,'/'),
 #'                        threshold = 0,
 #'                          out_file = "report.html")
 #'

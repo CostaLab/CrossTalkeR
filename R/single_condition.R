@@ -14,12 +14,6 @@
 #'@importFrom tidyr %>%
 #'@export
 #'@return LRObject
-#'@examples
-#' single <- read_lr_single_condiction(lrpaths,
-#'                           out_path = "/tmp/",
-#'                           sep = ",",
-#'                           colors = NULL,
-#'                           measure = "MeanLR")
 read_lr_single_condiction <- function(lrpaths,
                                       out_path = "/tmp/",
                                       sep = ",",

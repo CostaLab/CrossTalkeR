@@ -53,18 +53,3 @@ R default plot
 \description{
 This function do a CCI plot
 }
-\examples{
-data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-plot_cci(graph = data@graphs$CTR,
-       colors = data@colors,
-       plt_name = 'Example 1',
-       coords = data@coords[V(data@graphs$CTR)$name,],
-       emax = NULL,
-       leg = FALSE,
-       low = 0,
-       high = 0,
-       ignore_alpha = FALSE,
-       log = FALSE,
-       efactor = 8,
-       vfactor = 12)
-}

@@ -17,8 +17,3 @@ R default plot
 \description{
 This function signed sending and receiving barplot (GGI)
 }
-\examples{
-data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-plot_signedbar_ggi <- function(data,'CTR_x_EXP')
-
-}

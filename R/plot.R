@@ -20,20 +20,6 @@
 #'@import colorBlindness
 #'@return R default plot
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_cci(graph = data@graphs$CTR,
-#'        colors = data@colors,
-#'        plt_name = 'Example 1',
-#'        coords = data@coords[V(data@graphs$CTR)$name,],
-#'        emax = NULL,
-#'        leg = FALSE,
-#'        low = 0,
-#'        high = 0,
-#'        ignore_alpha = FALSE,
-#'        log = FALSE,
-#'        efactor = 8,
-#'        vfactor = 12)
 plot_cci <- function(graph,
                     colors,
                     plt_name,
@@ -55,7 +41,7 @@ plot_cci <- function(graph,
   # Using color pallet to up and down regulation
   col_pallet <- colorBlindness::Blue2DarkOrange18Steps
   # Expanding the pallet range
-  col_pallet[10] <- '#FFFFFF'
+  col_pallet[10] <- '#B8b9ba'
   col_pallet <- grDevices::colorRampPalette(col_pallet)(201)
   # Checking looops
   edge_start <- igraph::ends(graph,
@@ -93,7 +79,8 @@ plot_cci <- function(graph,
   }
   ## Thickness and arrow size
   if(is.null(pg)){
-    igraph::V(graph)$size <-  oce::rescale(igraph::page.rank(graph, weights = abs(igraph::E(graph)$weight),directed=T)$vector,rlow = 0, rhigh = 60)
+    pg <- igraph::page.rank(graph, weights = abs(igraph::E(graph)$weight),directed=T)$vector
+    igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 60)
   }
   else{
     igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 75)
@@ -129,7 +116,7 @@ plot_cci <- function(graph,
        edge.label = NA,
        main = plt_name
        )
-  # Thicknesse legenf
+  # Thicknesse legend
   amin <- min(igraph::E(graph)$inter[igraph::E(graph)$inter != 0])
   amax <- max(igraph::E(graph)$inter)
   e_wid_sp <- c(amin,
@@ -145,6 +132,17 @@ plot_cci <- function(graph,
          lwd = e_wid_sp,
          lty = c(1, 1, 1),
          horiz = FALSE)
+  v <- igraph::V(graph)$size
+  a <- graphics::legend('bottomleft',
+                        title="Node Pagerank",
+                        legend=c("","",""),
+                        pt.cex=c(min(v)+1,mean(v),max(v))/12,col='black',
+               pch=21, pt.bg='black',box.lwd = 0,y.intersp=2)
+  graphics::text(a$rect$left + a$rect$w, a$text$y,
+                  c(round(min(pg),2),round(mean(pg),2),round(max(pg),2)), pos = 2)
+  #x <- (a$text$x + a$rect$left) / 2
+  #y <- a$text$y
+  #symbols(x,y,circles=c(min(v),mean(v),max(v))/500,inches=FALSE,add=TRUE,bg='black')
   # Node names
   x <- coords_scale[, 1] * 1.2
   y <- coords_scale[, 2] * 1.2
@@ -167,9 +165,9 @@ plot_cci <- function(graph,
       # Edge Colormap
       if(min(igraph::E(graph)$mean) < 0){
         netdiffuseR::drawColorKey(seq(1, 200),
-                                  tick.marks = c(1, 200),
+                                  tick.marks = c(1,101,200),
                                   color.palette = col_pallet,
-                                  labels = c(-round(emax, 3), round(emax, 3)),
+                                  labels = c(-round(emax, 3),0,round(emax, 3)),
                                   nlevels = 200,
                                   main = "Weights",
                                   pos = 2,
@@ -204,10 +202,6 @@ plot_cci <- function(graph,
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-#'         color = data@colors)
 plot_ggi <- function(graph,color,name) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
@@ -222,7 +216,7 @@ plot_ggi <- function(graph,color,name) {
                                rhigh = 25
                                )
                   )
-  ecolors <- rev(colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[lr2col]
+  ecolors <- rev(grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[lr2col]
   igraph::E(graph)$colors <- ecolors
   cls <- names(color)
   names(color) <- NULL
@@ -233,8 +227,8 @@ plot_ggi <- function(graph,color,name) {
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
                                              color = igraph::E(graph)$MeanLR),
                                              alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
-                                           high = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
+        ggraph::scale_edge_color_gradient2(low = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
+                                           high = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
         ggraph::geom_node_point(size = ((deg / max(deg)) * 10),
                                 alpha = 1,
                                 ggplot2::aes(color = igraph::V(graph)$cluster)
@@ -270,10 +264,6 @@ plot_ggi <- function(graph,color,name) {
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_articulation(graph = data@graphs_ggi$EXP_x_CTR,
-#'                  colors = data@colors)
 plot_articulation <- function(graph, color) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
@@ -282,7 +272,7 @@ plot_articulation <- function(graph, color) {
     tidyr::separate(.data$value, c("genes", "cluster"), "/")
   igraph::V(graph)$genes <- v_names$genes
   igraph::V(graph)$cluster <- v_names$cluster
-  ecolors <- rev(colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[round(oce::rescale(igraph::E(graph)$MeanLR,
+  ecolors <- rev(grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[round(oce::rescale(igraph::E(graph)$MeanLR,
                                            xlow = min(igraph::E(graph)$MeanLR),
                                            rlow = 1,
                                            rhigh = 25))]
@@ -297,8 +287,8 @@ plot_articulation <- function(graph, color) {
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
                                              color = igraph::E(graph)$MeanLR),
                                 alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
-                                           high = colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
+        ggraph::scale_edge_color_gradient2(low = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
+                                           high = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
         ggraph::geom_node_point(size = (deg / max(deg) * 10),
                                 alpha = 1,
                                 ggplot2::aes(color = igraph::V(graph)$cluster)
@@ -333,14 +323,6 @@ plot_articulation <- function(graph, color) {
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
-#'            target = c("TGFB1"),
-#'            ligand_cluster = NULL,
-#'            receptor_cluster = NULL,
-#'            plt_name = "TGFB1")
-#'
 plot_sankey <- function(lrobj_tbl,
                         target = NULL,
                         ligand_cluster = NULL,
@@ -395,84 +377,6 @@ plot_sankey <- function(lrobj_tbl,
 
 
 
-#'This function pca PC1 and PC2 ranking barplot
-#'
-#'@param pca_l LRobject pca_slot
-#'@param lrobj_table LRobject table slcot
-#'@import ggplot2
-#'@import dplyr
-#'@import tibble
-#'@import colorBlindness
-#'@importFrom tidyr %>%
-#'@importFrom stats reorder
-#'@return R default plot
-#'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_pca(lrobj_tbl = data@tables$EXP_x_CTR,
-#'            target = c("TGFB1"),
-#'            ligand_cluster = NULL,
-#'            receptor_cluster = NULL,
-#'            plt_name = "TGFB1")
-#'
-plot_pca_barplor <- function(pca_l,lrobj_table,pc=1) {
-  lig_up <- unique(lrobj_table$ligpair[lrobj_table$MeanLR > 0])
-  pca_l_up <- as.tibble(pca_l[lig_up, ])
-  pca_l_up$ligname <- rownames(pca_l[lig_up, ])
-  pca_l_up$up <- rep('Upregulated', dim(pca_l_up)[1])
-  lig_down <- unique(lrobj_table$ligpair[lrobj_table$MeanLR < 0])
-  pca_l_down <- as.tibble(pca_l[lig_down, ])
-  pca_l_down$ligname <- rownames(pca_l[lig_down, ])
-  pca_l_down$up <- rep('Downregulated', dim(pca_l_down)[1])
-  pca_l_up$PC <- pca_l_up[[pc]]
-  pca_l_down$PC <- pca_l_down[[pc]]
-  s1 <- dplyr::top_n(pca_l_up, 20,PC)
-  s2 <- dplyr::top_n(pca_l_down, 20,PC)
-  rec_up <- unique(lrobj_table$recpair[lrobj_table$MeanLR > 0])
-  pca_l_up <- as.tibble(pca_l[rec_up, ])
-  pca_l_up$recname <- rownames(pca_l[rec_up, ])
-  pca_l_up$up <- rep('Upregulated', dim(pca_l_up)[1])
-  rec_down <- unique(lrobj_table$recpair[lrobj_table$MeanLR < 0])
-  pca_l_down <- as.tibble(pca_l[rec_down, ])
-  pca_l_down$recname <- rownames(pca_l[rec_down, ])
-  pca_l_down$up <- rep('Downregulated', dim(pca_l_down)[1])
-  pca_l_up$PC <- pca_l_up[[pc]]
-  pca_l_down$PC <- pca_l_down[[pc]]
-  r1 <- dplyr::top_n(pca_l_up, 20,PC)
-  r2 <- dplyr::top_n(pca_l_down, 20,PC)
-  p1 <- ggplot2::ggplot(s1,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
-    ggplot2::ggtitle('Ligands Upregulated')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('PC Score')+
-    ggplot2::theme_minimal()
-  p2 <- ggplot2::ggplot(r1,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
-    ggplot2::ggtitle('Receptor Upregulated')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('PC Score')+
-    ggplot2::theme_minimal()
-  p3 <- ggplot2::ggplot(s2,ggplot2::aes(x=PC,y=reorder(ligname, PC),fill=up))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
-    ggplot2::ggtitle('Ligands Downregulated')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('PC Score')+
-    ggplot2::theme_minimal()
-  p4 <- ggplot2::ggplot(r2,ggplot2::aes(x=PC,y=reorder(recname, PC),fill=up))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values = c("Upregulated"=colorBlindness::Blue2DarkOrange18Steps[1], "Downregulated"=colorBlindness::Blue2DarkOrange18Steps[16]))+
-    ggplot2::ggtitle('Receptor Downregulated')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('PC Score')+
-    ggplot2::theme_minimal()
-    print((p1+p2)/(p3+p4)+plot_annotation(title = paste0('PC ', pc),tag_levels = 'A'))
-}
-
-
-
 #'This function signed sending and receiving barplot (CCI)
 #'
 #'@param all_data LRobject
@@ -485,10 +389,6 @@ plot_pca_barplor <- function(pca_l,lrobj_table,pc=1) {
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_signedbar_ggi <- function(data,'CTR')
-#'
 plot_signedbar <- function(all_data,curr) {
    curr_net <- all_data@graphs[[curr]]
    in_deg_up <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR > 0])
@@ -507,18 +407,18 @@ plot_signedbar <- function(all_data,curr) {
    out_all <- dplyr::bind_rows(out_up,out_down)
    out_all$Expression <- ifelse(out_all$Freq<0,'Downregulated','Upregulated')
    out_all$rank <- ifelse(out_all$Freq<0,0,1)
-   p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
+   p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=.data$Freq,y=reorder(.data$Var1,.data$Freq*.data$rank),fill=.data$Expression))+
      ggplot2::geom_bar(stat = 'identity',position = "identity")+
-     ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=colorRampPalette(colorBlindness::Green2Magenta16Steps)(2))+
+     ggplot2::geom_text(ggplot2::aes(label=.data$Freq),size=3.5)+
+     ggplot2::scale_fill_manual(values=grDevices::colorRampPalette(colorBlindness::Green2Magenta16Steps)(2))+
      ggplot2::ggtitle('Ligands')+
      ggplot2::ylab('Cell')+
      ggplot2::xlab('Number of interactions')+
      ggplot2::theme_minimal()
-   p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=Freq,y=reorder(Var1,Freq*rank),fill=Expression))+
+   p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=.data$Freq,y=reorder(.data$Var1,.data$Freq*.data$rank),fill=.data$Expression))+
      ggplot2::geom_bar(stat = 'identity',position = "identity")+
-     ggplot2::geom_text(ggplot2::aes(label=Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(2))+
+     ggplot2::geom_text(ggplot2::aes(label=.data$Freq),size=3.5)+
+     ggplot2::scale_fill_manual(values=grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(2))+
      ggplot2::ggtitle('Receptors')+
      ggplot2::ylab('Cell')+
      ggplot2::xlab('Number of interactions')+
@@ -540,10 +440,6 @@ plot_signedbar <- function(all_data,curr) {
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
-#'@examples
-#'data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-#'plot_signedbar_ggi <- function(data,'CTR_x_EXP')
-#'
 plot_signedbar_ggi <- function(all_data,curr) {
   curr_net <- all_data@graphs_ggi[[curr]]
   up_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR > 0])
@@ -552,12 +448,12 @@ plot_signedbar_ggi <- function(all_data,curr) {
   in_deg_down <- igraph::degree(down_graph, mode = 'in')
   in_up <- tibble::tibble(genes = paste0(names(in_deg_up),'_up'), values=as.array(in_deg_up))
   in_down <- tibble::tibble(genes = paste0(names(in_deg_down),'_down'), values=as.array(in_deg_down))
-  in_deg_data_up <-dplyr::top_n(in_up, 10, values)
-  in_deg_data_down <- dplyr::top_n(in_down, 10, values)
+  in_deg_data_up <-dplyr::top_n(in_up, 10, .data$values)
+  in_deg_data_down <- dplyr::top_n(in_down, 10, .data$values)
   in_deg_data_down$values <- 0 -in_deg_data_down$values
   in_deg_data <- dplyr::bind_rows(in_deg_data_up,in_deg_data_down )
   in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
-  p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+  p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=.data$values,y=reorder(.data$genes,.data$values),fill=.data$Expression))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
     ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
     ggplot2::ggtitle('Receiving')+
@@ -568,12 +464,12 @@ plot_signedbar_ggi <- function(all_data,curr) {
   out_deg_down <- igraph::degree(down_graph, mode = 'out')
   out_up <- tibble::tibble(genes = paste0(names(out_deg_up),'_up'), values=as.array(out_deg_up))
   out_down <- tibble::tibble(genes = paste0(names(out_deg_down),'_down'), values=as.array(out_deg_down))
-  out_deg_data_up <-dplyr::top_n(out_up, 10, values)
-  out_deg_data_down <- dplyr::top_n(out_down, 10, values)
+  out_deg_data_up <-dplyr::top_n(out_up, 10, .data$values)
+  out_deg_data_down <- dplyr::top_n(out_down, 10, .data$values)
   out_deg_data_down$values <- 0-out_deg_data_down$values
   out_deg_data <- dplyr::bind_rows(out_deg_data_up,out_deg_data_down )
   out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')
-  p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=values,y=reorder(genes,values),fill=Expression))+
+  p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=.data$values,y=reorder(.data$genes,.data$values),fill=.data$Expression))+
     ggplot2::geom_bar(stat = 'identity',position = "identity")+
     ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
     ggplot2::ggtitle('Sending')+
@@ -581,39 +477,4 @@ plot_signedbar_ggi <- function(all_data,curr) {
     ggplot2::xlab('Number of interactions')+
     ggplot2::theme_minimal()
   print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
-}
-
-#'This function signed sending and receiving barplot (GGI)
-#'
-#'@param PCA LRobject
-#'@import ggplot2
-#'@import dplyr
-#'@import patchwork
-#'@import colorBlindness
-#'@importFrom tidyr %>%
-#'@importFrom stats reorder
-#'@return R default plot
-#'@export
-#'@examples
-#'PCbiplot(data@pca[['CTR_ggi']])
-PCbiplot <- function(PC, x="PC1", y="PC2") {
-    # PC being a prcomp object
-    data <- data.frame(obsnames=row.names(PC$x), PC$x)
-    plot <- ggplot(data, aes_string(x=x, y=y)) + geom_text(alpha=1, size=5, aes(label=obsnames))
-    datapc <- data.frame(varnames=rownames(PC$rotation), PC$rotation)
-    mult <- min(
-        (max(data[,y]) - min(data[,y])/(max(datapc[,y])-min(datapc[,y]))),
-        (max(data[,x]) - min(data[,x])/(max(datapc[,x])-min(datapc[,x])))
-        )
-    datapc <- transform(datapc,
-            v1 = .7 * mult * (get(x)),
-            v2 = .7 * mult * (get(y))
-            )
-    plot <- plot + coord_equal() + geom_text(data=datapc, aes(x=v1, y=v2, label=varnames), size = 5, vjust=1, color="red")
-    plot <- plot + geom_segment(data=datapc, aes(x=0, y=0, xend=v1, yend=v2), arrow=arrow(length=unit(0.2,"cm")), alpha=0.75, color="red")
-    plot <- plot+theme_minimal() +
-                xlim(-max(abs(data[,x]))+5, max(abs(data[,x]))+5)+
-                ylim(-max(abs(data[,y]))+5, max(abs(data[,y]))+5)
-
-    print(plot)
 }

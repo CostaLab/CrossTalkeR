@@ -17,11 +17,11 @@ kegg_annotation(
 
 \item{slot}{table fields}
 
-\item{database}{complex heatmap database}
+\item{out_path}{save path}
+
+\item{database}{annotation database}
 
 \item{org}{organism to be considered}
-
-\item{subslot}{table}
 }
 \description{
 Annotate Exclusive LR pairs (ligand or receptor)

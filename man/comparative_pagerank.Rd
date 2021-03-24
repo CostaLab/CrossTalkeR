@@ -7,9 +7,13 @@
 comparative_pagerank(rankings, slotname, graphname, curr.rkg)
 }
 \arguments{
-\item{ranking}{tables lrobject}
+\item{rankings}{tables lrobject}
 
-\item{slot}{slot of the networks graphs_ggi to gene cell interaction and abs}
+\item{slotname}{slot of the networks graphs_ggi to gene cell interaction and abs}
+
+\item{graphname}{graph comparison name}
+
+\item{curr.rkg}{ranking table}
 }
 \value{
 list

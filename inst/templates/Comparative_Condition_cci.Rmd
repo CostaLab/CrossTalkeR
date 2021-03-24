@@ -80,7 +80,7 @@ for(i in 1:length(names(all_data@pca))){
      print(fviz_pca_biplot(data@pca[[curr]],
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 12,
-                    repel = TRUE,max.overlaps=100,label='var')+
+                    repel = TRUE,max.overlaps=100,label='all')+
                     geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
                     xlim(-x, x)+
                     ylim(-y, y)+

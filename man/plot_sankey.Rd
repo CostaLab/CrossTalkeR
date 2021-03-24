@@ -23,10 +23,30 @@ plot_sankey(
 \item{receptor_cluster}{Receptor Clusters}
 
 \item{plt_name}{plot title}
+
+\item{threshold}{top_n n value}
 }
 \value{
 R default plot
 }
 \description{
 This function selected genes sankey plot
+}
+\examples{
+paths <- c('CTR' = system.file("extdata",
+                              "ctr_nils_bm_human.csv",
+                              package = "CrossTalkeR"),
+          'EXP' = system.file("extdata",
+                              "exp_nils_bm_human.csv",
+                              package = "CrossTalkeR"))
+output =  system.file("extdata", package = "CrossTalkeR")
+genes <- c('TGFB1')
+
+data <- generate_report(paths,
+                       genes,
+                       out_path=paste0(output,'/'),
+                       threshold=0,
+                       out_file = 'vignettes_example.html',
+                       output_fmt = "html_document",
+                       report = FALSE)
 }

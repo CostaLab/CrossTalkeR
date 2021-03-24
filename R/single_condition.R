@@ -12,7 +12,6 @@
 #'@param colors colorlist
 #'@param measure Measure columns name in the input data
 #'@importFrom tidyr %>%
-#'@export
 #'@return LRObject
 read_lr_single_condiction <- function(lrpaths,
                                       out_path = "/tmp/",

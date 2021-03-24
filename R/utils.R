@@ -79,7 +79,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 for(i in cls){
                     all.eq <- unique(union(table$ligpair[table$Ligand.Cluster==i],table$recpair[table$Receptor.Cluster==i]))
                     edges <- t(utils::combn(all.eq,2))
-                    df <- tibble::tibble(u=edges[,1],u=edges[,2],MeanLR=rep(0.1,dim(edges)[1]),.name_repair='minimal')
+                    df <- tibble::tibble(u=edges[,1],v=edges[,2],MeanLR=rep(0.1,dim(edges)[1]),.name_repair='minimal')
                     if(is.null(all)){
                       final <- df
                     }
@@ -122,6 +122,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
 #' Network Ranking method
 #'
 #'@param graph lrobject
+#'@param mode  is TRUE if is comparive mode
 #'@return list
 #'@import igraph
 #'@importFrom tidyr %>%
@@ -177,8 +178,8 @@ ranking_net <- function(graph,mode=TRUE) {
 #'
 #'@param data lrobject
 #'@param slot table fields
-#'@param subslot table
-#'@param database complex heatmap database
+#'@param out_path save path
+#'@param database annotation database
 #'@param org organism to be considered
 #'@import clusterProfiler
 #'@import org.Hs.eg.db
@@ -217,8 +218,10 @@ kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg
 
 #'Ranking the most interactive gene (ligand or receptor)
 #'
-#'@param ranking tables lrobject
-#'@param slot slot of the networks graphs_ggi to gene cell interaction and abs
+#'@param rankings tables lrobject
+#'@param slotname slot of the networks graphs_ggi to gene cell interaction and abs
+#'@param graphname graph comparison name
+#'@param curr.rkg ranking table
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
@@ -256,8 +259,10 @@ comparative_pagerank<- function(rankings,slotname,graphname,curr.rkg){
 
 #'Delta betweenness the most interactive gene (ligand or receptor)
 #'
-#'@param ranking tables lrobject
-#'@param slot slot of the networks graphs_ggi to gene cell interaction and abs
+#'@param rankings tables lrobject
+#'@param slotname slot of the networks graphs_ggi to gene cell interaction and abs
+#'@param graphname graph comparison name
+#'@param curr.rkg ranking table
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
@@ -280,10 +285,14 @@ comparative_med<- function(rankings,slotname,graphname,curr.rkg){
   return(curr.rkg)
 }
 
+
+
 #'Ranking the most interactive gene (ligand or receptor)
 #'
-#'@param list of genes
-#'@param rankings's table column name
+#'@param list list of genes
+#'@param name measure/subject name
+#'@param org annotation database default is org.Hs.eg.db
+#'@param univ annotation universe
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@import clusterProfiler

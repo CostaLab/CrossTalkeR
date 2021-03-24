@@ -46,10 +46,43 @@ which will be filtered. Edges within the interval [low\,high] are filtered.}
 \item{efactor}{edge scale factor}
 
 \item{vfactor}{edge scale factor}
+
+\item{pg}{pagerank values}
 }
 \value{
 R default plot
 }
 \description{
 This function do a CCI plot
+}
+\examples{
+paths <- c('CTR' = system.file("extdata",
+                              "ctr_nils_bm_human.csv",
+                              package = "CrossTalkeR"),
+          'EXP' = system.file("extdata",
+                              "exp_nils_bm_human.csv",
+                              package = "CrossTalkeR"))
+
+genes <- c('TGFB1')
+
+output =  system.file("extdata", package = "CrossTalkeR")
+data <- generate_report(paths,
+                       genes,
+                       out_path=paste0(output,'/'),
+                       threshold=0,
+                       out_file = 'vignettes_example.html',
+                       output_fmt = "html_document",
+                       report = FALSE)
+plot_cci(graph = data@graphs$CTR,
+       colors = data@colors,
+       plt_name = 'Example 1',
+       coords = data@coords[V(data@graphs$CTR)$name,],
+       emax = NULL,
+       leg = FALSE,
+       low = 0,
+       high = 0,
+       ignore_alpha = FALSE,
+       log = FALSE,
+       efactor = 8,
+       vfactor = 12)
 }

@@ -17,3 +17,23 @@ R default plot
 \description{
 This function do a ggi plot and articulation
 }
+\examples{
+paths <- c('CTR' = system.file("extdata",
+                              "ctr_nils_bm_human.csv",
+                              package = "CrossTalkeR"),
+          'EXP' = system.file("extdata",
+                              "exp_nils_bm_human.csv",
+                              package = "CrossTalkeR"))
+output =  system.file("extdata", package = "CrossTalkeR")
+genes <- c('TGFB1')
+
+data <- generate_report(paths,
+                       genes,
+                       out_path=paste0(output,'/'),
+                       threshold=0,
+                       out_file = 'vignettes_example.html',
+                       output_fmt = "html_document",
+                       report = FALSE)
+plot_articulation(graph = data@graphs_ggi$EXP_x_CTR,
+        color = data@colors)
+}

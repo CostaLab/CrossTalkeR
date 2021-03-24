@@ -16,10 +16,41 @@
 #'@param log logscale the interactions
 #'@param efactor edge scale factor
 #'@param vfactor edge scale factor
+#'@param pg pagerank values
 #'@importFrom tidyr %>%
 #'@import colorBlindness
 #'@return R default plot
 #'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'
+#'genes <- c('TGFB1')
+#'
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+#'plot_cci(graph = data@graphs$CTR,
+#'        colors = data@colors,
+#'        plt_name = 'Example 1',
+#'        coords = data@coords[V(data@graphs$CTR)$name,],
+#'        emax = NULL,
+#'        leg = FALSE,
+#'        low = 0,
+#'        high = 0,
+#'        ignore_alpha = FALSE,
+#'        log = FALSE,
+#'        efactor = 8,
+#'        vfactor = 12)
 plot_cci <- function(graph,
                     colors,
                     plt_name,
@@ -140,10 +171,6 @@ plot_cci <- function(graph,
                pch=21, pt.bg='black',box.lwd = 0,y.intersp=2)
   graphics::text(a$rect$left + a$rect$w, a$text$y,
                   c(round(min(pg),2),round(mean(pg),2),round(max(pg),2)), pos = 2)
-  #x <- (a$text$x + a$rect$left) / 2
-  #y <- a$text$y
-  #symbols(x,y,circles=c(min(v),mean(v),max(v))/500,inches=FALSE,add=TRUE,bg='black')
-  # Node names
   x <- coords_scale[, 1] * 1.2
   y <- coords_scale[, 2] * 1.2
   coord_ratio <- coords_scale[, 1] / coords_scale[, 2]
@@ -194,6 +221,7 @@ plot_cci <- function(graph,
 #'
 #'@param graph graph
 #'@param color cluster color
+#'@param name plot header
 #'@import ggplot2
 #'@import ggraph
 #'@import igraph
@@ -202,6 +230,24 @@ plot_cci <- function(graph,
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+#'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
+#'         color = data@colors,name="EXP_x_CTR")
 plot_ggi <- function(graph,color,name) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
@@ -264,6 +310,25 @@ plot_ggi <- function(graph,color,name) {
 #'@return R default plot
 #'@importFrom tidyr %>%
 #'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+#'plot_articulation(graph = data@graphs_ggi$EXP_x_CTR,
+#'         color = data@colors)
 plot_articulation <- function(graph, color) {
   deg <- igraph::degree(graph)
   v_names <- igraph::V(graph)$name
@@ -315,6 +380,7 @@ plot_articulation <- function(graph, color) {
 #'@param ligand_cluster Ligand Clusters
 #'@param receptor_cluster Receptor Clusters
 #'@param plt_name plot title
+#'@param threshold top_n n value
 #'@import ggplot2
 #'@import dplyr
 #'@import colorBlindness
@@ -323,6 +389,23 @@ plot_articulation <- function(graph, color) {
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
 plot_sankey <- function(lrobj_tbl,
                         target = NULL,
                         ligand_cluster = NULL,
@@ -372,109 +455,4 @@ plot_sankey <- function(lrobj_tbl,
       print(paste0("Gene->", target, "Not Found"))
 
   }
-}
-
-
-
-
-#'This function signed sending and receiving barplot (CCI)
-#'
-#'@param all_data LRobject
-#'@param curr condition
-#'@import ggplot2
-#'@import dplyr
-#'@import patchwork
-#'@import colorBlindness
-#'@importFrom tidyr %>%
-#'@importFrom stats reorder
-#'@return R default plot
-#'@export
-plot_signedbar <- function(all_data,curr) {
-   curr_net <- all_data@graphs[[curr]]
-   in_deg_up <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR > 0])
-   in_up <- tibble::tibble(as.data.frame(in_deg_up))
-   in_deg_down <- table(all_data@tables[[curr]]$Ligand.Cluster[all_data@tables[[curr]]$MeanLR < 0])
-   in_down <- tibble::tibble(as.data.frame(in_deg_down))
-   in_down$Freq <- 0-in_down$Freq
-   in_all <- dplyr::bind_rows(in_up,in_down)
-   in_all$Expression <- ifelse(in_all$Freq<0,'Downregulated','Upregulated')
-   in_all$rank <- ifelse(in_all$Freq<0,0,1)
-   out_deg_up <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR > 0])
-   out_up <- tibble::tibble(as.data.frame(out_deg_up))
-   out_deg_down <- table(all_data@tables[[curr]]$Receptor.Cluster[all_data@tables[[curr]]$MeanLR < 0])
-   out_down <- tibble::tibble(as.data.frame(out_deg_down))
-   out_down$Freq <- 0-out_down$Freq
-   out_all <- dplyr::bind_rows(out_up,out_down)
-   out_all$Expression <- ifelse(out_all$Freq<0,'Downregulated','Upregulated')
-   out_all$rank <- ifelse(out_all$Freq<0,0,1)
-   p1 <- ggplot2::ggplot(in_all,ggplot2::aes(x=.data$Freq,y=reorder(.data$Var1,.data$Freq*.data$rank),fill=.data$Expression))+
-     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-     ggplot2::geom_text(ggplot2::aes(label=.data$Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=grDevices::colorRampPalette(colorBlindness::Green2Magenta16Steps)(2))+
-     ggplot2::ggtitle('Ligands')+
-     ggplot2::ylab('Cell')+
-     ggplot2::xlab('Number of interactions')+
-     ggplot2::theme_minimal()
-   p2 <- ggplot2::ggplot(out_all,ggplot2::aes(x=.data$Freq,y=reorder(.data$Var1,.data$Freq*.data$rank),fill=.data$Expression))+
-     ggplot2::geom_bar(stat = 'identity',position = "identity")+
-     ggplot2::geom_text(ggplot2::aes(label=.data$Freq),size=3.5)+
-     ggplot2::scale_fill_manual(values=grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(2))+
-     ggplot2::ggtitle('Receptors')+
-     ggplot2::ylab('Cell')+
-     ggplot2::xlab('Number of interactions')+
-     ggplot2::theme_minimal()
-   print((p1+p2)+patchwork::plot_annotation(title = curr,tag_levels = 'A'))
-}
-
-
-
-#'This function signed sending and receiving barplot (GGI)
-#'
-#'@param all_data LRobject
-#'@param curr condition
-#'@import ggplot2
-#'@import dplyr
-#'@import patchwork
-#'@import colorBlindness
-#'@importFrom tidyr %>%
-#'@importFrom stats reorder
-#'@return R default plot
-#'@export
-plot_signedbar_ggi <- function(all_data,curr) {
-  curr_net <- all_data@graphs_ggi[[curr]]
-  up_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR > 0])
-  down_graph <- igraph::subgraph.edges(curr_net, E(curr_net)[E(curr_net)$MeanLR < 0])
-  in_deg_up <- igraph::degree(up_graph, mode = 'in')
-  in_deg_down <- igraph::degree(down_graph, mode = 'in')
-  in_up <- tibble::tibble(genes = paste0(names(in_deg_up),'_up'), values=as.array(in_deg_up))
-  in_down <- tibble::tibble(genes = paste0(names(in_deg_down),'_down'), values=as.array(in_deg_down))
-  in_deg_data_up <-dplyr::top_n(in_up, 10, .data$values)
-  in_deg_data_down <- dplyr::top_n(in_down, 10, .data$values)
-  in_deg_data_down$values <- 0 -in_deg_data_down$values
-  in_deg_data <- dplyr::bind_rows(in_deg_data_up,in_deg_data_down )
-  in_deg_data$Expression <- ifelse(in_deg_data$values <0,'Downregulated','Upregulated')
-  p1 <- ggplot2::ggplot(in_deg_data,ggplot2::aes(x=.data$values,y=reorder(.data$genes,.data$values),fill=.data$Expression))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-    ggplot2::ggtitle('Receiving')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('Number of interactions')+
-    ggplot2::theme_minimal()
-  out_deg_up <- igraph::degree(up_graph, mode = 'out')
-  out_deg_down <- igraph::degree(down_graph, mode = 'out')
-  out_up <- tibble::tibble(genes = paste0(names(out_deg_up),'_up'), values=as.array(out_deg_up))
-  out_down <- tibble::tibble(genes = paste0(names(out_deg_down),'_down'), values=as.array(out_deg_down))
-  out_deg_data_up <-dplyr::top_n(out_up, 10, .data$values)
-  out_deg_data_down <- dplyr::top_n(out_down, 10, .data$values)
-  out_deg_data_down$values <- 0-out_deg_data_down$values
-  out_deg_data <- dplyr::bind_rows(out_deg_data_up,out_deg_data_down )
-  out_deg_data$Expression <- ifelse(out_deg_data$values <0,'Downregulated','Upregulated')
-  p2 <- ggplot2::ggplot(out_deg_data,ggplot2::aes(x=.data$values,y=reorder(.data$genes,.data$values),fill=.data$Expression))+
-    ggplot2::geom_bar(stat = 'identity',position = "identity")+
-    ggplot2::scale_fill_manual(values=c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-    ggplot2::ggtitle('Sending')+
-    ggplot2::ylab('Cell')+
-    ggplot2::xlab('Number of interactions')+
-    ggplot2::theme_minimal()
-  print((p2+p1)+plot_annotation(title = curr,tag_levels = 'A'))
 }

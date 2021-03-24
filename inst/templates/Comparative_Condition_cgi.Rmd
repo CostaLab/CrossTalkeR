@@ -148,8 +148,8 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
       for(gene in params$obj2){
-        plot_sankey(all_data@tables[[curr]],
-                    target=gene,plt_name=paste0(curr,' ',gene))
+        suppressWarnings({plot_sankey(all_data@tables[[curr]],
+                    target=gene,plt_name=paste0(curr,' ',gene))})
       }
   }
 }

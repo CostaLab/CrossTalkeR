@@ -57,43 +57,49 @@ generate_report <- function(lrpaths,
   if (length(lrpaths) > 1) {
     data <- create_diff_table_wip(data, out_path)
   }
-  message("Defining templates")
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
-  data <- ranking(data, out_path, slot = "graphs")
-  data <- ranking(data, out_path, slot = "graphs_ggi")
-  data <- kegg_annotation(data=data,
-                          slot='rankings',out_path=out_path)
+  message("Calculating CCI Ranking")
+  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs")})
+  message("Calculating GCI Ranking")
+  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs_ggi")})
+  message("Anntating the top Cell Genes")
+  data <- suppressWarnings({ kegg_annotation(data=data,
+                          slot='rankings',out_path=out_path)})
 
-
+  message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,
                        thr = threshold)
   param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
                      thr = threshold)
+
   if (report) {
     message("Generating Report")
     if (length(lrpaths) > 1) {
+        message('Preparing Single Phenotype Report')
         rmarkdown::render(index_single,
                       output_format = output_fmt,
                       output_dir = out_path,
                       output_file = paste0("Single_",out_file),
                       intermediates_dir	= out_path,
-                      params = param_single)
+                      params = param_single,quiet = TRUE)
+        message('Preparing Comparative Phenotype Report')
         rmarkdown::render(index,
                           output_format = output_fmt,
                           output_dir = out_path,
                           output_file =  paste0("Comparative_", out_file),
                           intermediates_dir	= out_path,
-                          params = param_comp)
+                          params = param_comp,quiet = TRUE)
     }else{
+      message('Preparing Single Phenotype Report')
       rmarkdown::render(index_single,
                       output_format = output_fmt,
                       output_dir = out_path,
                       output_file = paste0("Single_",out_file),
                       intermediates_dir	= out_path,
-                      params = param_single)
+                      params = param_single,quiet = TRUE)
     }
   }
   return(data)

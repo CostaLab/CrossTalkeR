@@ -7,9 +7,13 @@
 enrich(list, name, org = org.Hs.eg.db, univ = NULL)
 }
 \arguments{
-\item{list}{of genes}
+\item{list}{list of genes}
 
-\item{rankings's}{table column name}
+\item{name}{measure/subject name}
+
+\item{org}{annotation database default is org.Hs.eg.db}
+
+\item{univ}{annotation universe}
 }
 \value{
 list

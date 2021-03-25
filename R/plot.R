@@ -412,9 +412,12 @@ plot_sankey <- function(lrobj_tbl,
                         receptor_cluster = NULL,
                         plt_name = NULL,
                         threshold=50) {
-  data <- lrobj_tbl
+
   if (!is.null(target)) {
     data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+  }
+  else{
+      data <- lrobj_tbl
   }
   if (!is.null(ligand_cluster)) {
     tmp_sel <- grepl(ligand_cluster, data$Ligand.Cluster)

@@ -79,7 +79,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 for(i in cls){
                     all.eq <- unique(union(table$ligpair[table$Ligand.Cluster==i],table$recpair[table$Receptor.Cluster==i]))
                     edges <- t(utils::combn(all.eq,2))
-                    df <- tibble::tibble(u=edges[,1],v=edges[,2],MeanLR=rep(0.1,dim(edges)[1]),.name_repair='minimal')
+                    df <- tibble::tibble(u=edges[,1],v=edges[,2],MeanLR=rep(0.0,dim(edges)[1]),.name_repair='minimal')
                     if(is.null(all)){
                       final <- df
                     }
@@ -89,7 +89,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 }
                 names(final) <- c('ligpair','recpair','MeanLR')
                 tmp_tbl = table[,c('ligpair','recpair','MeanLR')]
-                tmp_tbl$MeanLR = tmp_tbl$MeanLR+0.1
+                tmp_tbl$MeanLR = tmp_tbl$MeanLR
                 all1 <- dplyr::bind_rows(tmp_tbl,final)
                 tmp_net <- igraph::graph_from_data_frame(all1)
                 pg <- igraph::page.rank(tmp_net,weights=igraph::E(tmp_net)$MeanLR)
@@ -149,23 +149,23 @@ ranking_net <- function(graph,mode=TRUE) {
         deg_in_neg  <- deg_in_neg+1
         deg_out_neg  <- deg_out_neg+1
         centrality_table <- tibble::tibble(nodes = names,
-                                           'Influenced' = round(deg_in_pos,6)-round(deg_in_neg,6),
-                                           'Influencer' = round(deg_out_pos,6)-round(deg_out_neg,6))
+                                           'Influenced' = round(deg_in_pos,2)-round(deg_in_neg,2),
+                                           'Influencer' = round(deg_out_pos,2)-round(deg_out_neg,2))
 
          centrality_table[is.na(centrality_table)] = 0
 
   }else{
-    deg_in_pos <- igraph::degree(graph, mode = "in")
-    deg_out_pos <- igraph::degree(graph, mode = "out")
-    bet <- igraph::betweenness(graph, weights = abs(igraph::E(graph)$weight))
+    deg_in_pos <- igraph::degree(graph, mode = "in",normalized = FALSE)
+    deg_out_pos <- igraph::degree(graph, mode = "out",normalized = FALSE)
+    bet <- igraph::betweenness(graph, weights = abs(igraph::E(graph)$weight),normalized = FALSE)
     names <- igraph::V(graph)$name
     bet  <- bet[names]
     deg_in_pos  <- deg_in_pos[names]
     deg_out_pos  <- deg_out_pos[names]
     centrality_table <- tibble::tibble(nodes = names,
-                                       'Influenced' = round(deg_in_pos,6),
-                                       'Influencer' = round(deg_out_pos,6),
-                                       'Mediator' = round(bet,6))
+                                       'Influenced' = round(deg_in_pos,2),
+                                       'Influencer' = round(deg_out_pos,2),
+                                       'Mediator' = round(bet,2))
     centrality_table[is.na(centrality_table)] = 0
 
   }

@@ -8,6 +8,7 @@
 #'@param out_path output path
 #'@return LRObject
 #'@importFrom tidyr %>%
+#'@import methods
 create_diff_table <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
@@ -82,18 +83,21 @@ create_diff_table <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
+    raw_inter <- table(final_data$cellpair)
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
-    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
+    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")],directed=TRUE)
+
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$pair] #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1
     data@tables[[cmp_name]] <- final_data
     graph1 <- igraph::graph_from_data_frame(final_data[, c("ligpair",
                                                            "recpair",
-                                                           "MeanLR")])
+                                                           "MeanLR")],directed=TRUE)
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs_ggi[[cmp_name]] <- graph1
@@ -109,12 +113,8 @@ create_diff_table <- function(data, out_path) {
 #'@param data LRObj with single condition
 #'@param out_path output path
 #'@return LRObject
-
 #'@importFrom tidyr %>%
 #'@export
-#'@examples
-#'diff <- create_diff_table_wip(data,
-#'                           out_path)
 create_diff_table_wip <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]
   ctr_table <- data@tables[[ctr_name]]
@@ -190,11 +190,13 @@ create_diff_table_wip <- function(data, out_path) {
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
+    raw_inter <- table(final_data$cellpair)
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
     final$freq <- as.array(freq)[final$pair]
     final <- dplyr::arrange(final, abs(final$MeanLR))
     graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
+    igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$pair] #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs[[cmp_name]] <- graph1

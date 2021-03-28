@@ -9,7 +9,8 @@ plot_sankey(
   target = NULL,
   ligand_cluster = NULL,
   receptor_cluster = NULL,
-  plt_name = NULL
+  plt_name = NULL,
+  threshold = 50
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_sankey(
 \item{receptor_cluster}{Receptor Clusters}
 
 \item{plt_name}{plot title}
+
+\item{threshold}{top_n n value}
 }
 \value{
 R default plot
@@ -30,11 +33,20 @@ R default plot
 This function selected genes sankey plot
 }
 \examples{
-data <- generate_report(paths,genes,'~/Documents/',threshold=0,out_file = 'report.html')
-plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
-           target = c("TGFB1"),
-           ligand_cluster = NULL,
-           receptor_cluster = NULL,
-           plt_name = "TGFB1")
+paths <- c('CTR' = system.file("extdata",
+                              "ctr_nils_bm_human.csv",
+                              package = "CrossTalkeR"),
+          'EXP' = system.file("extdata",
+                              "exp_nils_bm_human.csv",
+                              package = "CrossTalkeR"))
+output =  system.file("extdata", package = "CrossTalkeR")
+genes <- c('TGFB1')
 
+data <- generate_report(paths,
+                       genes,
+                       out_path=paste0(output,'/'),
+                       threshold=0,
+                       out_file = 'vignettes_example.html',
+                       output_fmt = "html_document",
+                       report = FALSE)
 }

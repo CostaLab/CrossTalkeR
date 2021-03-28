@@ -17,7 +17,3 @@ LRObject
 \description{
 Read the lrobject and generate the comparative tables
 }
-\examples{
-diff <- create_diff_table_wip(data,
-                          out_path)
-}

@@ -1,4 +1,4 @@
-# CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="120" height=200 />
+# CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200" height="200" />
 
 
 [![DOI](https://zenodo.org/badge/329572127.svg)](https://zenodo.org/badge/latestdoi/329572127)

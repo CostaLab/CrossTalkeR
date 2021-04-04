@@ -1,4 +1,4 @@
-# CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200" height="200" />
+# CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200" />
 
 
 [![DOI](https://zenodo.org/badge/329572127.svg)](https://zenodo.org/badge/latestdoi/329572127)
@@ -10,6 +10,7 @@
 
 James S. Nagai<sup>1</sup>,
 Nils B. Leimkühler<sup>2</sup>,
+Michael T. Schaub <sup>5</sup>,
 Rebekka K. Schneider<sup>2,3,4</sup>,
 Ivan G. Costa<sup>1*</sup>
 
@@ -20,6 +21,8 @@ Ivan G. Costa<sup>1*</sup>
 <sup>3</sup>Department of Cell Biology, Institute for Biomedical Engineering, Faculty of Medicine,RWTH Aachen University, Pauwelsstrasse 30, 52074 Aachen, NRW, Germany
 
 <sup>4</sup>Oncode Institute, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands
+
+<sup>5</sup>Department of Computer Science, RWTH Aachen University, Germany
 
 ![scheme](./CrossTalkeR_only_A.png)
 

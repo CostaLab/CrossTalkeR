@@ -12,14 +12,7 @@
 #'@param colors colorlist
 #'@param measure Measure columns name in the input data
 #'@importFrom tidyr %>%
-#'@export
 #'@return LRObject
-#'@examples
-#' single <- read_lr_single_condiction(lrpaths,
-#'                           out_path = "/tmp/",
-#'                           sep = ",",
-#'                           colors = NULL,
-#'                           measure = "MeanLR")
 read_lr_single_condiction <- function(lrpaths,
                                       out_path = "/tmp/",
                                       sep = ",",
@@ -27,6 +20,7 @@ read_lr_single_condiction <- function(lrpaths,
                                       measure = "MeanLR") {
   data <- list()
   graphs <- list()
+  graphs_ggi <- list()
   conds <- names(lrpaths)
   max <- 0
   max_nodes <- 0
@@ -79,6 +73,13 @@ read_lr_single_condiction <- function(lrpaths,
     igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data[[conds[i]]] <- data1
     graphs[[conds[i]]] <- graph1
+    graph2 <- igraph::graph_from_data_frame(data1[, c("ligpair",
+                                                           "recpair",
+                                                           "MeanLR")],directed=TRUE)
+    igraph::E(graph2)$weight <- igraph::E(graph2)$MeanLR
+    igraph::E(graph2)$mean <- igraph::E(graph2)$MeanLR
+
+    graphs_ggi[[conds[i]]] <- graph2
     if (max(igraph::E(graph1)$mean) > max) {
       max <- max(igraph::E(graph1)$mean)
     }
@@ -109,8 +110,10 @@ read_lr_single_condiction <- function(lrpaths,
     }
   }
   rownames(c) <- sort(unif_celltypes)
+
   lr <- new("LRObj",
             graphs = graphs,
+            graphs_ggi = graphs_ggi,
             tables = data,
             max_iter = max,
             max_nodes = max_nodes,

@@ -1,0 +1,97 @@
+---
+title: "Annotation"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+      toc: yes
+      toc_depth: 3
+      theme: simplex
+      self_contained: true
+params:
+  obj1: "path to obj"
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=F, include=F}
+require(igraph)
+require(dplyr)
+require(tibble)
+require(tidyr)
+require(patchwork)
+require(stringr)
+require(CrossTalkeR)
+require(ggraph)
+require(graphlayouts)
+require(pals)
+require(htmltools)
+require(DT)
+require(knitr)
+require(org.Hs.eg.db)
+
+```
+
+## CCI comparison approaches
+
+### Attempt 1
+
+```{r}
+path <-params$obj1
+all_data <- readRDS(path)
+rank_log_odds <- list()
+ctr <- names(all_data@rankings)[1]
+for(i in 2:length(names(all_data@rankings))){
+  curr <- names(all_data@rankings)[i]
+  if(!str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
+    p <- data@rankings[[ctr]]$pagerank[names(data@rankings[[curr]]$pagerank)]
+    q <- data@rankings[[curr]]$pagerank
+    print(p)
+    print(q)
+    rank_log_odds[[paste0(curr,'/',ctr)]] <- log(q/p)
+    final<-tibble(cells=names(rank_log_odds[[paste0(curr,'/',ctr)]]),odds=rank_log_odds[[paste0(curr,'/',ctr)]])
+    print(ggplot(final, aes(x=odds,y=reorder(cells,odds)))+
+        geom_bar(stat='identity')+
+        theme_minimal())
+  }  
+}
+
+```
+
+### Attempt 2
+
+```{r,fig.width=15}
+path <-params$obj1
+all_data <- readRDS(path)
+rank_log_odds <- list()
+ctr <- names(all_data@rankings)[1]
+for(i in 2:length(names(all_data@rankings))){
+  curr <- names(all_data@rankings)[i]
+  if(!str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
+    p <- data@rankings[[ctr]]$pagerank[names(data@rankings[[curr]]$pagerank)]
+    q <- data@rankings[[curr]]$pagerank
+    p_f1 <- 0.5
+    p_f2 <- 0.5
+    pc <- p[names(q)]*p_f1 + q*p_f2
+    pcontrol <- (p_f1*p[names(q)])/pc
+    pdisease <- (p_f2*q)/pc
+    rank_log_odds[[paste0(curr,'/',ctr)]] <- log(pdisease/pcontrol)
+    print(pcontrol)
+    print(pdisease)
+    print(rank_log_odds[[paste0(curr,'/',ctr)]])
+    final<-tibble(cells=names(rank_log_odds[[paste0(curr,'/',ctr)]]),odds=rank_log_odds[[paste0(curr,'/',ctr)]],p_dis = pdisease, p_ctr=pcontrol)
+    p1<-ggplot(final, aes(x=odds,y=reorder(cells,odds)))+
+        geom_bar(stat='identity')+
+        ggtitle('LogOdds')+
+        theme_minimal()
+    p2<-ggplot(final, aes(x=p_dis,y=reorder(cells,p_dis)))+
+        geom_bar(stat='identity')+
+        ggtitle('Prob Disease')+
+        theme_minimal()    
+    p3<-ggplot(final, aes(x=p_ctr,y=reorder(cells,p_ctr)))+
+        geom_bar(stat='identity')+
+        ggtitle('Prob Control')+
+        theme_minimal()
+    print(p1+p2+p3)
+  }  
+}
+
+```

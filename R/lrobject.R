@@ -15,6 +15,8 @@
 #'@slot colors  Cell type colors
 #'@slot rankings Ranking of cells and Genes
 #'@slot loadings  CCI values to remove multiple times genes
+#'@slot pca  PCA results
+#'@slot annot  Annotation Results
 lrbject <- setClass("LRObj",
                     slots = list(graphs = "list",
                                graphs_ggi = "list",
@@ -25,6 +27,7 @@ lrbject <- setClass("LRObj",
                                colors = "character",
                                rankings = "list",
                                loadings = "list",
-                               pca = "list"
+                               pca = "list",
+                               annot = "list"
                                )
                     )

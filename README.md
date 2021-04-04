@@ -41,6 +41,19 @@ require(CrossTalkeR)
 
 *Note: Please avoid to use the following characters in celltype name: '_' and '\\' *
 
+## Possible system dependencies
+
+```
+libudunits2-dev 
+libgdal-dev 
+gdal-bin 
+libproj-dev 
+proj-data 
+proj-bin 
+libgeos-dev 
+
+```
+
 ## CrossTalkeR Plots examples and vignette
 
 We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq. 

@@ -32,10 +32,3 @@ the report data and it`s object
 It assumes that the table presents the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
 measure
 }
-\examples{
-single <- read_lr_single_condiction(lrpaths,
-                          out_path = "/tmp/",
-                          sep = ",",
-                          colors = NULL,
-                          measure = "MeanLR")
-}

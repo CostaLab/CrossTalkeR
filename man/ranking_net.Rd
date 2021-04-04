@@ -4,10 +4,12 @@
 \alias{ranking_net}
 \title{Network Ranking method}
 \usage{
-ranking_net(graph)
+ranking_net(graph, mode = TRUE)
 }
 \arguments{
 \item{graph}{lrobject}
+
+\item{mode}{is TRUE if is comparive mode}
 }
 \value{
 list

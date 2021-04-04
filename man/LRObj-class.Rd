@@ -28,5 +28,9 @@ measure
 \item{\code{rankings}}{Ranking of cells and Genes}
 
 \item{\code{loadings}}{CCI values to remove multiple times genes}
+
+\item{\code{pca}}{PCA results}
+
+\item{\code{annot}}{Annotation Results}
 }}
 

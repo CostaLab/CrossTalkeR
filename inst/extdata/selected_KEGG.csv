@@ -1,0 +1,106 @@
+2010,"ABC transporters"
+2060,Phosphotransferase system (PTS)
+3070,Bacterial secretion system
+2020,Two-component system
+4010,MAPK signaling pathway
+4012,ErbB signaling pathway
+4014,Ras signaling pathway
+4015,Rap1 signaling pathway
+4310,Wnt signaling pathway
+4330,Notch signaling pathway
+4340,Hedgehog signaling pathway
+4350,TGF-beta signaling pathway
+4390,Hippo signaling pathway
+4370,VEGF signaling pathway
+4371,Apelin signaling pathway
+4630,JAK-STAT signaling pathway
+4064,NF-kappa B signaling pathway
+4668,TNF signaling pathway
+4066,HIF-1 signaling pathway
+4068,FoxO signaling pathway
+4020,Calcium signaling pathway
+4070,Phosphatidylinositol signaling system
+4072,Phospholipase D signaling pathway
+4071,Sphingolipid signaling pathway
+4024,cAMP signaling pathway
+4022,cGMP-PKG signaling pathway
+4151,PI3K-Akt signaling pathway
+4152,AMPK signaling pathway
+4150,mTOR signaling pathway
+4080,Neuroactive ligand-receptor interaction
+4060,Cytokine-cytokine receptor interaction
+4061,Viral protein interaction with cytokine and cytokine receptor
+4512,ECM-receptor interaction
+4514,Cell adhesion molecules
+4144,Endocytosis
+4145,Phagosome
+4142,Lysosome
+4146,Peroxisome
+4140,Autophagy - animal
+4137,Mitophagy - animal
+4110,Cell cycle
+4114,Oocyte meiosis
+4210,Apoptosis
+4216,Ferroptosis
+4217,Necroptosis
+4115,p53 signaling pathway
+4218,Cellular senescence
+4510,Focal adhesion
+4520,Adherens junction
+4530,Tight junction
+4540,Gap junction
+4550,Signaling pathways regulating pluripotency of stem cells
+4640,Hematopoietic cell lineage
+4610,Complement and coagulation cascades
+4611,Platelet activation
+4613,Neutrophil extracellular trap formation
+4620,Toll-like receptor signaling pathway
+4624,Toll and Imd signaling pathway
+4621,NOD-like receptor signaling pathway
+4622,RIG-I-like receptor signaling pathway
+4623,Cytosolic DNA-sensing pathway
+4625,C-type lectin receptor signaling pathway
+4650,Natural killer cell mediated cytotoxicity
+4612,Antigen processing and presentation
+4660,T cell receptor signaling pathway
+4658,Th1 and Th2 cell differentiation
+4659,Th17 cell differentiation
+4657,IL-17 signaling pathway
+4662,B cell receptor signaling pathway
+4664,Fc epsilon RI signaling pathway
+4666,Fc gamma R-mediated phagocytosis
+4670,Leukocyte transendothelial migration
+4672,Intestinal immune network for IgA production
+4062,Chemokine signaling pathway
+4911,Insulin secretion
+4910,Insulin signaling pathway
+4922,Glucagon signaling pathway
+4923,Regulation of lipolysis in adipocytes
+4920,Adipocytokine signaling pathway
+3320,PPAR signaling pathway
+4929,GnRH secretion
+4912,GnRH signaling pathway
+4913,Ovarian steroidogenesis
+4915,Estrogen signaling pathway
+4914,Progesterone-mediated oocyte maturation
+4917,Prolactin signaling pathway
+4921,Oxytocin signaling pathway
+4926,Relaxin signaling pathway
+4935,"Growth hormone synthesis, secretion and action"
+4918,Thyroid hormone synthesis
+4919,"Thyroid hormone signaling pathway"
+4928,"Parathyroid hormone synthesis, secretion and action"
+4916,Melanogenesis
+4924,Renin secretion
+4614,Renin-angiotensin system
+4925,Aldosterone synthesis and secretion
+4927,Cortisol synthesis and secretion
+5200,Pathways in cancer
+5202,Transcriptional misregulation in cancer
+5206,MicroRNAs in cancer
+5205,Proteoglycans in cancer
+5204,Chemical carcinogenesis
+5203,Viral carcinogenesis
+5230,Central carbon metabolism in cancer
+5231,Choline metabolism in cancer
+5235,PD-L1 expression and PD-1 checkpoint pathway in cancer

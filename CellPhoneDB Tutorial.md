@@ -86,9 +86,9 @@ cellphonedb method statistical_analysis s2_filtered_meta.csv  s2_filtered_hcount
 #! /bin/bash
 mkdir s1 s2  # creating the output folders
 
-cellphonedb method statistical_analysis s1_filtered_meta.csv --counts-data hgnc_symbol s1_filtered_hcount.csv  --threads 30 --output-path s1/ 
+cellphonedb method statistical_analysis s1_filtered_meta.csv --counts-data hgnc_symbol s1_filtered_hcount.csv  --threads 30 --output-path s1/
 
-cellphonedb method statistical_analysis s2_filtered_meta.csv --counts-data hgnc_symbol s2_filtered_hcount.csv  --threads 30 --output-path s2/ 
+cellphonedb method statistical_analysis s2_filtered_meta.csv --counts-data hgnc_symbol s2_filtered_hcount.csv  --threads 30 --output-path s2/
 
 ```
 
@@ -135,9 +135,9 @@ def cpdb2df(data,clsmapping):
                 df_data['isReceptor_fst'].append(list(data['receptor_a'])[i])
                 df_data['isReceptor_scn'].append(list(data['receptor_b'])[i])
                 df_data['MeanLR'].append(data.iloc[i,j+12])
-    data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
+    data_final = pd.DataFrame.from_dict(df_data)
     return(data_final)
-            
+
 def cpdb2df_nocls(data):
     '''
    		When the cluster name is used on CPDB
@@ -163,9 +163,9 @@ def cpdb2df_nocls(data):
                 df_data['isReceptor_fst'].append(list(data['receptor_a'])[i])
                 df_data['isReceptor_scn'].append(list(data['receptor_b'])[i])
                 df_data['MeanLR'].append(data.iloc[i,j+12])
-    data_final = pd.DataFrame.from_dict(df_data)s1_filtered_corrected.csv
+    data_final = pd.DataFrame.from_dict(df_data)
     return(data_final)
-            
+
 s1 = pd.read_csv('./s1/significant_means.txt',sep='\t')
 s2 = pd.read_csv('./s2/ significant_means.txt',sep='\t')
 #dict with the mapping
@@ -191,7 +191,7 @@ s2_filtered.to_csv('s2_filtered_corrected.csv')
 library('CrossTalkeR')
 
 # the method always consider the first path as control: the multiple control case will be handle soon
-paths <- c('CTR' = 's1_filtered_corrected.csv', 
+paths <- c('CTR' = 's1_filtered_corrected.csv',
            'EXP' = 's1_filtered_corrected.csv',
            'EXP1' = 's1_filtered_corrected.csv',)
 # Selected gene list     
@@ -207,6 +207,3 @@ data <- generate_report(paths=paths, # paths list
 						)
 
 ````
-
-
-

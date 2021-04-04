@@ -1,5 +1,9 @@
 ## ----vignete0-----------------------------------------------------------------
 suppressPackageStartupMessages({require(CrossTalkeR)})
+suppressPackageStartupMessages({require(igraph)})
+suppressPackageStartupMessages({require(ggraph)})
+suppressPackageStartupMessages({require(ggplot2)})
+
 
 ## ----vignete1, results="hide", warning=FALSE,message=F, output=FALSE----------
 paths <- c('CTR' = system.file("extdata",
@@ -9,12 +13,14 @@ paths <- c('CTR' = system.file("extdata",
                                "exp_nils_bm_human.csv",
                                package = "CrossTalkeR"))
 genes <- c('TGFB1','PF4','PPBP')
+output =  system.file("extdata", package = "CrossTalkeR")
 data <- generate_report(paths,
                         genes,
-                        out_path='~/Documents/',
+                        out_path=paste0(output,'/'),
                         threshold=0,
                         out_file = 'vignettes_example.html',
-                        output_fmt = "html_document")
+                        output_fmt = "html_document",
+                        report = FALSE)
 
 ## ----vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8----
 plot_cci(graph = data@graphs$CTR,
@@ -33,7 +39,7 @@ plot_cci(graph = data@graphs$CTR,
 
 ## ----vignete3, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=15----
 plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-         color = data@colors)
+         color = data@colors,name="EXP_x_CTR")
 
 
 ## ----vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=10----
@@ -43,4 +49,7 @@ plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
             receptor_cluster = NULL,
             plt_name = "TGFB1")
 
+
+## ----sessionInfo, echo=FALSE--------------------------------------------------
+sessionInfo()
 

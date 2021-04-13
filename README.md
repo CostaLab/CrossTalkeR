@@ -11,7 +11,7 @@
 James S. Nagai<sup>1</sup>,
 Nils B. Leimkühler<sup>2</sup>,
 Michael T. Schaub <sup>3</sup>,
-Rebekka K. Schneider<sup>2,4,5</sup>,
+Rebekka K. Schneider<sup>4,5</sup>,
 Ivan G. Costa<sup>1*</sup>
 
 <sup>1</sup>Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany
@@ -26,7 +26,7 @@ Ivan G. Costa<sup>1*</sup>
 
 <sup>6</sup>Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands
 
-![scheme](/inst/CrossTalkeR_only_A.png)
+![scheme](https://GitHub.com/CostaLab/inst/CrossTalkeR_only_A.png)
 
 
 

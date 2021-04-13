@@ -7,10 +7,9 @@ author:
                RWTH Aachen University,
                Aachen, 52074 Germany
 - name: Nils B. Leimkühler
-  affiliation: Oncode Institute,
-               Erasmus Medical Center,
-               Rotterdam, 3015GD,
-               the Netherlands
+  affiliation: Department of Hematology and Stem Cell Transplantation,
+               University Hospital Essen,
+               Germany
 - name: Michael T. Schaub
   affiliation:
      - Department of Computer Science,

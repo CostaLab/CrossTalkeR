@@ -17,6 +17,7 @@ plot_cci(
   log = FALSE,
   efactor = 8,
   vfactor = 12,
+  vnames = T,
   pg = NULL
 )
 }
@@ -47,6 +48,8 @@ which will be filtered. Edges within the interval [low\,high] are filtered.}
 
 \item{vfactor}{edge scale factor}
 
+\item{vnames}{remove vertex labels}
+
 \item{pg}{pagerank values}
 }
 \value{
@@ -76,7 +79,7 @@ data <- generate_report(paths,
 plot_cci(graph = data@graphs$CTR,
        colors = data@colors,
        plt_name = 'Example 1',
-       coords = data@coords[V(data@graphs$CTR)$name,],
+       coords = data@coords[igraph::V(data@graphs$CTR)$name,],
        emax = NULL,
        leg = FALSE,
        low = 0,
@@ -84,5 +87,6 @@ plot_cci(graph = data@graphs$CTR,
        ignore_alpha = FALSE,
        log = FALSE,
        efactor = 8,
-       vfactor = 12)
+       vfactor = 12,
+       vnames = TRUE)
 }

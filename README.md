@@ -1,6 +1,5 @@
 # CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200" />
 
-
 [![DOI](https://zenodo.org/badge/329572127.svg)](https://zenodo.org/badge/latestdoi/329572127)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity)
 [![GitHub license](https://img.shields.io/github/license/CostaLab/CrossTalkeR.svg)](https://github.com/CostaLab/CrossTalkeR.js/blob/master/LICENSE)

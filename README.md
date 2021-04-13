@@ -26,7 +26,7 @@ Ivan G. Costa<sup>1*</sup>
 
 <sup>6</sup>Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands
 
-![scheme](https://GitHub.com/CostaLab/inst/CrossTalkeR_only_A.png)
+![scheme](inst/CrossTalkeR_only_A.png)
 
 
 

@@ -55,7 +55,7 @@ generate_report <- function(lrpaths,
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table_wip(data, out_path)
+    data <- create_diff_table(data, out_path)
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")

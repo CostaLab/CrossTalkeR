@@ -7,10 +7,14 @@ author:
                RWTH Aachen University,
                Aachen, 52074 Germany
 - name: Nils B. Leimkühler
-  affiliation: Oncode Institute,
-               Erasmus Medical Center,
-               Rotterdam, 3015GD,
-               the Netherlands
+  affiliation: Department of Hematology and Stem Cell Transplantation,
+               University Hospital Essen,
+               Germany
+- name: Michael T. Schaub
+  affiliation:
+     - Department of Computer Science,
+       RWTH Aachen University,
+       Aachen, Germany
 - name: Rebekka K. Schneider
   affiliation:
     - Department of Hematology,
@@ -65,7 +69,7 @@ paths <- c('CTR' = system.file("extdata",
            'EXP' = system.file("extdata",
                                "exp_nils_bm_human.csv",
                                package = "CrossTalkeR"))
-genes <- c('TGFB1','PF4','PPBP')
+genes <- c('TGFB1')
 output =  system.file("extdata", package = "CrossTalkeR")
 data <- generate_report(paths,
                         genes,

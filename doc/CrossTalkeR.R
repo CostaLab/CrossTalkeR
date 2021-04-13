@@ -12,7 +12,7 @@ paths <- c('CTR' = system.file("extdata",
            'EXP' = system.file("extdata",
                                "exp_nils_bm_human.csv",
                                package = "CrossTalkeR"))
-genes <- c('TGFB1','PF4','PPBP')
+genes <- c('TGFB1')
 output =  system.file("extdata", package = "CrossTalkeR")
 data <- generate_report(paths,
                         genes,

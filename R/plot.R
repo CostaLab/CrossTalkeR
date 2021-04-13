@@ -17,6 +17,7 @@
 #'@param efactor edge scale factor
 #'@param vfactor edge scale factor
 #'@param pg pagerank values
+#'@param vnames remove vertex labels
 #'@importFrom tidyr %>%
 #'@import colorBlindness
 #'@return R default plot
@@ -42,7 +43,7 @@
 #'plot_cci(graph = data@graphs$CTR,
 #'        colors = data@colors,
 #'        plt_name = 'Example 1',
-#'        coords = data@coords[V(data@graphs$CTR)$name,],
+#'        coords = data@coords[igraph::V(data@graphs$CTR)$name,],
 #'        emax = NULL,
 #'        leg = FALSE,
 #'        low = 0,
@@ -50,7 +51,8 @@
 #'        ignore_alpha = FALSE,
 #'        log = FALSE,
 #'        efactor = 8,
-#'        vfactor = 12)
+#'        vfactor = 12,
+#'        vnames = TRUE)
 plot_cci <- function(graph,
                     colors,
                     plt_name,
@@ -63,6 +65,7 @@ plot_cci <- function(graph,
                     log = FALSE,
                     efactor = 8,
                     vfactor = 12,
+                    vnames = T,
                     pg = NULL) {
 
   # Check Maximal Weight
@@ -163,6 +166,7 @@ plot_cci <- function(graph,
          lwd = e_wid_sp,
          lty = c(1, 1, 1),
          horiz = FALSE)
+
   v <- igraph::V(graph)$size
   a <- graphics::legend('bottomleft',
                         title="Node Pagerank",
@@ -178,15 +182,17 @@ plot_cci <- function(graph,
               atan(-coord_ratio) * (180 / pi) < 0,
               90 + atan(-coord_ratio) * (180 / pi),
               270 + atan(-coord_ratio) * (180 / pi))
-  for (i in seq_len(length(x))) {
-    graphics::text(x = x[i],
-         y = y[i],
-         labels = igraph::V(graph)$name[i],
-         adj = NULL,
-         pos = NULL,
-         cex = 0.8,
-         col = "black",
-         xpd = TRUE)
+  if(vnames){
+      for (i in seq_len(length(x))) {
+        graphics::text(x = x[i],
+             y = y[i],
+             labels = igraph::V(graph)$name[i],
+             adj = NULL,
+             pos = NULL,
+             cex = 0.8,
+             col = "black",
+             xpd = TRUE)
+      }
   }
   if (leg) {
       # Edge Colormap
@@ -271,10 +277,7 @@ plot_ggi <- function(graph,color,name) {
   ewidth <-  (ewidth - min(ewidth)) / (max(ewidth) - min(ewidth))
   print(ggraph::ggraph(graph, layout = "stress") +
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
-                                             color = igraph::E(graph)$MeanLR),
-                                             alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
-                                           high = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
+                                             alpha = ewidth)) +
         ggraph::geom_node_point(size = ((deg / max(deg)) * 10),
                                 alpha = 1,
                                 ggplot2::aes(color = igraph::V(graph)$cluster)
@@ -290,83 +293,10 @@ plot_ggi <- function(graph,color,name) {
                                hjust = "inward",
                                size = 7,
                                show.legend = FALSE) +
-        ggraph::scale_edge_width_continuous(range = c(0, 1)) +
+        ggraph::scale_edge_width_continuous(range = c(0, 1))  +
         ggplot2::ggtitle(name)+
         #scale_size(range = c(1,6))+
-        ggraph::theme_graph() +
-        ggplot2::theme(legend.position = "left"))
-
-}
-
-
-#'This function do a ggi plot and articulation
-#'
-#'@param graph graph
-#'@param color cluster color
-#'@import ggplot2
-#'@import ggraph
-#'@import graphlayouts
-#'@import colorBlindness
-#'@return R default plot
-#'@importFrom tidyr %>%
-#'@export
-#'@examples
-#'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"),
-#'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
-#'genes <- c('TGFB1')
-#'
-#'data <- generate_report(paths,
-#'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
-#'                        out_file = 'vignettes_example.html',
-#'                        output_fmt = "html_document",
-#'                        report = FALSE)
-#'plot_articulation(graph = data@graphs_ggi$EXP_x_CTR,
-#'         color = data@colors)
-plot_articulation <- function(graph, color) {
-  deg <- igraph::degree(graph)
-  v_names <- igraph::V(graph)$name
-  v_names <- tibble::as_tibble(v_names)
-  v_names <- v_names %>%
-    tidyr::separate(.data$value, c("genes", "cluster"), "/")
-  igraph::V(graph)$genes <- v_names$genes
-  igraph::V(graph)$cluster <- v_names$cluster
-  ecolors <- rev(grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[round(oce::rescale(igraph::E(graph)$MeanLR,
-                                           xlow = min(igraph::E(graph)$MeanLR),
-                                           rlow = 1,
-                                           rhigh = 25))]
-  igraph::E(graph)$colors <- ecolors
-  cls <- names(color)
-  names(color) <- NULL
-  ewidth <- (abs(igraph::E(graph)$MeanLR) - mean(abs(igraph::E(graph)$MeanLR)))
-  ewidth <- ewidth / stats::sd(abs(igraph::E(graph)$MeanLR))
-  ewidth <-  (ewidth - min(ewidth)) / (max(ewidth) - min(ewidth))
-  ap <- igraph::V(graph) %in% igraph::articulation.points(graph)
-  print(ggraph::ggraph(graph, layout = "stress") +
-        ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
-                                             color = igraph::E(graph)$MeanLR),
-                                alpha = ewidth) +
-        ggraph::scale_edge_color_gradient2(low = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[1],
-                                           high = grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25)[25]) +
-        ggraph::geom_node_point(size = (deg / max(deg) * 10),
-                                alpha = 1,
-                                ggplot2::aes(color = igraph::V(graph)$cluster)
-                                ) +
-        ggplot2::scale_colour_manual(values = color,
-                                     labels = cls,
-                                     name = "Clusters") +
-        ggraph::geom_node_label(ggplot2::aes(filter = ap,
-                                            label = igraph::V(graph)$genes,
-                                            color = igraph::V(graph)$cluster),
-                                 show.legend = FALSE) +
-        ggraph::scale_edge_width_continuous(range = c(0, 1)) +
-        ggraph::theme_graph() +
+        ggraph::theme_graph(base_family="sans") +
         ggplot2::theme(legend.position = "left"))
 
 }

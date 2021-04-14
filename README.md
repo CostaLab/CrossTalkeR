@@ -10,7 +10,7 @@
 James S. Nagai<sup>1</sup>,
 Nils B. Leimkühler<sup>2</sup>,
 Michael T. Schaub <sup>3</sup>,
-Rebekka K. Schneider<sup>4,5</sup>,
+Rebekka K. Schneider<sup>4,5,6</sup>,
 Ivan G. Costa<sup>1*</sup>
 
 <sup>1</sup>Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany
@@ -40,7 +40,7 @@ You can install CrossTalkeR with the simple comands below:
 
 ```{r}
 install.packages("devtools")
-devtools::install_github("https://github.com/CostaLab/CrossTalkeR")
+devtools::install_github("https://github.com/CostaLab/CrossTalkeR", build_vignettes = TRUE)
 require(CrossTalkeR)
 ```
 
@@ -75,7 +75,7 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
 [CellPhoneDB Tutorial.md](https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md)
 
 
-## Current Features v1.0.0
+## Current Features v1.2.0
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking
@@ -89,6 +89,6 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
 
 # References
 
-[1] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (in preparation)
+[1] CrossTalkeR: Analysis and Visualisation of Ligand Receptor Networks [preprintlink](https://www.biorxiv.org/content/10.1101/2021.01.20.427390v1)
 
 [2]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)

@@ -29,7 +29,7 @@ htmltools::img(src = knitr::image_uri(imgpath),
 ```
 
 <style>
-      div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+      div.blue { background-color:#e6f0ff; border-radius: 0.2%; padding: 10%;}
 </style>
 
 # Differential Analysis

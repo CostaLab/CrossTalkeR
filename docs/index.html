@@ -19,7 +19,7 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-
+    
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -45,12 +45,27 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/html/Output_Samples.html">Single Phenotype Report</a>
+    </li>
+    <li>
+      <a href="articles/html/Output_Samples1.html">Comparative Phenotype Report</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/CostaLab/CrossTalkeR/">
     <span class="fab fa-github fa-lg"></span>
-
+     
   </a>
 </li>
       </ul>
@@ -61,14 +76,14 @@
 </div>
 <!--/.navbar -->
 
-
+      
 
       </header><div class="row">
   <div class="contents col-md-9">
 
 <div id="crosstalker-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#crosstalker-" class="anchor"></a>CrossTalkeR <img src="reference/logo1.png" align="right" width="200">
+<a href="#crosstalker-" class="anchor"></a>CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200">
 </h1></div>
 
 <p>James S. Nagai<sup>1</sup>, Nils B. Leimkühler<sup>2</sup>, Michael T. Schaub <sup>3</sup>, Rebekka K. Schneider<sup>4,5,6</sup>, Ivan G. Costa<sup>1*</sup></p>
@@ -78,9 +93,7 @@
 <p><sup>4</sup>Department of Cell Biology, Institute for Biomedical Engineering, Faculty of Medicine,RWTH Aachen University, Pauwelsstrasse 30, 52074 Aachen, NRW, Germany</p>
 <p><sup>5</sup>Oncode Institute, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands</p>
 <p><sup>6</sup>Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands</p>
-<div class="figure">
-<img src="reference/CrossTalkeR_only_A.png" alt=""><p class="caption">scheme</p>
-</div>
+<p><img src="inst/CrossTalkeR_only_A.png"></p>
 <p><strong>Motivation:</strong> Ligand-receptor (LR) analysis allows the characterization of cellular crosstalk from single cell RNA-seq data. However, current LR methods provide limited approaches for prioritization of cell types, ligands or receptors or characterizing changes in crosstalk between two biological conditions.</p>
 <p><strong>Results:</strong> CrossTalkeR is a framework for network analysis and visualisation of LR networks. CrossTalkeR identifies relevant ligands, receptors and cell types contributing to changes in cell communication when contrasting two biological states: disease vs. homeostasis. A case study on scRNA-seq of human myeloproliferative neoplasms reinforces the strengths of CrossTalkeR for characterisation of changes in cellular crosstalk in disease state.</p>
 <div id="install" class="section level2">
@@ -116,9 +129,9 @@ libgeos-dev
 <p>We provide here a tutorial on how to integrate preditions from CellPhoneDB into Crosstalker.</p>
 <p><a href="https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md" class="external-link">CellPhoneDB Tutorial.md</a></p>
 </div>
-<div id="current-features-v100" class="section level2">
+<div id="current-features-v120" class="section level2">
 <h2 class="hasAnchor">
-<a href="#current-features-v100" class="anchor"></a>Current Features v1.0.0</h2>
+<a href="#current-features-v120" class="anchor"></a>Current Features v1.2.0</h2>
 <ul>
 <li>Single and Comparative Reports
 <ul>
@@ -140,7 +153,7 @@ libgeos-dev
 <div id="references" class="section level1">
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
-<p>[1] CrossTalkNet: Analysis and Visualisation of LigandReceptor Networks. (in preparation)</p>
+<p>[1] CrossTalkeR: Analysis and Visualisation of Ligand Receptor Networks <a href="https://www.biorxiv.org/content/10.1101/2021.01.20.427390v1" class="external-link">preprintlink</a></p>
 <p>[2]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. <a href="https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115" class="external-link">link</a></p>
 </div>
 
@@ -205,10 +218,10 @@ libgeos-dev
       </footer>
 </div>
 
+  
 
 
-
-
+  
 
   </body>
 </html>

@@ -150,7 +150,7 @@ ranking_net <- function(graph,mode=TRUE) {
         deg_out_neg  <- deg_out_neg+1
         centrality_table <- tibble::tibble(nodes = names,
                                            'Influenced' = round(deg_in_pos,2)-round(deg_in_neg,2),
-                                           'Influencer' = round(deg_out_pos,2)-round(deg_out_neg,2))
+                                           'Listener' = round(deg_out_pos,2)-round(deg_out_neg,2))
 
          centrality_table[is.na(centrality_table)] = 0
 
@@ -164,7 +164,7 @@ ranking_net <- function(graph,mode=TRUE) {
     deg_out_pos  <- deg_out_pos[names]
     centrality_table <- tibble::tibble(nodes = names,
                                        'Influenced' = round(deg_in_pos,2),
-                                       'Influencer' = round(deg_out_pos,2),
+                                       'Listener' = round(deg_out_pos,2),
                                        'Mediator' = round(bet,2))
     centrality_table[is.na(centrality_table)] = 0
 

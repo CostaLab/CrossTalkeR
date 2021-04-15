@@ -95,6 +95,21 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/html/Output_Samples.html">Single Phenotype Report</a>
+    </li>
+    <li>
+      <a href="../articles/html/Output_Samples1.html">Comparative Phenotype Report</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -196,6 +211,10 @@ which will be filtered. Edges within the interval [low\,high] are filtered.</p><
       <td><p>edge scale factor</p></td>
     </tr>
     <tr>
+      <th>vnames</th>
+      <td><p>remove vertex labels</p></td>
+    </tr>
+    <tr>
       <th>pg</th>
       <td><p>pagerank values</p></td>
     </tr>
@@ -224,14 +243,14 @@ which will be filtered. Edges within the interval [low\,high] are filtered.</p><
                        output_fmt <span class='op'>=</span> <span class='st'>"html_document"</span>,
                        report <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Reading Files</span></div><div class='output co'>#&gt;                                                                                  CTR 
-#&gt; "/tmp/RtmphnvLcG/temp_libpathdd1350efb020/CrossTalkeR/extdata/ctr_nils_bm_human.csv" 
+#&gt; "/tmp/RtmpVbBFue/temp_libpath205728ee23d7/CrossTalkeR/extdata/ctr_nils_bm_human.csv" 
 #&gt; [1] 5
 #&gt;                                                                                  EXP 
-#&gt; "/tmp/RtmphnvLcG/temp_libpathdd1350efb020/CrossTalkeR/extdata/exp_nils_bm_human.csv" 
+#&gt; "/tmp/RtmpVbBFue/temp_libpath205728ee23d7/CrossTalkeR/extdata/exp_nils_bm_human.csv" 
 #&gt; [1] 5</div><div class='output co'>#&gt; <span class='message'>Create a Differential Table</span></div><div class='output co'>#&gt; <span class='message'>Calculating CCI Ranking</span></div><div class='output co'>#&gt; <span class='message'>EXP_x_CTR</span></div><div class='output co'>#&gt; <span class='message'>Calculating GCI Ranking</span></div><div class='output co'>#&gt; <span class='message'>EXP_x_CTR</span></div><div class='output co'>#&gt; <span class='message'>Anntating the top Cell Genes</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:many mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>Defining templates</span></div><div class='output co'>#&gt; <span class='message'>DONE!</span></div><div class='input'><span class='fu'>plot_cci</span><span class='op'>(</span>graph <span class='op'>=</span> <span class='va'>data</span><span class='op'>@</span><span class='va'>graphs</span><span class='op'>$</span><span class='va'>CTR</span>,
        colors <span class='op'>=</span> <span class='va'>data</span><span class='op'>@</span><span class='va'>colors</span>,
        plt_name <span class='op'>=</span> <span class='st'>'Example 1'</span>,
-       coords <span class='op'>=</span> <span class='va'>data</span><span class='op'>@</span><span class='va'>coords</span><span class='op'>[</span><span class='fu'>V</span><span class='op'>(</span><span class='va'>data</span><span class='op'>@</span><span class='va'>graphs</span><span class='op'>$</span><span class='va'>CTR</span><span class='op'>)</span><span class='op'>$</span><span class='va'>name</span>,<span class='op'>]</span>,
+       coords <span class='op'>=</span> <span class='va'>data</span><span class='op'>@</span><span class='va'>coords</span><span class='op'>[</span><span class='fu'>igraph</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/igraph/man/V.html'>V</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>@</span><span class='va'>graphs</span><span class='op'>$</span><span class='va'>CTR</span><span class='op'>)</span><span class='op'>$</span><span class='va'>name</span>,<span class='op'>]</span>,
        emax <span class='op'>=</span> <span class='cn'>NULL</span>,
        leg <span class='op'>=</span> <span class='cn'>FALSE</span>,
        low <span class='op'>=</span> <span class='fl'>0</span>,
@@ -239,7 +258,8 @@ which will be filtered. Edges within the interval [low\,high] are filtered.</p><
        ignore_alpha <span class='op'>=</span> <span class='cn'>FALSE</span>,
        log <span class='op'>=</span> <span class='cn'>FALSE</span>,
        efactor <span class='op'>=</span> <span class='fl'>8</span>,
-       vfactor <span class='op'>=</span> <span class='fl'>12</span><span class='op'>)</span>
+       vfactor <span class='op'>=</span> <span class='fl'>12</span>,
+       vnames <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </div><div class='img'><img src='plot_cci-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

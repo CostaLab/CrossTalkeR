@@ -1,0 +1,9 @@
+---
+title: Single Phenotype Report
+output:
+  html_document:
+    self_contained: no
+    mode: selfcontained
+---
+
+`r htmltools::includeHTML("./Single_vignettes_example_full.html")`

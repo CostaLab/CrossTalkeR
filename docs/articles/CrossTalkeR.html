@@ -45,6 +45,21 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/html/Output_Samples.html">Single Phenotype Report</a>
+    </li>
+    <li>
+      <a href="../articles/html/Output_Samples1.html">Comparative Phenotype Report</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -63,7 +78,7 @@
 
       
 
-      </header><script src="CrossTalkeR_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>CrossTalkeR cookbook</h1>
@@ -71,13 +86,13 @@
             <address class="author_afil">
       Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><h4 data-toc-skip class="author">Nils B. Leimkühler</h4>
             <address class="author_afil">
-      Oncode Institute, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands<br><h4 data-toc-skip class="author">Michael T. Schaub</h4>
+      Department of Hematology and Stem Cell Transplantation, University Hospital Essen, Germany<br><h4 data-toc-skip class="author">Michael T. Schaub</h4>
             <address class="author_afil">
       Department of Computer Science, RWTH Aachen University, Aachen, Germany<br><h4 data-toc-skip class="author">Rebekka K. Schneider</h4>
             <address class="author_afil">
-      Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the NetherlandsDepartment of Cell Biology, Institute for Biomedical Engineering, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 GermanyOncode Institute, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands<br><h4 data-toc-skip class="author">Ivan G. Costa</h4>
+      Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands<br><h4 data-toc-skip class="author">Ivan G. Costa</h4>
             <address class="author_afil">
-      Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><small class="dont-index">Source: <a href="https://github.com/CostaLab/CrossTalkeR/blob/master/../CrossTalkeR_test/vignettes/CrossTalkeR.Rmd" class="external-link"><code>../CrossTalkeR_test/vignettes/CrossTalkeR.Rmd</code></a></small>
+      Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><small class="dont-index">Source: <a href="https://github.com/CostaLab/CrossTalkeR/blob/master/../../../nagai_myweb/jsnagai.github.io/vignettes/CrossTalkeR.Rmd" class="external-link"><code>../../../nagai_myweb/jsnagai.github.io/vignettes/CrossTalkeR.Rmd</code></a></small>
       <div class="hidden name"><code>CrossTalkeR.Rmd</code></div>
 
     </address>
@@ -208,19 +223,19 @@
 ##  [34] stringr_1.4.0          digest_0.6.27          oce_1.4-0             
 ##  [37] rmarkdown_2.7          DOSE_3.16.0            pkgconfig_2.0.3       
 ##  [40] htmltools_0.5.1.1      highr_0.8              fastmap_1.1.0         
-##  [43] rlang_0.4.10           RSQLite_2.2.5          gridGraphics_0.5-1    
+##  [43] rlang_0.4.10           RSQLite_2.2.6          gridGraphics_0.5-1    
 ##  [46] jquerylib_0.1.3        generics_0.1.0         farver_2.1.0          
 ##  [49] jsonlite_1.7.2         BiocParallel_1.24.1    GOSemSim_2.16.1       
 ##  [52] dplyr_1.0.5            magrittr_2.0.1         GO.db_3.12.1          
 ##  [55] Matrix_1.3-2           Rcpp_1.0.6             munsell_0.5.0         
-##  [58] S4Vectors_0.28.1       fansi_0.4.2            viridis_0.5.1         
+##  [58] S4Vectors_0.28.1       fansi_0.4.2            viridis_0.6.0         
 ##  [61] lifecycle_1.0.0        stringi_1.5.3          yaml_2.2.1            
 ##  [64] ggalluvial_0.12.3      MASS_7.3-53.1          org.Hs.eg.db_3.12.0   
 ##  [67] plyr_1.8.6             qvalue_2.22.0          grid_4.0.5            
 ##  [70] blob_1.2.1             parallel_4.0.5         ggrepel_0.9.1         
 ##  [73] DO.db_2.9              crayon_1.4.1           lattice_0.20-41       
 ##  [76] graphlayouts_0.7.1     cowplot_1.1.1          splines_4.0.5         
-##  [79] knitr_1.31             pillar_1.5.1           fgsea_1.16.0          
+##  [79] knitr_1.32             pillar_1.6.0           fgsea_1.16.0          
 ##  [82] reshape2_1.4.4         stats4_4.0.5           fastmatch_1.1-0       
 ##  [85] glue_1.4.2             evaluate_0.14          downloader_0.4        
 ##  [88] BiocManager_1.30.12    data.table_1.14.0      vctrs_0.3.7           
@@ -228,7 +243,7 @@
 ##  [94] purrr_0.3.4            polyclip_1.10-0        tidyr_1.1.3           
 ##  [97] cachem_1.0.4           xfun_0.22              ggforce_0.3.3         
 ## [100] tidygraph_1.2.0        e1071_1.7-6            class_7.3-18          
-## [103] ragg_1.1.2             viridisLite_0.3.0      tibble_3.1.0          
+## [103] ragg_1.1.2             viridisLite_0.4.0      tibble_3.1.0          
 ## [106] rvcheck_0.1.8          clusterProfiler_3.18.1 AnnotationDbi_1.52.0  
 ## [109] memoise_2.0.0          IRanges_2.24.1         units_0.7-1           
 ## [112] ellipsis_0.3.1</code></pre>

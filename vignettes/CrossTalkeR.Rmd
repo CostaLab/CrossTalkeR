@@ -59,8 +59,9 @@ suppressPackageStartupMessages({require(ggplot2)})
 
 **Package version**: `r packageVersion("CrossTalkeR")`
 
-
 # Generate Report Example
+In our vignette we provide examples on how to analyse cell interactions infrom a human myelofibrosis single cell RNA-seq dataset.
+
 
 ```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE}
 paths <- c('CTR' = system.file("extdata",

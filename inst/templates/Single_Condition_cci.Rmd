@@ -28,7 +28,7 @@ require("DT")
 
 ### Single Condition Cell Cell Interaction Plot (CCI)
 
-*Here the cell cell interaction is provided for each phenotype*
+*Here, the cell-cell interaction is provided for each phenotype separately*
 
 ```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1

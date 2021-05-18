@@ -1,6 +1,6 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
-Version: 1.2.0
+Version: 1.2.1
 Authors@R:c(
     person(given = "James Shiniti",
            family = "Nagai",
@@ -10,7 +10,7 @@ Authors@R:c(
     person(given = "Nils",
                   family = "Leimkühler",
                   role = c("aut"),
-                  comment = c(ORCID = "")),
+                  comment = c(ORCID = "0000-0003-2530-4329")),
     person(given = "Michael T. ",
                   family = "Schaub",
                   role = c("aut"),
@@ -63,5 +63,6 @@ Imports:
     methods,
     qpdf
 Suggests:
-    knitr
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr

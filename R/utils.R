@@ -47,7 +47,8 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 data@rankings[[graph]] <- all_both
                 all_both <- all_both[,-1]
                 all_both <- all_both[,which(colSums(all_both)!=0)]
-                all_both <- all_both[,which(colSums(all_both)/dim(all_both)[1]!=dim(all_both)[1])]
+                all_both <- all_both[,sapply(all_both,var)!=0]
+                message(colnames(all_both)[sapply(all_both,var)==0])
                 data@pca[[graph]] <- prcomp(all_both, center = TRUE, scale = TRUE)
                 rownames(data@pca[[graph]]$x) <- data@rankings[[graph]]$nodes
                 data@pca[[graph]]$x <- -data@pca[[graph]]$x
@@ -149,8 +150,8 @@ ranking_net <- function(graph,mode=TRUE) {
         deg_in_neg  <- deg_in_neg+1
         deg_out_neg  <- deg_out_neg+1
         centrality_table <- tibble::tibble(nodes = names,
-                                           'Influenced' = round(deg_in_pos,2)-round(deg_in_neg,2),
-                                           'Listener' = round(deg_out_pos,2)-round(deg_out_neg,2))
+                                           'Listener' = round(deg_in_pos,2)-round(deg_in_neg,2),
+                                           'Influencer' = round(deg_out_pos,2)-round(deg_out_neg,2))
 
          centrality_table[is.na(centrality_table)] = 0
 
@@ -163,8 +164,8 @@ ranking_net <- function(graph,mode=TRUE) {
     deg_in_pos  <- deg_in_pos[names]
     deg_out_pos  <- deg_out_pos[names]
     centrality_table <- tibble::tibble(nodes = names,
-                                       'Influenced' = round(deg_in_pos,2),
-                                       'Listener' = round(deg_out_pos,2),
+                                       'Listener' = round(deg_in_pos,2),
+                                       'Influencer' = round(deg_out_pos,2),
                                        'Mediator' = round(bet,2))
     centrality_table[is.na(centrality_table)] = 0
 

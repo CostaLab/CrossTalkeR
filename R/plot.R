@@ -117,7 +117,7 @@ plot_cci <- function(graph,
     igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 60)
   }
   else{
-    igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 75)
+    igraph::V(graph)$size <-  pg
   }
 
   if (log) {
@@ -168,13 +168,15 @@ plot_cci <- function(graph,
          horiz = FALSE)
 
   v <- igraph::V(graph)$size
-  a <- graphics::legend('bottomleft',
-                        title="Node Pagerank",
-                        legend=c("","",""),
-                        pt.cex=c(min(v)+1,mean(v),max(v))/12,col='black',
-               pch=21, pt.bg='black',box.lwd = 0,y.intersp=2)
-  graphics::text(a$rect$left + a$rect$w, a$text$y,
-                  c(round(min(pg),2),round(mean(pg),2),round(max(pg),2)), pos = 2)
+  if(is.null(pg)){
+    a <- graphics::legend('bottomleft',
+                          title="Node Pagerank",
+                          legend=c("","",""),
+                          pt.cex=c(min(v)+1,mean(v),max(v))/12,col='black',
+                 pch=21, pt.bg='black',box.lwd = 0,y.intersp=2)
+    graphics::text(a$rect$left + a$rect$w, a$text$y,
+                    c(round(min(pg),2),round(mean(pg),2),round(max(pg),2)), pos = 2)
+  }
   x <- coords_scale[, 1] * 1.2
   y <- coords_scale[, 2] * 1.2
   coord_ratio <- coords_scale[, 1] / coords_scale[, 2]

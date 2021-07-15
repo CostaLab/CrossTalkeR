@@ -18,12 +18,9 @@ read_lr_single_condiction <- function(lrpaths,
                                       sep = ",",
                                       colors = NULL,
                                       measure = "MeanLR") {
-  data <- list()
-  graphs <- list()
-  graphs_ggi <- list()
+  data <- graphs <-graphs_ggi <- list()
   conds <- names(lrpaths)
-  max <- 0
-  max_nodes <- 0
+  max <- max_nodes <-0
   unif_celltypes <- c()
   sel_columns <- c("Ligand.Cluster",
                    "Receptor.Cluster",
@@ -60,7 +57,6 @@ read_lr_single_condiction <- function(lrpaths,
                              unique(data1$Receptor.Cluster)
                             )
                           )
-    print(length(clusters_num))
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux

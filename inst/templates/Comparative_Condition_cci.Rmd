@@ -39,7 +39,7 @@ extrafont::loadfonts()
 
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes*
 
-```{r fig.align='center', fig.height=8, fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
+```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
@@ -50,9 +50,14 @@ for(i in 1:length(names(all_data@tables))){
       curr_net <- all_data@graphs[[curr]]
       low <- thr
       par(cex.axis=7, cex.lab=7)
-      plot_cci(curr_net,
-                 all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),all_data@coords[V(curr_net)$name,],leg=TRUE,low=0,high=low/100,log = TRUE,pg=all_data@rankings[[curr]]$Pagerank)
+      plot_cci(graph=curr_net,
+               coords=all_data@coords[V(curr_net)$name,],
+               colors=all_data@colors[V(curr_net)$name],
+               plt_name=paste0(curr,' CCI'),
+               leg=TRUE,
+               low=0,
+               high=low/100,
+               log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
    }
 }
 ```

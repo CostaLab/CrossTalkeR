@@ -63,7 +63,7 @@ generate_report <- function(lrpaths,
   data <- suppressWarnings({ ranking(data, out_path, slot = "graphs")})
   message("Calculating GCI Ranking")
   data <- suppressWarnings({ ranking(data, out_path, slot = "graphs_ggi")})
-  message("Anntating the top Cell Genes")
+  message("Annotating the top Cell Genes")
   data <- suppressWarnings({kegg_annotation(data=data,
                           slot='rankings',out_path=out_path)})
 

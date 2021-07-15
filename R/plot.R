@@ -113,17 +113,16 @@ plot_cci <- function(graph,
   }
   ## Thickness and arrow size
   if(is.null(pg)){
-    pg <- igraph::page.rank(graph, weights = abs(igraph::E(graph)$weight),directed=T)$vector
-    igraph::V(graph)$size <-  oce::rescale(pg,rlow = 0, rhigh = 60)
+    igraph::V(graph)$size <-  60
   }
   else{
-    igraph::V(graph)$size <-  pg
+    igraph::V(graph)$size <-  scales::rescale(pg,c(1,60))
   }
 
   if (log) {
         igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
                                          log2(1 + igraph::E(graph)$inter),
-                                         0) * efactor
+                                          0) * efactor
   }else{
         igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
                                          igraph::E(graph)$inter,
@@ -168,7 +167,7 @@ plot_cci <- function(graph,
          horiz = FALSE)
 
   v <- igraph::V(graph)$size
-  if(is.null(pg)){
+  if(!is.null(pg)){
     a <- graphics::legend('bottomleft',
                           title="Node Pagerank",
                           legend=c("","",""),
@@ -222,7 +221,6 @@ plot_cci <- function(graph,
       }
   }
 }
-
 
 
 #'This function do a ggi plot and higest degree nodes

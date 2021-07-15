@@ -3,6 +3,7 @@
 #'@param data lrobject
 #'@param out_path to save the lrobject with ranking
 #'@param slot slot of the networks graphs_ggi to gene cell interaction and abs
+#'@param meas current measure
 #'@import tibble
 #'@import utils
 #'@import dplyr
@@ -116,6 +117,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
   saveRDS(data, file.path(out_path, "LR_data_final.Rds"))
   return(data)
 }
+
 
 
 

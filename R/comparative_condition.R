@@ -141,19 +141,13 @@ create_diff_table <- function(data, out_path) {
       dplyr::summarise(MeanLR = sum(.data$MeanLR))
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), sep="_",remove = F)
-
     raw_inter <- table(final_data$cellpair)
-
     freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
-
     final$freq <- as.array(freq)[final$cellpair]
-
     final$pair <- final$cellpair
-
     final <- dplyr::arrange(final, abs(final$MeanLR))
     print(final)
     graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
-
     igraph::E(graph1)$inter <- final$freq #setting thickness and weight
     igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$cellpair] #setting thickness and weight
     igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR

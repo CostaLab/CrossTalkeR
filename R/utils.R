@@ -2,15 +2,15 @@
 #'
 #'@param data lrobject
 #'@param out_path to save the lrobject with ranking
+#'@param sel_columns columns to consider
 #'@param slot slot of the networks graphs_ggi to gene cell interaction and abs
-#'@param meas current measure
 #'@import tibble
 #'@import utils
 #'@import dplyr
 #'@return list
 #'@importFrom tidyr %>%
 #'@importFrom stats prcomp
-ranking <- function(data, out_path, slot="graphs_ggi") {
+ranking <- function(data, out_path,sel_columns, slot="graphs_ggi") {
       for (graph in names(slot(data, slot))) {
           if (grepl("_x_", graph)) {  # Signed Analysis
               message(graph)
@@ -77,11 +77,11 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
               if (grepl("_ggi", slot)) {
                 final <- NULL
                 table <- slot(data, 'tables')[[graph]]
-                cls <- unique(union(table$Ligand.Cluster,table$Receptor.Cluster))
+                cls <- unique(union(table[[sel_columns[1]]],table[[sel_columns[2]]]))
                 for(i in cls){
-                    all.eq <- unique(union(table$ligpair[table$Ligand.Cluster==i],table$recpair[table$Receptor.Cluster==i]))
+                    all.eq <- unique(union(table$ligpair[table[[sel_columns[1]]]==i],table$recpair[table[[sel_columns[2]]]==i]))
                     edges <- t(utils::combn(all.eq,2))
-                    df <- tibble::tibble(u=edges[,1],v=edges[,2],MeanLR=rep(0.0,dim(edges)[1]),.name_repair='minimal')
+                    df <- tibble::tibble(u=edges[,1],v=edges[,2],MeanLR=rep(0.0,dim(edges)[1]),.name_repair=~c('u','v','LRScore'))
                     if(is.null(all)){
                       final <- df
                     }
@@ -89,12 +89,12 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                       final <- dplyr::bind_rows(final,df)
                     }
                 }
-                names(final) <- c('ligpair','recpair','MeanLR')
-                tmp_tbl = table[,c('ligpair','recpair','MeanLR')]
-                tmp_tbl$MeanLR = tmp_tbl$MeanLR
+                names(final) <- c('ligpair','recpair','LRScore')
+                tmp_tbl = table[,c('ligpair','recpair','LRScore')]
+                tmp_tbl[['LRScore']]= tmp_tbl[['LRScore']]
                 all1 <- dplyr::bind_rows(tmp_tbl,final)
                 tmp_net <- igraph::graph_from_data_frame(all1)
-                pg <- igraph::page.rank(tmp_net,weights=igraph::E(tmp_net)$MeanLR)
+                pg <- igraph::page.rank(tmp_net,weights=igraph::edge_attr(tmp_net,'LRScore'))
                 all$Pagerank <- pg$vector[all$nodes]
                 data@rankings[[paste0(graph, "_ggi")]] <- all
                 all <- all[,-1]
@@ -103,7 +103,7 @@ ranking <- function(data, out_path, slot="graphs_ggi") {
                 data@pca[[paste0(graph, "_ggi")]] <- stats::prcomp(all, center = TRUE, scale = TRUE)
                 rownames(data@pca[[paste0(graph, "_ggi")]]$x) <- data@rankings[[paste0(graph, "_ggi")]]$nodes
               }else{
-                pg <- igraph::page.rank(slot(data, slot)[[graph]],weights=igraph::E(slot(data, slot)[[graph]])$MeanLR)
+                pg <- igraph::page.rank(slot(data, slot)[[graph]],weights=igraph::edge_attr(slot(data, slot)[[graph]],'LRScore'))
                 all$Pagerank <- pg$vector[all$nodes]
                 data@rankings[[graph]] <-  all
                 all <- all[,-1]
@@ -308,7 +308,7 @@ enrich <- function(list,name,org=org.Hs.eg.db, univ=NULL){
                                 toType=c("ENTREZID","ENSEMBL"),
                                 OrgDb=org.Hs.eg.db)
   fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
-  nodesentrez <- clusterProfiler::bitr(fgenes$x,
+  nodesentrez <- clusterProfiler::bitr(fgenes$y,
                                        fromType="SYMBOL",
                                        toType=c("ENTREZID","ENSEMBL"),
                                        OrgDb=org)

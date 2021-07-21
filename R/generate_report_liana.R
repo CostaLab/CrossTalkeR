@@ -59,16 +59,17 @@ generate_report_liana <- function(lianalr,
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
   message("Calculating CCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs")})
+  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs",sel_columns = sel_columns)})
   message("Calculating GCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs_ggi")})
+  data <- suppressWarnings({ ranking(data, out_path, slot = "graphs_ggi",sel_columns = sel_columns)})
   message("Annotating the top Cell Genes")
-  data <- suppressWarnings({kegg_annotation(data=data,
-                          slot='rankings',out_path=out_path)})
+  #data <- suppressWarnings({kegg_annotation(data=data,
+  #                        slot='rankings',out_path=out_path)})
   message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,
-                       thr = threshold)
+                       thr = threshold,
+                       sel = sel_columns)
  if (report) {
     message("Generating Report")
       message('Preparing Single Phenotype Report')

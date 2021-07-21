@@ -10,6 +10,7 @@ output:
 params:
   obj1: "path to obj"
   thr: 'percentage edges to plot'
+  sel: 'selected columns'
 
 ---
 

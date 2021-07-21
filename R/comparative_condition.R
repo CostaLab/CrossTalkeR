@@ -3,6 +3,7 @@
 #'@param data LRObj with single condition
 #'@param out_path output path
 #'@return LRObject
+#'@import dplyr
 #'@importFrom tidyr %>%
 create_diff_table <- function(data, out_path) {
   ctr_name <- names(data@tables)[1]

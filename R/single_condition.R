@@ -12,7 +12,7 @@
 #'@param sep character used to divide the columns on input file
 #'@param colors colorlist
 #'@importFrom tidyr %>%
-#'@import tibble
+#'@import tibble dplyr
 #'@return LRObject
 read_lr_single_condition <- function(lrpaths,
                                      sel_columns,
@@ -33,8 +33,8 @@ read_lr_single_condition <- function(lrpaths,
         data1 <- tibble(lrpaths[[conds[i]]])
       }
       data1 <- data1 %>%
-        tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
-      if('Ligand' %in% sel_columns[5]){
+      tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
+      if('Ligand' %in% data1[[sel_columns[5]]]){
         data1 <- data1 %>%
                  tidyr::unite("ligpair",
                               c(sel_columns[1],sel_columns[3]),
@@ -44,18 +44,34 @@ read_lr_single_condition <- function(lrpaths,
                               c(sel_columns[2],sel_columns[4]),
                               remove = FALSE,
                               sep='/')  %>%
-                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
+                 tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+
       }else{
+        tmp <- data1[[sel_columns[5]]]
+        data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
+        data1[[sel_columns[6]]] <- tmp
+        tmp <- data1[[sel_columns[4]]]
+        data1[[sel_columns[4]]] <- data1[[sel_columns[3]]]
+        data1[[sel_columns[3]]] <- tmp
+
         data1 <- data1 %>%
                  tidyr::unite("ligpair",
-                              c(sel_columns[2],sel_columns[3]),
+                              c(sel_columns[1],sel_columns[3]),
                               remove = FALSE,
                               sep='/')%>%
                  tidyr::unite("recpair",
-                              c(sel_columns[1],sel_columns[4]),
+                              c(sel_columns[2],sel_columns[4]),
                               remove = FALSE,
                               sep='/')  %>%
-                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
+                 tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+
+
       }
       unif_celltypes <- unique(c(data1[[sel_columns[1]]],
                                  data1[[sel_columns[2]]],

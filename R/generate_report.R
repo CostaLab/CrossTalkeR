@@ -65,7 +65,7 @@ generate_report <- function(lrpaths,
   message("Calculating CCI Ranking")
   data <- suppressWarnings({ ranking(data, out_path, sel_columns=sel_columns,slot = "graphs")})
   message("Calculating GCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns, slot = "graphs_ggi")})
+  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs_ggi")})
   message("Annotating the top Cell Genes")
   data <- suppressWarnings({kegg_annotation(data=data,
                           slot='rankings',out_path=out_path)})
@@ -73,10 +73,12 @@ generate_report <- function(lrpaths,
   message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,
-                       thr = threshold)
+                       thr = threshold,
+                       sel = sel_columns)
   param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
-                     thr = threshold)
+                     thr = threshold,
+                     sel = sel_columns)
 
   if (report) {
     message("Generating Report")

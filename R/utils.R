@@ -188,7 +188,7 @@ ranking_net <- function(graph,mode=TRUE) {
 kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg.db, org='hsa') {
   rkg <- slot(data, slot)
   rkg <- rkg %>%
-        filter(!grepl("tf-",nodes))
+    dplyr::filter(!grepl("tf-",nodes))
   for(x in names(rkg)){
     all = list()
     for(i in names(rkg[[x]])){

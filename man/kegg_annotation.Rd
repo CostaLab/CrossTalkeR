@@ -9,7 +9,8 @@ kegg_annotation(
   slot,
   out_path,
   database = org.Hs.eg.db::org.Hs.eg.db,
-  org = "hsa"
+  org = "hsa",
+  n = 100
 )
 }
 \arguments{

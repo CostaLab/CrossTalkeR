@@ -29,7 +29,7 @@ require(pals)
 
 ## Genes Sankey Plot
 
-```{r fig.align='center', fig.height=5, fig.width=8,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=12,message=FALSE, warning=FALSE, echo=F}
 path <-params$obj1
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){

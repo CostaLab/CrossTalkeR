@@ -29,8 +29,16 @@ create_diff_table <- function(data, out_path) {
                                   cellpair,
                                   ligpair,
                                   recpair,
-                                  allpair))
+                                  allpair,
+                                  type_gene_A.x,
+                                  type_gene_B.x,
+                                  type_gene_A.y,
+                                  type_gene_B.y))
     final_data <- final_data[final_data$LRScore!=0,]
+    final_data <- final_data %>%
+      dplyr::mutate(type_gene_A = coalesce(type_gene_A.x, type_gene_A.y)) %>%
+      dplyr::mutate(type_gene_B = coalesce(type_gene_B.x, type_gene_B.y)) %>%
+      dplyr::select(-type_gene_A.x, -type_gene_A.y, -type_gene_B.x, -type_gene_B.y)
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
       dplyr::group_by(.data$cellpair) %>%

@@ -128,8 +128,8 @@ plot_cci <- function(graph,
                                          igraph::E(graph)$inter,
                                          0) * efactor
   }
-  igraph::E(graph)$arrow.size <- 0.6
-  igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.8
+  igraph::E(graph)$arrow.size <- 0.4
+  igraph::E(graph)$arrow.width <- igraph::E(graph)$width+0.8
   if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
     igraph::E(graph)$loop.angle[which(edge_start[,2]==edge_start[,1])]<-loop_angle[edge_start[which(edge_start[,2]==edge_start[,1]),1]]
     igraph::E(graph)$loop.angle[which(edge_start[,2]!=edge_start[,1])]<-0
@@ -368,7 +368,7 @@ plot_sankey <- function(lrobj_tbl,
                                    axis2 = stats::reorder(.data$Ligand, .data$LRScore),
                                    axis3 = stats::reorder(.data$Receptor, .data$LRScore),
                                    axis4 = .data$Receptor.Cluster)) +
-          ggalluvial::geom_alluvium(aes(fill = .data$LRScore > 0),
+          ggalluvial::geom_alluvium(aes(fill = .data$LRScore > 0,color='b'),
                                     width = 1 / 12,
                                     discern = FALSE) +
           ggalluvial::geom_stratum(width = 1 / 12) +
@@ -379,6 +379,7 @@ plot_sankey <- function(lrobj_tbl,
           ggplot2::scale_fill_manual(values = colp,
                                      limits = names(colp),
                                      name = "Upregulated") +
+          ggplot2::scale_color_manual(values = c("black")) +
           ggplot2::ggtitle(plt_name) +
           ggplot2::theme(text = element_text(size = 8)) +
           ggplot2::theme_minimal()

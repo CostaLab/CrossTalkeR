@@ -58,7 +58,7 @@ generate_report <- function(lrpaths,
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table(data, out_path)
+    data <- create_diff_table1(data, out_path)
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
@@ -80,7 +80,7 @@ generate_report <- function(lrpaths,
                      thr = threshold,
                      sel = sel_columns)
   if (length(lrpaths) > 1) {
-     data <- fisher_test_cci(data,'MeanLR',out_path=out_path)
+     data <- fisher_test_cci(data,'LRScore',out_path=out_path)
   }
   if (report) {
     message("Generating Report")

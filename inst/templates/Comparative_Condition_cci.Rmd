@@ -123,9 +123,10 @@ for(i in 2:length(names(all_data@rankings))){
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.keep='all',fig.width=10,fig.height=10}
 for(i in names(all_data@stats)){
-     print(ggplot(all_data@stats[[i]],aes(x=lodds,y=reorder(columns_name,lodds),fill=ifelse(lodds>0,T,F)))+
+     sel <- all_data@stats[[i]][all_data@stats[[i]]$p <= 0.05,]
+     print(ggplot(sel,aes(x=lodds,y=reorder(columns_name,lodds),fill=ifelse(lodds>0,T,F)))+
         geom_bar(stat='identity')+
-        geom_text(aes(label=p.signif), vjust=-0.3, size=3.5,hjust=0.3)+
+        geom_text(aes(label=round(p,4), vjust=-0.3, size=3.5,hjust=0.3))+
         scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+    
         xlab("Log Odds Ratio")+
         ylab("Cell Cell Interactions")+

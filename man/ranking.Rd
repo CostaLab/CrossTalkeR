@@ -14,6 +14,8 @@ ranking(data, out_path, sel_columns, slot = "graphs_ggi")
 \item{sel_columns}{columns to consider}
 
 \item{slot}{slot of the networks graphs_ggi to gene cell interaction and abs}
+
+\item{meas}{current measure}
 }
 \value{
 list

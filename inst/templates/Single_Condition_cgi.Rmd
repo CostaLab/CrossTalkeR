@@ -9,7 +9,7 @@ output:
 params:
   obj1: "path to obj"
   thr: 'cutoff'
-  sel: 'columns'
+  selcln: 'columns'
 ---
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE, include=FALSE}
@@ -120,19 +120,24 @@ for(i in 1:length(names(all_data@pca))){
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes*
 
 
-```{r annotsingle, fig.align='center', fig.height=7,fig.width=10,warning=FALSE,echo=F}
+```{r annotsingle, fig.align='center', fig.height=7,fig.width=10,warning=FALSE,echo=F,eval=F}
 out <- c()
 out1 <- list()
 plots <- list()
-paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
+paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=T)
 for(i in names(all_data@annot)){
   if(str_detect(i, 'ggi', negate = FALSE) & !str_detect(i, '_x_', negate = FALSE)){
-    filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
-    filtered <- filtered[filtered$p.adjust<=0.05,]
-    mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
-    mat[is.na(mat)]=1
-    p1<-Heatmap(-log10(mat), col = c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='-log10(p.adjust)')
-    draw(p1)
+     out <- tryCatch({
+            filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
+            filtered <- filtered[filtered$p.adjust<=0.05,]
+            mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
+            mat[is.na(mat)]=1
+            p1<-Heatmap(-log10(mat), col = c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='-log10(p.adjust)')
+            draw(p1)
+            },
+        error=function(cond){
+            message("Significant enrichment not found")
+        })    
   }
 }
 ```
@@ -147,7 +152,7 @@ for(i in 1:length(names(all_data@tables))){
      if(!str_detect(curr, '_x_', negate = FALSE)){
          rmd_title <- paste0(curr,'_tbl')
          knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE,warning=F}
-                                 \n\n                          datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'LRScore')],caption='",curr,"', extensions = 'Buttons', options = list(
+                                 \n\n                          datatable(all_data@tables[['",curr,"']][,",params$selcln,"],caption='",curr,"', extensions = 'Buttons', options = list(
         dom = 'Bfrtip',
         buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
          out <- c(out,knit_expanded)

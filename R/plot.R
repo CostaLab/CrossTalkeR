@@ -344,7 +344,7 @@ plot_sankey <- function(lrobj_tbl,
                         threshold=50) {
 
   if (!is.null(target)) {
-    data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+      data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
   }
   else{
       data <- lrobj_tbl
@@ -357,11 +357,11 @@ plot_sankey <- function(lrobj_tbl,
     tmp_sel <- grepl(receptor_cluster, data$target)
     data <- data[tmp_sel, ]
   }
-  data$freq <- 1
   colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
   tmp_cols <- c("source", "Ligand", "Receptor", "target")
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
+    data$freq <- 1
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                         dim(data)[1]), abs(.data$LRScore))
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
@@ -386,7 +386,6 @@ plot_sankey <- function(lrobj_tbl,
   }
   else{
       print(paste0("Gene->", target, "Not Found"))
-
   }
 }
 

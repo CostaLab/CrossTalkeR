@@ -82,10 +82,11 @@ for(i in 2:length(names(all_data@rankings))){
   if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)){
     tmp <- top_n(all_data@rankings[[curr]],20,abs(.data$Pagerank))
     signal <- ifelse(tmp$Pagerank < 0, 'negative','positive')
-    print(ggplot(tmp, aes(x=Pagerank,y=reorder(nodes,Pagerank),fill=signal))+
+    p1<-ggplot(tmp, aes(x=Pagerank,y=reorder(nodes,Pagerank),fill=signal))+
         geom_bar(stat="identity")+
         scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-        theme_minimal())
+        theme_minimal()
+     print(p1)
   }  
 }
 ```
@@ -155,8 +156,8 @@ for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
       for(gene in params$obj2){
-        suppressWarnings({plot_sankey(all_data@tables[[curr]],
-                    target=gene,plt_name=paste0(curr,' ',gene))})
+        plot_sankey(all_data@tables[[curr]],
+                    target=gene,plt_name=paste0(curr,' ',gene))
       }
   }
 }

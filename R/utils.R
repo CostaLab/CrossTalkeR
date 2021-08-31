@@ -106,9 +106,8 @@ ranking <- function(data, out_path,sel_columns, slot="graphs_ggi") {
                 pg <- igraph::page.rank(slot(data, slot)[[graph]],weights=igraph::edge_attr(slot(data, slot)[[graph]],'LRScore'))
                 all$Pagerank <- pg$vector[all$nodes]
                 data@rankings[[graph]] <-  all
-                all <- all[,-1]
-                all <- all[,which(colSums(all)!=0)]
-                all <- all[,which(colSums(all)/dim(all)[1]!=dim(all)[1])]
+                ver <- all %>% summarise_if(is.numeric,var)
+                all <- all[,c(FALSE,as.vector(ver[1,]!=0))]
                 data@pca[[graph]] <- stats::prcomp(all, center = TRUE, scale = TRUE)
                rownames(data@pca[[graph]]$x) <- data@rankings[[graph]]$nodes
               }
@@ -318,4 +317,70 @@ enrich <- function(list,name,org=org.Hs.eg.db, univ=NULL){
   enriched <- enriched@result
   enriched$type <-name
   return(enriched)
+}
+
+#'Format liana2CT
+#'@param data datafromliana
+#'@param source source cell population
+#'@param target target cell population
+#'@param gene_A source gene population
+#'@param gene_B target gene population
+#'@param type_gene_A type source gene population
+#'@param type_gene_B type target gene population
+#'@param measure measure to be considered
+#'@importFrom tidyr %>%
+#'@import tibble dplyr
+#'@return tibble
+liana2CT <- function(data,gene_Ai,gene_Bi,measure){
+  data <- data %>%
+    dplyr::mutate(source=as.character(data[['source']])) %>%
+    dplyr::mutate(target=as.character(data[['target']])) %>%
+    dplyr::mutate(gene_A=data[[gene_Ai]]) %>%
+    dplyr::mutate(gene_B=data[[gene_Bi]]) %>%
+    dplyr::mutate(type_gene_A=gene_Ai) %>%
+    dplyr::mutate(type_gene_B=gene_Bi) %>%
+    dplyr::mutate(measure=data[[measure]])
+  return(data)
+}
+
+
+
+#' Evaluate Differences in the edge proportion
+#'@param data datafromlian
+#'@param measure intensity
+#'@param out_path save path
+#'@importFrom tidyr %>%
+#'@import tibble dplyr rstatix
+#'@return tibble
+fisher_test_cci <- function(data,measure,out_path){
+  if(length(data@tables)>=2){
+      c <- data@tables[[1]] %>%
+      group_by(cellpair) %>%
+      select(c(Ligand.Cluster,Receptor.Cluster,measure)) %>%
+      summarise(measure=n())
+      for(i in 2:length(names(data@tables))){
+            if(!str_detect(names(data@tables)[i],'_x_')){
+            e <- data@tables[[i]] %>%
+              dplyr::group_by(cellpair) %>%
+              dplyr::select(c(Ligand.Cluster,Receptor.Cluster,measure)) %>%
+              dplyr::summarise(measure=n())
+            joined <- merge(c,e,by.x='cellpair',by.y='cellpair',keep='all')
+            pval <- list()
+            for(j in 1:length(joined$cellpair)){
+              ctotal <- sum(joined$measure.x)-joined$measure.x[j]
+              etotal <- sum(joined$measure.y)-joined$measure.y[j]
+              m<-matrix(c(joined$measure.y[j],etotal,joined$measure.x[j],ctotal),nrow = 2)
+              rownames(m) <- c(joined$cellpair[i],'total')
+              colnames(m) <- c("EXP","CTR")
+              t <- rstatix::fisher_test(m,detailed=T,B=1000)
+              pval[[joined$cellpair[j]]] <-t
+            }
+            pval <-bind_rows(pval,.id='columns_name') %>%
+                  mutate(lodds=log2(estimate))
+            data@stats[[paste0(names(data@tables)[i],'_x_',names(data@tables)[1])]] <- pval
+          }
+      }
+      saveRDS(data,file.path(out_path, "LR_data_final.Rds"))
+      return(data)
+    }
 }

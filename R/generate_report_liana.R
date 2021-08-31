@@ -52,7 +52,7 @@ generate_report_liana <- function(lianalr,
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
   message("Reading Data")
-  data <- read_lr_single_condiction_liana(lianalr,
+  data <- read_lr_single_condiction(lianalr,
                                     out_path,
                                     colors,
                                     sel_columns)

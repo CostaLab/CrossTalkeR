@@ -19,10 +19,10 @@
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
+#'                               "ctr_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
+#'                               "exp_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -79,7 +79,9 @@ generate_report <- function(lrpaths,
                      obj2 = genes,
                      thr = threshold,
                      sel = sel_columns)
-
+  if (length(lrpaths) > 1) {
+     data <- fisher_test_cci(data,'MeanLR',out_path=out_path)
+  }
   if (report) {
     message("Generating Report")
     if (length(lrpaths) > 1) {

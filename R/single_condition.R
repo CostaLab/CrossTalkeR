@@ -29,11 +29,11 @@ read_lr_single_condition <- function(lrpaths,
       ## Reading from tables
       if(is.character(lrpaths[[conds[i]]])){
         data1 <- tibble::tibble(utils::read.csv(lrpaths[[conds[i]]], sep = sep)) # Reading csv
-      }else if(is.data.frame(lrpaths[[conds[i]]])|tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
+      }else if(is.data.frame(lrpaths[[conds[i]]]) | tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
         data1 <- tibble(lrpaths[[conds[i]]])
       }
       data1 <- data1 %>%
-      tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
+          tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
       if('Ligand' %in% data1[[sel_columns[5]]]){
         data1 <- data1 %>%
                  tidyr::unite("ligpair",
@@ -131,7 +131,7 @@ read_lr_single_condition <- function(lrpaths,
       }
     }
     rownames(c) <- sort(unif_celltypes)
-      lr <- new("LRObj",
+    lr <- new("LRObj",
               graphs = graphs,
               graphs_ggi = graphs_ggi,
               tables = data,
@@ -140,7 +140,8 @@ read_lr_single_condition <- function(lrpaths,
               coords = c,
               colors = colors,
               rankings = list(),
-              pca = list())
+              pca = list(),
+              stats=list())
     saveRDS(lr,file.path(out_path, "LR_data.Rds"))
     return(lr)
 }

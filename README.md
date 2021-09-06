@@ -56,7 +56,6 @@ libproj-dev
 proj-data
 proj-bin
 libgeos-dev
-
 ```
 
 ## CrossTalkeR Plots examples and vignette
@@ -74,8 +73,8 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
 
 [CellPhoneDB Tutorial.md](https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md)
 
+## Current Features v1.3.0
 
-## Current Features v1.2.0
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
    - Sending and Receiving Cells Ranking
@@ -84,11 +83,17 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
       - All measures and PC table
       - PC1 and PC2 based barplot
    - Leimkühler et. al. [2] data were added to the package
-
-
+   - Fisher Test were implemented to highlight the CCI edges significance (new) 🔥**NEW**🔥
+   - **Change input format: Please see the Documentation** 🔥**NEW**🔥
+      - A python3 notebook are available to cast the old input to the new input.
+   - Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input. 🔥**NEW**🔥
+   - LR pair visualization plot can be done using a Seurat Object 🔥**NEW**🔥
 
 # References
 
-[1] CrossTalkeR: Analysis and Visualisation of Ligand Receptor Networks [preprintlink](https://www.biorxiv.org/content/10.1101/2021.01.20.427390v1)
+[1] CrossTalkeR: Analysis and Visualisation of Ligand Receptor Networks [link](https://doi.org/10.1093/bioinformatics/btab370)
 
-[2]Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
+[2] Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
+
+[3] Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data [link](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.full)
+

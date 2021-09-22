@@ -350,11 +350,11 @@ plot_sankey <- function(lrobj_tbl,
       data <- lrobj_tbl
   }
   if (!is.null(ligand_cluster)) {
-    tmp_sel <- grepl(ligand_cluster, data$source)
+    tmp_sel <- grepl(ligand_cluster, data$ligpair)
     data <- data[tmp_sel, ]
   }
   if (!is.null(receptor_cluster)) {
-    tmp_sel <- grepl(receptor_cluster, data$target)
+    tmp_sel <- grepl(receptor_cluster, data$recpair)
     data <- data[tmp_sel, ]
   }
   colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
@@ -392,7 +392,7 @@ plot_sankey <- function(lrobj_tbl,
 
 
 
-#'This function selected genes sankey plot
+#'This function selected genes correlation
 #'
 #'@param data Seurat object
 #'@param lrobject LRObj object

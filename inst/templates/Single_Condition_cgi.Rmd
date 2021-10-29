@@ -66,16 +66,52 @@ for(i in 1:length(names(all_data@pca))){
 
 ### PCA GCI Table
 
+```{r fig.align='center',warning=FALSE,echo=FALSE}
+out <- c()
+out1 <- list()
+all_data <- readRDS(path)
+for(i in 1:length(names(all_data@pca))){
+     curr <- names(all_data@pca)[i]
+     if(!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+     rmd_title <- paste0(curr,'_tbl')
+     rmd_title1 <- paste0(curr,'_pca')
+     title <- paste0('\n\n#### Table PCA CGI ',curr)
+     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
+         pca <- all_data@pca[['",curr,"']]$x[,1:2]
+         pca[,1] <- round(pca[,1],6)
+         pca[,2] <- round(pca[,2],6)
+         ranking <- cbind(all_data@rankings[['",curr,"']][,2:dim(all_data@rankings[['",curr,"']])[2]],pca[all_data@rankings[['",curr,"']]$nodes,])
+         datatable(ranking,
+                 caption='",curr,"',
+                 extensions = 'Buttons',
+                 options = list(dom = 'Bfrtip',
+                                buttons = c('copy',
+                                            'csv',
+                                            'excel',
+                                            'pdf', 'print'),
+                               autoWidth = FALSE
+                               )
+                )
+
+     ```")
+     out <- c(out,knit_expanded)
+     out1[[curr]] <-knit_expanded
+   }  
+}
+
+```
+`r paste(knitr::knit(text = out), collapse = '\n')`
 
 ### Most significant deregulated pathway per topological measure
 
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes*
 
 
-```{r annotsingle, fig.align='center', fig.height=7,fig.width=10,warning=FALSE,echo=F,eval=F}
+```{r annotsingle, fig.align='center', fig.height=7,fig.width=10,warning=FALSE,echo=F,eval=T}
 out <- c()
 out1 <- list()
 plots <- list()
+all_data <- readRDS(path)
 paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=T)
 for(i in names(all_data@annot)){
   if(str_detect(i, 'ggi', negate = FALSE) & !str_detect(i, '_x_', negate = FALSE)){

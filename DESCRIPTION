@@ -1,6 +1,6 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
-Version: 1.3.0
+Version: 1.3.1
 Authors@R:c(
     person(given = "James Shiniti",
            family = "Nagai",

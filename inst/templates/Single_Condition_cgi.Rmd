@@ -26,19 +26,6 @@ require("DT")
 require(ggrepel)
 
 ```
-```{r message=FALSE, warning=FALSE, echo=FALSE, include=FALSE}
-require(igraph)
-require(dplyr)
-require(tibble)
-require(tidyr)
-require(stringr)
-require(patchwork)
-require(CrossTalkeR)
-require(factoextra)
-require(ComplexHeatmap)
-require("DT")
-require(ggrepel)
-```
 
 
 ### PCA CGI
@@ -57,15 +44,15 @@ for(i in 1:length(names(all_data@pca))){
      rmd_title1 <- paste0(curr,'_pca')
      x <- max(abs(all_data@pca[[curr]]$x[,1]))
      y <- max(abs(all_data@pca[[curr]]$x[,2]))
-     z_x <- all_data@pca[[curr]]$x[,1]
-     z_y <- all_data@pca[[curr]]$x[,2]
-     ver_zx <- ifelse(abs(z_x)>2*all_data@pca[[curr]]$sdev[1],1,0)
-     ver_zy <- ifelse(abs(z_y)>2*all_data@pca[[curr]]$sdev[2],1,0)
-     print(fviz_pca_biplot(all_data@pca[[curr]],
+     z_x <- data@pca[[curr]]$x[,1]
+     z_y <- data@pca[[curr]]$x[,2]
+     ver_zx <- ifelse(abs(z_x)>2*data@pca[[curr]]$sdev[1],1,0)
+     ver_zy <- ifelse(abs(z_y)>2*data@pca[[curr]]$sdev[2],1,0)
+     print(fviz_pca_biplot(data@pca[[curr]],
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 12,
                     repel = TRUE,max.overlaps=100,label='var')+
-                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(all_data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
+                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(curr)+
@@ -77,43 +64,8 @@ for(i in 1:length(names(all_data@pca))){
 ```
 
 
+### PCA GCI Table
 
-
-
-### PCA Tables
-
-```{r fig.align='center',warning=FALSE,echo=FALSE}
-out <- c()
-out1 <- list()
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca')
-     title <- paste0('\n\n### Table PCA CGI ',curr)
-     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
-         pca <- all_data@pca[['",curr,"']]$x[,1:2]
-         pca[,1] <- round(pca[,1],6)
-         pca[,2] <- round(pca[,2],6)
-         ranking <- cbind(all_data@rankings[['",curr,"']][,2:dim(all_data@rankings[['",curr,"']])[2]],pca[all_data@rankings[['",curr,"']]$nodes,])
-         datatable(ranking,
-                 caption='",curr,"',
-                 extensions = 'Buttons',
-                 options = list(dom = 'Bfrtip',
-                                buttons = c('copy',
-                                            'csv',
-                                            'excel',
-                                            'pdf', 'print'),
-                               autoWidth = FALSE
-                               )
-                )
-     ```")
-     out <- c(out,title,knit_expanded)
-     out1[[curr]] <-knit_expanded
-   }  
-}
-```
-`r paste(knitr::knit(text = out), collapse = '\n')`
 
 ### Most significant deregulated pathway per topological measure
 
@@ -141,24 +93,3 @@ for(i in names(all_data@annot)){
   }
 }
 ```
-
-## LR analysis data
-
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
-out <- c()
-out1 <- list()
-for(i in 1:length(names(all_data@tables))){
-     curr <- names(all_data@tables)[i]
-     if(!str_detect(curr, '_x_', negate = FALSE)){
-         rmd_title <- paste0(curr,'_tbl')
-         knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE,warning=F}
-                                 \n\n                          datatable(all_data@tables[['",curr,"']][,",params$selcln,"],caption='",curr,"', extensions = 'Buttons', options = list(
-        dom = 'Bfrtip',
-        buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
-         out <- c(out,knit_expanded)
-         out1[[curr]] <-knit_expanded
-     }
-}
-```
-
-`r paste(knitr::knit(text = out), collapse = '\n')`

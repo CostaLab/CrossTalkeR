@@ -10,7 +10,6 @@ output:
 params:
   obj1: "path to obj"
   thr: 'percentage edges to plot'
-  sel: 'selected columns'
 
 ---
 
@@ -38,7 +37,7 @@ extrafont::loadfonts()
 
 ### Interaction Plot (CCI)
 
-*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes*
+*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes. Note that this is a FILTERED data*
 
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1
@@ -47,9 +46,11 @@ all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-      message(paste0('Printing CCI ',curr))
-      curr_net <- all_data@graphs[[curr]]
-      low <- thr
+    h <- head_of(data@graphs[[curr]],E(data@graphs[[curr]]))$name
+    f <- tail_of(data@graphs[[curr]],E(data@graphs[[curr]]))$name
+    curr_net <- subgraph.edges(all_data@graphs[[curr]],E(data@graphs[[curr]])[match(data@stats[[curr]]$columns_name[data@stats[[curr]]$p<=0.05]
+,paste(h,f,sep = '_'))])
+    low <- thr
       par(cex.axis=7, cex.lab=7)
       plot_cci(graph=curr_net,
                coords=all_data@coords[V(curr_net)$name,],
@@ -115,23 +116,6 @@ for(i in 2:length(names(all_data@rankings))){
         scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
         theme_minimal())
   }  
-}
-```
-
-### Fisher Test CCI
-
-
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.keep='all',fig.width=10,fig.height=10}
-for(i in names(all_data@stats)){
-     sel <- all_data@stats[[i]][all_data@stats[[i]]$p <= 0.05,]
-     print(ggplot(sel,aes(x=lodds,y=reorder(columns_name,lodds),fill=ifelse(lodds>0,T,F)))+
-        geom_bar(stat='identity')+
-        geom_text(aes(label=round(p,4), vjust=-0.3, size=3.5,hjust=0.3))+
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+    
-        xlab("Log Odds Ratio")+
-        ylab("Cell Cell Interactions")+
-        ggtitle('Fisher test: EXP vs CTR')+
-        theme_minimal())
 }
 ```
 

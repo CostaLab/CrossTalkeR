@@ -132,7 +132,7 @@ for(i in names(all_data@annot)){
 
 ## LR analysis data
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=T}
 out <- c()
 out1 <- list()
 for(i in 1:length(names(all_data@tables))){

@@ -129,3 +129,25 @@ for(i in names(all_data@annot)){
   }
 }
 ```
+
+## LR analysis data
+
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
+out <- c()
+out1 <- list()
+for(i in 1:length(names(all_data@tables))){
+     curr <- names(all_data@tables)[i]
+     if(!str_detect(curr, '_x_', negate = FALSE)){
+         rmd_title <- paste0(curr,'_tbl')
+         knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE,warning=F}
+                                 \n\n                          datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'LRScore')],caption='",curr,"', extensions = 'Buttons', options = list(
+        dom = 'Bfrtip',
+        buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
+         out <- c(out,knit_expanded)
+         out1[[curr]] <-knit_expanded
+     }
+}
+
+```
+
+`r paste(knitr::knit(text = out), collapse = '\n')`

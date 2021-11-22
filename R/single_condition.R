@@ -20,8 +20,8 @@ read_lr_single_condition <- function(lrpaths,
                                      sep = ",",
                                      colors = NULL) {
   data <- graphs <-graphs_ggi <- list()
-  assertthat::assert_that(assertthat::not_empty(paths))
-  assertthat::assert_that(!is.null(names(paths)))
+  assertthat::assert_that(assertthat::not_empty(lrpaths))
+  assertthat::assert_that(!is.null(names(lrpaths)))
   conds <- names(lrpaths)
   max <- max_nodes <-0
   unif_celltypes <- c()

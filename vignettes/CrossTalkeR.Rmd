@@ -10,6 +10,11 @@ author:
   affiliation: Department of Hematology and Stem Cell Transplantation,
                University Hospital Essen,
                Germany
+- name: Vanessa Krammer
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
 - name: Michael T. Schaub
   affiliation:
      - Department of Computer Science,
@@ -60,15 +65,15 @@ suppressPackageStartupMessages({require(ggplot2)})
 **Package version**: `r packageVersion("CrossTalkeR")`
 
 # Generate Report Example
-In our vignette we provide examples on how to analyse cell interactions infrom a human myelofibrosis single cell RNA-seq dataset.
+In our vignette we provide examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq dataset.
 
 
 ```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE}
 paths <- c('CTR' = system.file("extdata",
-                               "ctr_nils_bm_human.csv",
+                               "ctr_nils_bm_human_newformat.csv",
                                package = "CrossTalkeR"),
            'EXP' = system.file("extdata",
-                               "exp_nils_bm_human.csv",
+                               "exp_nils_bm_human_newformat.csv",
                                package = "CrossTalkeR"))
 genes <- c('TGFB1')
 output =  system.file("extdata", package = "CrossTalkeR")
@@ -97,12 +102,6 @@ plot_cci(graph = data@graphs$CTR,
         log = FALSE,
         efactor = 8,
         vfactor = 12)
-
-```
-## GCI
-```{r vignete3, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=15}
-plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-         color = data@colors,name="EXP_x_CTR")
 
 ```
 

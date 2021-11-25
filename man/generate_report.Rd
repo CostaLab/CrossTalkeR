@@ -13,7 +13,9 @@ generate_report(
   colors = NULL,
   out_file = NULL,
   report = TRUE,
-  output_fmt = "html_document"
+  output_fmt = "html_document",
+  sel_columns = c("source", "target", "gene_A", "gene_B", "type_gene_A", "type_gene_B",
+    "MeanLR")
 )
 }
 \arguments{
@@ -34,6 +36,8 @@ generate_report(
 \item{report}{decide if a report is generated or not}
 
 \item{output_fmt}{rmarkdown render output format parameter}
+
+\item{sel_columns}{columns from data}
 }
 \value{
 Rmarkdown report all objects from each step
@@ -45,10 +49,10 @@ measure
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",
-                              "ctr_nils_bm_human.csv",
+                              "ctr_nils_bm_human_newformat.csv",
                               package = "CrossTalkeR"),
           'EXP' = system.file("extdata",
-                              "exp_nils_bm_human.csv",
+                              "exp_nils_bm_human_newformat.csv",
                               package = "CrossTalkeR"))
 output =  system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')

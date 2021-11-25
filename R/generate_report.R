@@ -13,15 +13,16 @@
 #'@param out_file output file names
 #'@param report decide if a report is generated or not
 #'@param output_fmt rmarkdown render output format parameter
+#'@param sel_columns columns from data
 #'@importFrom tidyr %>%
 #'@return Rmarkdown report all objects from each step
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
+#'                               "ctr_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
+#'                               "exp_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -39,7 +40,8 @@ generate_report <- function(lrpaths,
                             colors = NULL,
                             out_file = NULL,
                             report = TRUE,
-                            output_fmt = "html_document") {
+                            output_fmt = "html_document",
+                            sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR')) {
   # Creating the single condition Object
   index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",
@@ -48,21 +50,22 @@ generate_report <- function(lrpaths,
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
   message("Reading Files")
-  data <- read_lr_single_condiction(lrpaths,
+  data <- read_lr_single_condition(lrpaths,
+                                    sel_columns,
                                     out_path,
                                     sep = ",",
                                     colors)
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table(data, out_path)
+    data <- create_diff_table1(data, out_path)
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
   message("Calculating CCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path, sel_columns=c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor','MeanLR'),slot = "graphs")})
+  data <- suppressWarnings({ ranking(data, out_path, sel_columns=sel_columns,slot = "graphs")})
   message("Calculating GCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path,sel_columns=c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor','MeanLR'), slot = "graphs_ggi")})
+  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs_ggi")})
   message("Annotating the top Cell Genes")
   data <- suppressWarnings({kegg_annotation(data=data,
                           slot='rankings',out_path=out_path)})
@@ -70,11 +73,15 @@ generate_report <- function(lrpaths,
   message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,
-                       thr = threshold)
+                       thr = threshold,
+                       sel = sel_columns)
   param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
-                     thr = threshold)
-
+                     thr = threshold,
+                     sel = sel_columns)
+  if (length(lrpaths) > 1) {
+     data <- fisher_test_cci(data,'LRScore',out_path=out_path)
+  }
   if (report) {
     message("Generating Report")
     if (length(lrpaths) > 1) {

@@ -4,12 +4,14 @@
 \alias{ranking}
 \title{Ranking the most interactive gene (ligand or receptor)}
 \usage{
-ranking(data, out_path, slot = "graphs_ggi")
+ranking(data, out_path, sel_columns, slot = "graphs_ggi")
 }
 \arguments{
 \item{data}{lrobject}
 
 \item{out_path}{to save the lrobject with ranking}
+
+\item{sel_columns}{columns to consider}
 
 \item{slot}{slot of the networks graphs_ggi to gene cell interaction and abs}
 

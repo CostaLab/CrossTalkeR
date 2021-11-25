@@ -70,7 +70,7 @@ plot_cci <- function(graph,
 
   # Check Maximal Weight
   if (is.null(emax)) {
-    emax <- max(abs(igraph::E(graph)$mean))
+    emax <- max(abs(igraph::E(graph)$weight))
   }
   # Using color pallet to up and down regulation
   col_pallet <- colorBlindness::Blue2DarkOrange18Steps
@@ -197,7 +197,7 @@ plot_cci <- function(graph,
   }
   if (leg) {
       # Edge Colormap
-      if(min(igraph::E(graph)$mean) < 0){
+      if(min(igraph::E(graph)$weight) < 0){
         netdiffuseR::drawColorKey(seq(1, 200),
                                   tick.marks = c(1,101,200),
                                   color.palette = col_pallet,
@@ -262,8 +262,8 @@ plot_ggi <- function(graph,color,name) {
     tidyr::separate(.data$value, c("genes", "cluster"), "/")
   igraph::V(graph)$genes <- v_names$genes
   igraph::V(graph)$cluster <- v_names$cluster
-  lr2col <- round(oce::rescale(igraph::E(graph)$MeanLR,
-                               xlow = min(igraph::E(graph)$MeanLR),
+  lr2col <- round(oce::rescale(igraph::E(graph)$LRScore,
+                               xlow = min(igraph::E(graph)$LRScore),
                                rlow = 1,
                                rhigh = 25
                                )
@@ -272,8 +272,8 @@ plot_ggi <- function(graph,color,name) {
   igraph::E(graph)$colors <- ecolors
   cls <- names(color)
   names(color) <- NULL
-  ewidth <- abs(igraph::E(graph)$MeanLR) - mean(abs(igraph::E(graph)$MeanLR))
-  ewidth <- ewidth / stats::sd(abs(igraph::E(graph)$MeanLR))
+  ewidth <- abs(igraph::E(graph)$LRScore) - mean(abs(igraph::E(graph)$LRScore))
+  ewidth <- ewidth / stats::sd(abs(igraph::E(graph)$LRScore))
   ewidth <-  (ewidth - min(ewidth)) / (max(ewidth) - min(ewidth))
   print(ggraph::ggraph(graph, layout = "stress") +
         ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
@@ -344,31 +344,31 @@ plot_sankey <- function(lrobj_tbl,
                         threshold=50) {
 
   if (!is.null(target)) {
-    data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+      data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
   }
   else{
       data <- lrobj_tbl
   }
   if (!is.null(ligand_cluster)) {
-    tmp_sel <- grepl(ligand_cluster, data$Ligand.Cluster)
+    tmp_sel <- grepl(ligand_cluster, data$ligpair)
     data <- data[tmp_sel, ]
   }
   if (!is.null(receptor_cluster)) {
-    tmp_sel <- grepl(receptor_cluster, data$Receptor.Cluster)
+    tmp_sel <- grepl(receptor_cluster, data$recpair)
     data <- data[tmp_sel, ]
   }
-  data$freq <- 1
   colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
-  tmp_cols <- c("Ligand Cluster", "Ligand", "Receptor", "Receptor Cluster")
+  tmp_cols <- c("source", "Ligand", "Receptor", "target")
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
+    data$freq <- 1
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
-                        dim(data)[1]), abs(.data$MeanLR))
+                        dim(data)[1]), abs(.data$LRScore))
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
-                                   axis2 = stats::reorder(.data$Ligand, .data$MeanLR),
-                                   axis3 = stats::reorder(.data$Receptor, .data$MeanLR),
+                                   axis2 = stats::reorder(.data$Ligand, .data$LRScore),
+                                   axis3 = stats::reorder(.data$Receptor, .data$LRScore),
                                    axis4 = .data$Receptor.Cluster)) +
-          ggalluvial::geom_alluvium(aes(fill = .data$MeanLR > 0),
+          ggalluvial::geom_alluvium(aes(fill = .data$LRScore > 0,color='b'),
                                     width = 1 / 12,
                                     discern = FALSE) +
           ggalluvial::geom_stratum(width = 1 / 12) +
@@ -379,6 +379,7 @@ plot_sankey <- function(lrobj_tbl,
           ggplot2::scale_fill_manual(values = colp,
                                      limits = names(colp),
                                      name = "Upregulated") +
+          ggplot2::scale_color_manual(values = c("black")) +
           ggplot2::ggtitle(plt_name) +
           ggplot2::theme(text = element_text(size = 8)) +
           ggplot2::theme_minimal()
@@ -386,13 +387,12 @@ plot_sankey <- function(lrobj_tbl,
   }
   else{
       print(paste0("Gene->", target, "Not Found"))
-
   }
 }
 
 
 
-#'This function selected genes sankey plot
+#'This function selected genes correlation
 #'
 #'@param data Seurat object
 #'@param lrobject LRObj object

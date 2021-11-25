@@ -37,7 +37,7 @@ extrafont::loadfonts()
 
 ### Interaction Plot (CCI)
 
-*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes*
+*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes. Note that this is a FILTERED data*
 
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1
@@ -46,9 +46,12 @@ all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-      message(paste0('Printing CCI ',curr))
-      curr_net <- all_data@graphs[[curr]]
+    h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+    f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+    curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05]
+,paste(h,f,sep = '_'),nomatch = F)])
       low <- thr
+      E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
       par(cex.axis=7, cex.lab=7)
       plot_cci(graph=curr_net,
                coords=all_data@coords[V(curr_net)$name,],

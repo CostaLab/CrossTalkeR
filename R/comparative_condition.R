@@ -41,12 +41,16 @@ create_diff_table1 <- function(data, out_path) {
       dplyr::select(-type_gene_A.x, -type_gene_A.y, -type_gene_B.x, -type_gene_B.y)
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
-      dplyr::group_by(.data$cellpair) %>%
-      dplyr::summarise(LRScore = sum(.data$LRScore))
+        dplyr::mutate(ccitype = paste(.data$type_gene_A,.data$type_gene_B)) %>%
+        dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
+        dplyr::group_by(.data$cellpair) %>%
+        dplyr::summarise(LRScore=sum(.data$LRScore))
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), sep="_",remove = F)
-    raw_inter <- table(final_data$cellpair)
-    freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
+    filtervar <- grepl('Transcription',final_data[['type_gene_A']]) | grepl('Transcription',final_data[['type_gene_B']])
+    raw_inter <- table(final_data$cellpair[!filtervar])
+    freq <- as.array(raw_inter)[final$cellpair]- min(as.array(raw_inter)[final$cellpair])
+    freq <- freq/(max(as.array(raw_inter)[final$cellpair]) -min(as.array(raw_inter)[final$cellpair]))+0.1
     final$freq <- as.array(freq)[final$cellpair]
     final$pair <- final$cellpair
     final <- dplyr::arrange(final, abs(final$LRScore))
@@ -103,12 +107,15 @@ create_diff_table <- function(data, out_path) {
     final_data <- final_data[final_data$MeanLR!=0,]
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
+      dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
+      dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
       dplyr::group_by(.data$cellpair) %>%
-      dplyr::summarise(MeanLR = sum(.data$MeanLR))
+      dplyr::summarise(LRScore=sum(.data$LRScore))
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), sep="_",remove = F)
     raw_inter <- table(final_data$cellpair)
-    freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
+    freq <- ((table(data1$cellpair[!filtervar])- min(table(data1$cellpair[!filtervar]))))
+    freq <- freq/(max(table(data1$cellpair[!filtervar])) -min(table(data1$cellpair[!filtervar])))+0.1
     final$freq <- as.array(freq)[final$cellpair]
     final$pair <- final$cellpair
     final <- dplyr::arrange(final, abs(final$MeanLR))

@@ -79,15 +79,20 @@ read_lr_single_condition <- function(lrpaths,
                                )
       data1 <-data1 %>% dplyr::mutate(LRScore=data1[[sel_columns[length(sel_columns)]]])
       final <- data1 %>%
+        dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
+        dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
         dplyr::group_by(.data$cellpair) %>%
         dplyr::summarise(LRScore=sum(.data$LRScore))
       aux <- final$cellpair
       clusters_num <- unique(c(unique(data1[[sel_columns[1]]]),
                                unique(data1[[sel_columns[2]]])))
       final <- final %>%
-        tidyr::separate(.data$cellpair, c("u", "v"), "_")
+           tidyr::separate(.data$cellpair, c("u", "v"), "_")
       final$pair <- aux
-      freq <- table(data1$cellpair) / max(table(data1$cellpair))
+      filtervar <- grepl('Transcription',data1[[sel_columns[5]]])| grepl('Transcription',data1[[sel_columns[6]]])
+      raw_inter <- table(data1$cellpair[!filtervar])
+      freq <- (as.array(raw_inter)[final$pair]- min(as.array(raw_inter)[final$pair]))
+      freq <- freq/(max(as.array(raw_inter)[final$pair]) -min(as.array(raw_inter)[final$pair]))+0.1
       final$freq <- as.array(freq)[final$pair]
       final <- dplyr::arrange(final, abs(final$LRScore))
       graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "LRScore")])
@@ -192,6 +197,8 @@ read_lr_single_condiction_liana <- function(lianalr,
                             )
                           )
     final <- final %>%
+      dplyr::filter(stringr::str_detect(type_gene_A,"Transcription Factor")) %>%
+      dplyr::filter(stringr::str_detect(type_gene_B,"Transcription Factor")) %>%
       tidyr::separate(.data$cellpair, c("u", "v"), "_")
     final$pair <- aux
     freq <- table(data1$cellpair) / max(table(data1$cellpair))

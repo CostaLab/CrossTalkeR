@@ -230,7 +230,7 @@ for (i in 1:length(names(all_data@tables))) {
       df_combined = left_join(table_rtfs, table_tfl, by = "TF", all = TRUE) %>%
         na.omit()
       suppressWarnings({
-        plot_sankey_tf(all_data@tables[[curr]],
+        plot_sankey_tf(df_combined,
                     target = gene[[2]],
                     cluster = gene[[3]],
                     target_type = gene[[1]],

@@ -180,6 +180,69 @@ for(i in 1:length(names(all_data@tables))){
 
 
 
+## Transkription Factor Sankey Plot: Transcription Factor-based intra cellular interactions
+
+
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+all_data <- readRDS(path)
+for (i in 1:length(names(all_data@tables))) {
+  curr <- names(all_data@tables)[i]
+  if (str_detect(curr, '_x_', negate = FALSE)) {
+    for (gene in params$obj3) {
+      table_rtfs = all_data@tables[[curr]] %>%
+        filter(type_gene_B == "Transcription Factor") %>%
+        subset(
+          select = c(
+            "Ligand",
+            "Receptor",
+            "LRScore",
+            "type_gene_A",
+            "type_gene_B",
+            "Ligand.Cluster"
+          )
+        ) %>%
+        rename(
+          Receptor = Ligand,
+          TF = Receptor,
+          Cluster = Ligand.Cluster,
+          TFScore = LRScore
+        )
+      
+      table_tfl = all_data@tables[[curr]] %>%
+        filter(type_gene_A == "Transcription Factor") %>%
+        subset(
+          select = c(
+            "Ligand",
+            "Receptor",
+            "LRScore",
+            "type_gene_A",
+            "type_gene_B",
+            "Ligand.Cluster"
+          )
+        ) %>%
+        rename(
+          Ligand = Receptor,
+          TF = Ligand,
+          Cluster = Ligand.Cluster,
+          TFScore = LRScore
+        )
+      
+      df_combined = left_join(table_rtfs, table_tfl, by = "TF", all = TRUE) %>%
+        na.omit()
+      suppressWarnings({
+        plot_sankey_tf(all_data@tables[[curr]],
+                    target = gene[[2]],
+                    cluster = gene[[3]],
+                    target_type = gene[[1]],
+                    plt_name = paste0(curr, ' ', gene[[2]]))
+      })
+    }
+  }
+}
+```
+
+
+
 ## LR analysis data
 
 ```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}

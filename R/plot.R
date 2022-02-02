@@ -392,6 +392,101 @@ plot_sankey <- function(lrobj_tbl,
 
 
 
+#'This function selected gene transcription factor interaction related sankey plot
+#'
+#'@param lrobj_tbl LRobject table with all data
+#'@param target gene
+#'@param cluster cluster
+#'@param target_type type of target
+#'@param plt_name plot title
+#'@param threshold top_n n value
+#'@import ggplot2
+#'@import dplyr
+#'@import colorBlindness
+#'@import ggalluvial
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+plot_sankey_tf <- function(lrobj_tbl,
+                        target = NULL,
+                        cluster = NULL,
+                        target_type = "TF",
+                        plt_name = NULL,
+                        threshold=50) {
+
+  lrobj_tbl = lrobj_tbl %>%
+    filter(Cluster.x == cluster)
+
+  if (!is.null(target)) {
+    if (target_type == "R"){
+      data <- lrobj_tbl %>%
+        filter(Receptor == target)
+    } else if (target_type == "L"){
+      data <- lrobj_tbl %>%
+        filter(Ligand == target)
+    } else {
+      data <- lrobj_tbl %>%
+        filter(TF == target)
+    }
+  }
+  else{
+    data <- lrobj_tbl
+  }
+
+  plt_name = paste0(cluster, " Sankey ", target)
+  colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
+  tmp_cols <- c("source", "Ligand", "Receptor", "target")
+  names(colp) <- c("FALSE", "TRUE")
+  if (dim(data)[1] >= 1) {
+    data$freq <- 1
+    tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
+                                     dim(data)[1]), abs(.data$LRScore))
+    print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
+                                   axis2 = stats::reorder(.data$Ligand, .data$LRScore),
+                                   axis3 = stats::reorder(.data$Receptor, .data$LRScore),
+                                   axis4 = .data$Receptor.Cluster)) +
+            ggalluvial::geom_alluvium(aes(fill = .data$LRScore > 0,color='b'),
+                                      width = 1 / 12,
+                                      discern = FALSE) +
+            ggalluvial::geom_stratum(width = 1 / 12) +
+            ggplot2::geom_label(stat = ggalluvial::StatStratum,
+                                ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
+                                size = 4) +
+            ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
+            ggplot2::scale_fill_manual(values = colp,
+                                       limits = names(colp),
+                                       name = "Upregulated") +
+            ggplot2::scale_color_manual(values = c("black")) +
+            ggplot2::ggtitle(plt_name) +
+            ggplot2::theme(text = element_text(size = 8)) +
+            ggplot2::theme_minimal()
+    )
+  }
+  else{
+    print(paste0("Gene->", target, "Not Found"))
+  }
+}
+
+
+
 #'This function selected genes correlation
 #'
 #'@param data Seurat object

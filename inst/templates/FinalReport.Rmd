@@ -16,6 +16,7 @@ params:
   comp: "path to comparative report template"
   obj1: "LRobj"
   obj2: "sankey gene plot"
+  obj3: "sankey tf plot"
   thr: 'percentage of disregarded edges'
   sel: 'selected columns'
 always_allow_html: true

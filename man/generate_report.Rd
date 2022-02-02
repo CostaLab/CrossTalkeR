@@ -7,6 +7,7 @@
 generate_report(
   lrpaths,
   genes = NULL,
+  tf_genes = NULL,
   out_path,
   sep = ",",
   threshold = 0,

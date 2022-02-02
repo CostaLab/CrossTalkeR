@@ -76,7 +76,7 @@ generate_report <- function(lrpaths,
                        obj2 = genes,
                        thr = threshold,
                        sel = sel_columns)
-  ´ <- list(obj1 = lrobj_path1,
+  param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
                      obj3 = tf_genes,
                      thr = threshold,

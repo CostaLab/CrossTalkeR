@@ -459,8 +459,6 @@ plot_sankey_tf <- function(lrobj_tbl,
     data$freq <- 1
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                                      dim(data)[1]), abs(.data$TFScore.x))
-    print(tmp)
-    pdf(paste0(out_path, "/Sankey/", cluster, "_Sankey_", threshold))
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Receptor,
                                    axis2 = stats::reorder(.data$TF, .data$TFScore.x),
                                    axis3 = stats::reorder(.data$Ligand, .data$TFScore.x))) +

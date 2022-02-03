@@ -8,7 +8,7 @@ plot_sankey_tf(
   lrobj_tbl,
   target = NULL,
   cluster = NULL,
-  target_type = "TF",
+  target_type = NULL,
   plt_name = NULL,
   threshold = 50
 )

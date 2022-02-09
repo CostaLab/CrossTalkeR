@@ -354,6 +354,7 @@ plot_sankey <- function(lrobj_tbl,
     } else if (target_type == "L"){
       data <- lrobj_tbl %>%
         filter(Ligand == target)
+    }
   }
   else{
       data <- lrobj_tbl

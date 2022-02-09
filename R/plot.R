@@ -343,8 +343,17 @@ plot_sankey <- function(lrobj_tbl,
                         plt_name = NULL,
                         threshold=50) {
 
+  target_type = str_split(target, "\\|")[[1]][[2]]
+
   if (!is.null(target)) {
-      data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+      #data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+
+    if (target_type == "R"){
+      data <- lrobj_tbl %>%
+        filter(Receptor == target)
+    } else if (target_type == "L"){
+      data <- lrobj_tbl %>%
+        filter(Ligand == target)
   }
   else{
       data <- lrobj_tbl

@@ -24,10 +24,10 @@
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
+#'                               "ctr_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
+#'                               "exp_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"))
 #'
 #'genes <- c('TGFB1')
@@ -223,83 +223,7 @@ plot_cci <- function(graph,
 }
 
 
-#'This function do a ggi plot and higest degree nodes
-#'
-#'@param graph graph
-#'@param color cluster color
-#'@param name plot header
-#'@import ggplot2
-#'@import ggraph
-#'@import igraph
-#'@import colorBlindness
-#'@import graphlayouts
-#'@return R default plot
-#'@importFrom tidyr %>%
-#'@export
-#'@examples
-#'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"),
-#'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
-#'genes <- c('TGFB1')
-#'data <- generate_report(paths,
-#'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
-#'                        out_file = 'vignettes_example.html',
-#'                        output_fmt = "html_document",
-#'                        report = FALSE)
-#'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-#'         color = data@colors,name="EXP_x_CTR")
-plot_ggi <- function(graph,color,name) {
-  deg <- igraph::degree(graph)
-  v_names <- igraph::V(graph)$name
-  v_names <- tibble::as_tibble(v_names)
-  v_names <- v_names %>%
-    tidyr::separate(.data$value, c("genes", "cluster"), "/")
-  igraph::V(graph)$genes <- v_names$genes
-  igraph::V(graph)$cluster <- v_names$cluster
-  lr2col <- round(oce::rescale(igraph::E(graph)$LRScore,
-                               xlow = min(igraph::E(graph)$LRScore),
-                               rlow = 1,
-                               rhigh = 25
-                               )
-                  )
-  ecolors <- rev(grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[lr2col]
-  igraph::E(graph)$colors <- ecolors
-  cls <- names(color)
-  names(color) <- NULL
-  ewidth <- abs(igraph::E(graph)$LRScore) - mean(abs(igraph::E(graph)$LRScore))
-  ewidth <- ewidth / stats::sd(abs(igraph::E(graph)$LRScore))
-  ewidth <-  (ewidth - min(ewidth)) / (max(ewidth) - min(ewidth))
-  print(ggraph::ggraph(graph, layout = "stress") +
-        ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
-                                             alpha = ewidth)) +
-        ggraph::geom_node_point(size = ((deg / max(deg)) * 10),
-                                alpha = 1,
-                                ggplot2::aes(color = igraph::V(graph)$cluster)
-                                ) +
-        ggplot2::scale_colour_manual(values = color,
-                                     labels = cls,
-                                     name = "Clusters") +
-        ggraph::geom_node_label(ggplot2::aes(filter = deg > deg[order(deg, decreasing = TRUE)][ifelse(length(deg) > 100, 100, length(deg))] & igraph::V(graph) %in% igraph::articulation.points(graph),
-                                             label = igraph::V(graph)$genes,
-                                             color = igraph::V(graph)$cluster
-                                            ),
-                               repel = TRUE,
-                               hjust = "inward",
-                               size = 7,
-                               show.legend = FALSE) +
-        ggraph::scale_edge_width_continuous(range = c(0, 1))  +
-        ggplot2::ggtitle(name)+
-        #scale_size(range = c(1,6))+
-        ggraph::theme_graph(base_family="sans") +
-        ggplot2::theme(legend.position = "left"))
 
-}
 
 
 
@@ -321,10 +245,10 @@ plot_ggi <- function(graph,color,name) {
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
+#'                               "ctr_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
+#'                               "exp_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -404,9 +328,9 @@ plot_sankey <- function(lrobj_tbl,
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
-plotInterInfo<-function(data,lrobject,pair,lrslot,assay='RNA'){
+plotInterInfo<-function(data,lrobject,pair,lrslot,assay='RNA',comp='EXP_x_CTR'){
       Seurat::DefaultAssay(data) <- assay
-      pair <- lrobject@tables[[lrslot]][grepl(pair,datalr@tables$EXP_x_CTR$allpair),]
+      pair <- lrobject@tables[[lrslot]][grepl(pair,datalr@tables[[comp]]$allpair),]
       sender <- pair$Ligand.Cluster
       receiver <- pair$Receptor.Cluster
       exp <- Seurat::GetAssayData(data)

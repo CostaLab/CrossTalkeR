@@ -323,18 +323,16 @@ enrich <- function(list,name,org=org.Hs.eg.db, univ=NULL){
 #'@param data datafromliana
 #'@param source source cell population
 #'@param target target cell population
-#'@param gene_A source gene population
-#'@param gene_B target gene population
-#'@param type_gene_A type source gene population
-#'@param type_gene_B type target gene population
+#'@param gene_Ai source gene population
+#'@param gene_Bi target gene population
 #'@param measure measure to be considered
 #'@importFrom tidyr %>%
 #'@import tibble dplyr
 #'@return tibble
-liana2CT <- function(data,gene_Ai,gene_Bi,measure){
+liana2CT <- function(data,source='source',target='target',gene_Ai,gene_Bi,measure){
   data <- data %>%
-    dplyr::mutate(source=as.character(data[['source']])) %>%
-    dplyr::mutate(target=as.character(data[['target']])) %>%
+    dplyr::mutate(source=as.character(data[[source]])) %>%
+    dplyr::mutate(target=as.character(data[[target]])) %>%
     dplyr::mutate(gene_A=data[[gene_Ai]]) %>%
     dplyr::mutate(gene_B=data[[gene_Bi]]) %>%
     dplyr::mutate(type_gene_A=gene_Ai) %>%
@@ -362,7 +360,7 @@ fisher_test_cci <- function(data,measure,out_path){
             if(!str_detect(names(data@tables)[i],'_x_')){
             e <- data@tables[[i]] %>%
               dplyr::group_by(cellpair) %>%
-              dplyr::select(c(Ligand.Cluster,Receptor.Cluster,measure)) %>%
+              dplyr::select(c(.data$Ligand.Cluster,.data$Receptor.Cluster,measure)) %>%
               dplyr::summarise(measure=n())
             joined <- merge(c,e,by.x='cellpair',by.y='cellpair',keep='all')
             pval <- list()

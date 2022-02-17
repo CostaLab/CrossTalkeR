@@ -121,10 +121,7 @@ for(i in 1:length(names(all_data@pca))){
                                             'excel',
                                             'pdf', 'print'),
                                autoWidth = FALSE
-                               )
-                )
-
-     ```")
+                               ))\n\n```")
      out <- c(out,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  

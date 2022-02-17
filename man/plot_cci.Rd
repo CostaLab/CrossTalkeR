@@ -60,10 +60,10 @@ This function do a CCI plot
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",
-                              "ctr_nils_bm_human.csv",
+                              "ctr_nils_bm_human_newformat.csv",
                               package = "CrossTalkeR"),
           'EXP' = system.file("extdata",
-                              "exp_nils_bm_human.csv",
+                              "exp_nils_bm_human_newformat.csv",
                               package = "CrossTalkeR"))
 
 genes <- c('TGFB1')

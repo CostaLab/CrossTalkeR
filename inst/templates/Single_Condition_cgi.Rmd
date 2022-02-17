@@ -90,16 +90,14 @@ for(i in 1:length(names(all_data@pca))){
                                             'excel',
                                             'pdf', 'print'),
                                autoWidth = FALSE
-                               )
-                )
-
-     ```")
+                             ))\n\n```")
+     message(knit_expanded)
      out <- c(out,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
-
 ```
+
 `r paste(knitr::knit(text = out), collapse = '\n')`
 
 ### Most significant deregulated pathway per topological measure

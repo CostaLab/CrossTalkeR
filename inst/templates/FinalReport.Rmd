@@ -17,6 +17,7 @@ params:
   obj1: "LRobj"
   obj2: "sankey gene plot"
   thr: 'percentage of disregarded edges'
+  sel: 'selected columns'
 always_allow_html: true
 
 

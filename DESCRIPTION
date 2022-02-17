@@ -1,7 +1,7 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
-Version: 1.2.1
-Authors@R:c(
+Version: 1.3.1
+Authors@R: c(
     person(given = "James Shiniti",
            family = "Nagai",
            role = c("aut", "cre"),
@@ -11,6 +11,10 @@ Authors@R:c(
                   family = "Leimkühler",
                   role = c("aut"),
                   comment = c(ORCID = "0000-0003-2530-4329")),
+    person(given = "Vanessa",
+                  family = "Krammer",
+                  role = c("aut"),
+                  comment = c('')),
     person(given = "Michael T. ",
                   family = "Schaub",
                   role = c("aut"),
@@ -28,11 +32,11 @@ Description: This Package allows the network based analysis over ligand receptor
 URL: https://github.com/CostaLab/CrossTalkeR
 BugReports: https://github.com/CostaLab/CrossTalkeR/issues
 License: MIT + file LICENSE
-biocViews:  Network, SystemsBiology, SingleCell, Software, GraphAndNetwork
+biocViews: Network, SystemsBiology, SingleCell, Software, GraphAndNetwork
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     pals (>= 1.1),
     graphlayouts (>= 0.7.0),
@@ -67,8 +71,9 @@ Imports:
     ggsci (>= 2.9),
     Rmagic (>= 2.0.3),
     methods,
+    rstatix,
+    assertthat,
     qpdf
 Suggests:
     knitr,
-    rmarkdown
 VignetteBuilder: knitr

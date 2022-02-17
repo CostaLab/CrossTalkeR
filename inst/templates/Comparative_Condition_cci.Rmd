@@ -27,17 +27,15 @@ require(graphlayouts)
 require(pals)
 require(extrafont)
 require(colorBlindness)
-require("DT")
+require(DT)
 require(ComplexHeatmap)
-
 extrafont::loadfonts()
-
 ```
 
 
 ### Interaction Plot (CCI)
 
-*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes*
+*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <-params$obj1
@@ -46,23 +44,51 @@ all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-      message(paste0('Printing CCI ',curr))
-      curr_net <- all_data@graphs[[curr]]
-      low <- thr
-      par(cex.axis=7, cex.lab=7)
-      plot_cci(graph=curr_net,
-               coords=all_data@coords[V(curr_net)$name,],
-               colors=all_data@colors[V(curr_net)$name],
-               plt_name=paste0(curr,' CCI'),
-               leg=TRUE,
-               low=0,
-               high=low/100,
-               log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
-   }
+      h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+      f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+      curr_net<-all_data@graphs[[curr]]
+      curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '_'),nomatch = F)])
+        low <- thr
+        E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
+        par(cex.axis=7, cex.lab=7)
+        plot_cci(graph=curr_net,
+                 coords=all_data@coords[V(curr_net)$name,],
+                 colors=all_data@colors[V(curr_net)$name],
+                 plt_name=paste0(curr,' CCI'),
+                 leg=TRUE,
+                 low=0,
+                 high=low/100,
+                 log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+     }
 }
 ```
 
+### Pvalue Filtered Interaction Plot (CCI)
 
+*Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
+
+```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
+for(i in 1:length(names(all_data@tables))){
+  curr <- names(all_data@tables)[i]
+  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
+      h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+      f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
+      curr_net<-all_data@graphs[[curr]]
+      #curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '_'),nomatch = F)])
+        #low <- thr
+        #E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
+        par(cex.axis=7, cex.lab=7)
+        plot_cci(graph=curr_net,
+                 coords=all_data@coords[V(curr_net)$name,],
+                 colors=all_data@colors[V(curr_net)$name],
+                 plt_name=paste0(curr,' CCI'),
+                 leg=TRUE,
+                 low=0,
+                 high=low/100,
+                 log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+     }
+}
+```
 
 
 
@@ -87,7 +113,7 @@ for(i in 1:length(names(all_data@pca))){
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 6,
                     repel = TRUE,max.overlaps=100,label='var')+
-                    geom_text_repel(aes(label=rownames(data@pca[[curr]]$x)))+
+                    geom_text_repel(aes(label=rownames(all_data@pca[[curr]]$x)))+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(curr)+
@@ -146,9 +172,7 @@ for(i in 1:length(names(all_data@pca))){
                                             'pdf', 'print'),
                                autoWidth = FALSE
                                )
-                )
-
-     ```")
+                )\n\n```")
      out <- c(out,title,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  

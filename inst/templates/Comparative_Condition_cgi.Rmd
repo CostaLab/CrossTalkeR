@@ -51,15 +51,15 @@ for(i in 1:length(names(all_data@pca))){
      rmd_title1 <- paste0(curr,'_pca')
      x <- max(abs(all_data@pca[[curr]]$x[,1]))
      y <- max(abs(all_data@pca[[curr]]$x[,2]))
-     z_x <- data@pca[[curr]]$x[,1]
-     z_y <- data@pca[[curr]]$x[,2]
-     ver_zx <- ifelse(abs(z_x)>=(2*data@pca[[curr]]$sdev[1]),1,0)
-     ver_zy <- ifelse(abs(z_y)>=(2*data@pca[[curr]]$sdev[2]),1,0)
-     print(fviz_pca_biplot(data@pca[[curr]],
+     z_x <- all_data@pca[[curr]]$x[,1]
+     z_y <- all_data@pca[[curr]]$x[,2]
+     ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[1]),1,0)
+     ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[2]),1,0)
+     print(fviz_pca_biplot(all_data@pca[[curr]],
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 10,
                     repel = FALSE,max.overlaps=100,label='var')+
-                    geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(data@pca[[curr]]$x),NA)),size = 5)+
+                    geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(curr)+
@@ -72,10 +72,12 @@ for(i in 1:length(names(all_data@pca))){
 
 ```
 
+
 ### Pagerank Log Ratio
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
+all_data <- readRDS(path)
 for(i in 2:length(names(all_data@rankings))){
   curr <- names(all_data@rankings)[i]
   if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)){
@@ -89,11 +91,16 @@ for(i in 2:length(names(all_data@rankings))){
 }
 ```
 
+
+
+
+
 ### PCA GCI Table
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
 out <- c()
 out1 <- list()
+all_data <- readRDS(path)
 for(i in 1:length(names(all_data@pca))){
      curr <- names(all_data@pca)[i]
      if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
@@ -114,11 +121,8 @@ for(i in 1:length(names(all_data@pca))){
                                             'excel',
                                             'pdf', 'print'),
                                autoWidth = FALSE
-                               )
-                )
-
-     ```")
-     out <- c(out,title,knit_expanded)
+                               ))\n\n```")
+     out <- c(out,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
 }
@@ -126,28 +130,40 @@ for(i in 1:length(names(all_data@pca))){
 ```
 `r paste(knitr::knit(text = out), collapse = '\n')`
 
+
+
+
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
 ```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F}
+all_data <- readRDS(path)
 for(i in names(all_data@annot)){
   if( grepl('_x_',i) & grepl('ggi',i) ){
     paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
     filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
     filtered <- filtered[filtered$p.adjust<=0.05,]
+    if(dim(filtered)[1] >=2){
     mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
     mat[is.na(mat)]=1
     p1<-Heatmap(-log10(mat), col =c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='-log10(p.adjust)')
     draw(p1)
+   }
+   else{
+     print('Unnable to do the enrichment')
+   }  
   }
 }
 
 ```
 
+
+
 ## Genes Sankey Plot: Gene-based cell-cell interaction
 
 
 ```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
@@ -160,18 +176,20 @@ for(i in 1:length(names(all_data@tables))){
 ```
 
 
+
 ## LR analysis data
 
 ```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
 out <- c()
 out1 <- list()
+all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
      curr <- names(all_data@tables)[i]
      if(str_detect(curr, '_x_', negate = FALSE)){
 
      rmd_title <- paste0(curr,'_tbl')
      knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE, warning=FALSE}
-                             \n\n                          datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'MeanLR')],caption='",curr,"', extensions = 'Buttons', options = list(
+                             \n\n                          datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'LRScore')],caption='",curr,"', extensions = 'Buttons', options = list(
     dom = 'Bfrtip',
     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
      out <- c(out,knit_expanded)

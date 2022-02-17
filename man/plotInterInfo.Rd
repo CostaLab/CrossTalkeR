@@ -2,9 +2,9 @@
 % Please edit documentation in R/plot.R
 \name{plotInterInfo}
 \alias{plotInterInfo}
-\title{This function selected genes sankey plot}
+\title{This function selected genes correlation}
 \usage{
-plotInterInfo(data, lrobject, pair, lrslot, assay = "RNA")
+plotInterInfo(data, lrobject, pair, lrslot, assay = "RNA", comp = "EXP_x_CTR")
 }
 \arguments{
 \item{data}{Seurat object}
@@ -21,5 +21,5 @@ plotInterInfo(data, lrobject, pair, lrslot, assay = "RNA")
 R default plot
 }
 \description{
-This function selected genes sankey plot
+This function selected genes correlation
 }

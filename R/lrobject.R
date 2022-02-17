@@ -28,6 +28,7 @@ lrbject <- setClass("LRObj",
                                rankings = "list",
                                loadings = "list",
                                pca = "list",
-                               annot = "list"
+                               annot = "list",
+                               stats="list"
                                )
                     )

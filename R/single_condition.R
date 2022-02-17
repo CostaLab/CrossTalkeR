@@ -7,118 +7,141 @@
 #'
 #'
 #'@param lrpaths Named vector with the lrpaths of each output
+#'@param sel selected columns
 #'@param out_path Path to deposit the results
 #'@param sep character used to divide the columns on input file
 #'@param colors colorlist
-#'@param measure Measure columns name in the input data
 #'@importFrom tidyr %>%
+#'@import tibble dplyr assertthat
 #'@return LRObject
-read_lr_single_condiction <- function(lrpaths,
-                                      out_path = "/tmp/",
-                                      sep = ",",
-                                      colors = NULL,
-                                      measure = "MeanLR") {
+read_lr_single_condition <- function(lrpaths,
+                                     sel_columns,
+                                     out_path = "/tmp/",
+                                     sep = ",",
+                                     colors = NULL) {
   data <- graphs <-graphs_ggi <- list()
+  assertthat::assert_that(assertthat::not_empty(lrpaths))
+  assertthat::assert_that(!is.null(names(lrpaths)))
   conds <- names(lrpaths)
   max <- max_nodes <-0
   unif_celltypes <- c()
-  sel_columns <- c("Ligand.Cluster",
-                   "Receptor.Cluster",
-                   "Ligand",
-                   "Receptor",
-                   measure)
-  for (i in seq_len(length(lrpaths))) {
-    print(lrpaths[i])
-    data1 <- utils::read.csv(lrpaths[i], sep = sep) # Reading csv
-    data1 <- data1[, sel_columns]
-    data1$cellpair <- paste(data1$Ligand.Cluster,
-                            data1$Receptor.Cluster,
-                            sep = "_")
-    data1$ligpair <- paste(data1$Ligand,
-                           data1$Ligand.Cluster,
-                           sep = "/")
-    data1$recpair <- paste(data1$Receptor,
-                           data1$Receptor.Cluster,
-                          sep = "/")
-    data1$allpair <- paste(data1$ligpair,
-                           data1$recpair,
-                           sep = "_")
-    unif_celltypes <- unique(c(data1$Ligand.Cluster,
-                               data1$Receptor.Cluster,
-                               unif_celltypes)
-                             )
-    data1$MeanLR <- data1[,measure]
-    data1 <- tibble::as_tibble(data1)
-    final <- data1 %>%
-      dplyr::group_by(.data$cellpair) %>%
-      dplyr::summarise(MeanLR = sum(.data[[measure]]))
-    aux <- final$cellpair
-    clusters_num <- unique(c(unique(data1$Ligand.Cluster),
-                             unique(data1$Receptor.Cluster)
-                            )
-                          )
-    final <- final %>%
-      tidyr::separate(.data$cellpair, c("u", "v"), "_")
-    final$pair <- aux
-    freq <- table(data1$cellpair) / max(table(data1$cellpair))
-    final$freq <- as.array(freq)[final$pair]
-    final <- dplyr::arrange(final, abs(final$MeanLR))
-    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", measure)])
-    igraph::E(graph1)$inter <- final$freq#setting thickness and weight
-    igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
-    igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
-    data[[conds[i]]] <- data1
-    graphs[[conds[i]]] <- graph1
-    graph2 <- igraph::graph_from_data_frame(data1[, c("ligpair",
-                                                           "recpair",
-                                                           "MeanLR")],directed=TRUE)
-    igraph::E(graph2)$weight <- igraph::E(graph2)$MeanLR
-    igraph::E(graph2)$mean <- igraph::E(graph2)$MeanLR
+  for (i in seq_len(length(lrpaths))){
+      ## Reading from tables
+      if(is.character(lrpaths[[conds[i]]])){
+        data1 <- tibble::tibble(utils::read.csv(lrpaths[[conds[i]]], sep = sep)) # Reading csv
+      }else if(is.data.frame(lrpaths[[conds[i]]]) | tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
+        data1 <- tibble(lrpaths[[conds[i]]])
+      }
+      data1 <- data1 %>%
+          tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
+      if('Ligand' %in% data1[[sel_columns[5]]]){
+        data1 <- data1 %>%
+                 tidyr::unite("ligpair",
+                              c(sel_columns[1],sel_columns[3]),
+                              remove = FALSE,
+                              sep='/')%>%
+                 tidyr::unite("recpair",
+                              c(sel_columns[2],sel_columns[4]),
+                              remove = FALSE,
+                              sep='/')  %>%
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
+                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+      }else{
+        tmp <- data1[[sel_columns[5]]]
+        data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
+        data1[[sel_columns[6]]] <- tmp
+        tmp <- data1[[sel_columns[4]]]
+        data1[[sel_columns[4]]] <- data1[[sel_columns[3]]]
+        data1[[sel_columns[3]]] <- tmp
+        data1 <- data1 %>%
+                 tidyr::unite("ligpair",
+                              c(sel_columns[1],sel_columns[3]),
+                              remove = FALSE,
+                              sep='/')%>%
+                 tidyr::unite("recpair",
+                              c(sel_columns[2],sel_columns[4]),
+                              remove = FALSE,
+                              sep='/')  %>%
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
+                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
 
-    graphs_ggi[[conds[i]]] <- graph2
-    if (max(igraph::E(graph1)$mean) > max) {
-      max <- max(igraph::E(graph1)$mean)
-    }
-    if (length(igraph::V(graph1)) > max_nodes) {
-      max_nodes <- length(igraph::V(graph1))
-    }
-  }
-  template <- igraph::make_full_graph(n = length(unif_celltypes),
-                                      directed = TRUE,
-                                      loops = TRUE)
-  c <- igraph::layout.circle(template)
-  if (is.null(colors)) {
-    colors <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))
-    colors <- colors(length(unif_celltypes))
-    names(colors) <- sort(unif_celltypes)
-  }
-  for (g in names(graphs)) {
-    sel <- match(unif_celltypes,
-                 unique(igraph::V(graphs[[g]])$name),
-                 nomatch = FALSE)
-    sel <- sel == 0
-    if (sum(sel) != 0) {
-      nodes <- seq_len(length(unif_celltypes[sel]))
-      names(nodes) <- unif_celltypes[sel]
-      graphs[[g]] <- igraph::add.vertices(graphs[[g]],
-                                          length(nodes),
-                                          attr = list(name = names(nodes)))
-    }
-  }
-  rownames(c) <- sort(unif_celltypes)
 
-  lr <- new("LRObj",
-            graphs = graphs,
-            graphs_ggi = graphs_ggi,
-            tables = data,
-            max_iter = max,
-            max_nodes = max_nodes,
-            coords = c,
-            colors = colors,
-            rankings = list(),
-            pca = list())
-  saveRDS(lr,file.path(out_path, "LR_data.Rds"))
-  return(lr)
+      }
+      unif_celltypes <- unique(c(data1[[sel_columns[1]]],
+                                 data1[[sel_columns[2]]],
+                                 unif_celltypes)
+                               )
+      data1 <-data1 %>% dplyr::mutate(LRScore=data1[[sel_columns[length(sel_columns)]]])
+      final <- data1 %>%
+        dplyr::group_by(.data$cellpair) %>%
+        dplyr::summarise(LRScore=sum(.data$LRScore))
+      aux <- final$cellpair
+      clusters_num <- unique(c(unique(data1[[sel_columns[1]]]),
+                               unique(data1[[sel_columns[2]]])))
+      final <- final %>%
+        tidyr::separate(.data$cellpair, c("u", "v"), "_")
+      final$pair <- aux
+      freq <- table(data1$cellpair) / max(table(data1$cellpair))
+      final$freq <- as.array(freq)[final$pair]
+      final <- dplyr::arrange(final, abs(final$LRScore))
+      graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "LRScore")])
+      igraph::E(graph1)$inter <- final$freq#setting thickness and weight
+      igraph::E(graph1)$weight <- igraph::E(graph1)$LRScore
+      data[[conds[i]]] <- data1
+      graphs[[conds[i]]] <- graph1
+      graph2 <- igraph::graph_from_data_frame(data1[, c("ligpair",
+                                                             "recpair",
+                                                             "LRScore")],directed=TRUE)
+      igraph::E(graph2)$weight <- igraph::E(graph2)$LRScore
+      igraph::E(graph2)$mean <- igraph::E(graph2)$LRScore
+      graphs_ggi[[conds[i]]] <- graph2
+      if (max(igraph::E(graph1)$weight) > max) {
+        max <- max(igraph::E(graph1)$weight)
+      }
+      if (length(igraph::V(graph1)) > max_nodes) {
+        max_nodes <- length(igraph::V(graph1))
+      }
+    }
+    template <- igraph::make_full_graph(n = length(unif_celltypes),
+                                        directed = TRUE,
+                                        loops = TRUE)
+    c <- igraph::layout.circle(template)
+    if (is.null(colors)) {
+      colors <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))
+      colors <- colors(length(unif_celltypes))
+      names(colors) <- sort(unif_celltypes)
+    }
+    for (g in names(graphs)) {
+      sel <- match(unif_celltypes,
+                   unique(igraph::V(graphs[[g]])$name),
+                   nomatch = FALSE)
+      sel <- sel == 0
+      if (sum(sel) != 0) {
+        nodes <- seq_len(length(unif_celltypes[sel]))
+        names(nodes) <- unif_celltypes[sel]
+        graphs[[g]] <- igraph::add.vertices(graphs[[g]],
+                                            length(nodes),
+                                            attr = list(name = names(nodes)))
+      }
+    }
+    rownames(c) <- sort(unif_celltypes)
+    lr <- new("LRObj",
+              graphs = graphs,
+              graphs_ggi = graphs_ggi,
+              tables = data,
+              max_iter = max,
+              max_nodes = max_nodes,
+              coords = c,
+              colors = colors,
+              rankings = list(),
+              pca = list(),
+              stats=list())
+    saveRDS(lr,file.path(out_path, "LR_data.Rds"))
+    return(lr)
 }
 
 

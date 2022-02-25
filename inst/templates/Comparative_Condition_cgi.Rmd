@@ -635,6 +635,14 @@ for(i in 1:length(names(all_data@tables))){
 
 ```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
 all_data <- readRDS(path)
+
+for(i in 1:length(names(all_data@rankings))){
+  curr_pagerank <- names(all_data@pca)[i]
+  if(str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)){
+    pagerank_table = all_data@rankings[[curr_pagerank]] %>%
+      select(c("nodes", "Pagerank"))
+  }}
+
 for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
   if (str_detect(curr, '_x_', negate = FALSE)) {

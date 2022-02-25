@@ -689,6 +689,7 @@ for (i in 1:length(names(all_data@tables))) {
         na.omit()
       suppressWarnings({
         plot_sankey_tf_pagerank(df_combined,
+                    pagerank_table,
                     target = gene[[2]],
                     cluster = gene[[3]],
                     target_type = gene[[1]],

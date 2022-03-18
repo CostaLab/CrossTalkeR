@@ -534,7 +534,8 @@ plot_sankey_tf_pagerank <- function(lrobj_tbl,
                            cluster = NULL,
                            target_type = NULL,
                            plt_name = NULL,
-                           threshold=50) {
+                           threshold=50,
+                           save_path = NULL) {
 
   lrobj_tbl = lrobj_tbl %>%
     filter(Cluster.x == cluster)
@@ -560,9 +561,19 @@ plot_sankey_tf_pagerank <- function(lrobj_tbl,
 
   receptor_list_unique = unique(receptor_list)
 
-  filtered_pagerank <- pagerank_table %>%
+  pagerank_table <- pagerank_table %>%
     filter(nodes %in% receptor_list_unique) %>%
-    arrange(desc(abs(Pagerank))) %>%
+    arrange(desc(abs(Pagerank)))
+
+  sankey_table = data %>%
+    merge(pagerank_table, by.x = "combined_gene", by.y = "nodes") %>%
+    arrange(desc(abs(Pagerank)))
+
+  if(!is.null(save_path)){
+    write.csv(sankey_table, paste0(dirname(save_path), "/", target, "_", cluster, "_sankey_table.csv"))
+  }
+
+  filtered_pagerank <- pagerank_table %>%
     head(15)
 
   filtered_data = data %>%

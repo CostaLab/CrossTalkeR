@@ -596,6 +596,7 @@ for(i in names(all_data@annot)){
     paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
     filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
     filtered <- filtered[filtered$p.adjust<=0.05,]
+    filtered <- na.omit(filtered)
     if(dim(filtered)[1] >=2){
     mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
     mat[is.na(mat)]=1
@@ -693,7 +694,8 @@ for (i in 1:length(names(all_data@tables))) {
                     target = gene[[2]],
                     cluster = gene[[3]],
                     target_type = gene[[1]],
-                    plt_name = paste0(curr, ' ', gene[[2]]))
+                    plt_name = paste0(curr, ' ', gene[[2]]),
+                    save_path = path)
       })
     }
   }

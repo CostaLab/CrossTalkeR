@@ -9,6 +9,7 @@ output:
 
 params:
   obj1: "path to obj"
+  obj2: "target gene"
   thr: 'percentage edges to plot'
 
 ---
@@ -161,15 +162,17 @@ for(i in names(all_data@annot)){
 
 ## Genes Sankey Plot: Gene-based cell-cell interaction
 
-
 ```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE)){
       for(gene in params$obj2){
-        suppressWarnings({plot_sankey(all_data@tables[[curr]],
-                    target=gene,plt_name=paste0(curr,' ',gene))})
+        print(gene)
+        p1<-plot_sankey(all_data@tables[[curr]],
+                    target=gene,
+                    plt_name=paste0(curr,' ',gene))
+        print(p1)
       }
   }
 }

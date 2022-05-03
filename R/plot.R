@@ -281,18 +281,16 @@ plot_sankey <- function(lrobj_tbl,
     tmp_sel <- grepl(receptor_cluster, data$recpair)
     data <- data[tmp_sel, ]
   }
-  colp <-c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14])
   tmp_cols <- c("source", "Ligand", "Receptor", "target")
-  names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
     data$freq <- 1
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                         dim(data)[1]), abs(.data$LRScore))
-    print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
-                                   axis2 = stats::reorder(.data$Ligand, .data$LRScore),
-                                   axis3 = stats::reorder(.data$Receptor, .data$LRScore),
+    return(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
+                                   axis2 = stats::reorder(.data$Ligand, -.data$LRScore),
+                                   axis3 = stats::reorder(.data$Receptor, -.data$LRScore),
                                    axis4 = .data$Receptor.Cluster)) +
-          ggalluvial::geom_alluvium(aes(fill = .data$LRScore > 0,color='b'),
+          ggalluvial::geom_alluvium(aes(fill = .data$LRScore,color='b'),
                                     width = 1 / 12,
                                     discern = FALSE) +
           ggalluvial::geom_stratum(width = 1 / 12) +
@@ -300,12 +298,12 @@ plot_sankey <- function(lrobj_tbl,
                               ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
                               size = 4) +
           ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
-          ggplot2::scale_fill_manual(values = colp,
-                                     limits = names(colp),
-                                     name = "Upregulated") +
           ggplot2::scale_color_manual(values = c("black")) +
+          ggplot2::scale_fill_gradient2(low = colorBlindness::Blue2DarkOrange18Steps[4],
+                                        mid = colorBlindness::Blue2DarkOrange18Steps[10],
+                                        high =colorBlindness::Blue2DarkOrange18Steps[14],midpoint=0)+
           ggplot2::ggtitle(plt_name) +
-          ggplot2::theme(text = element_text(size = 8)) +
+          ggplot2::theme(text = element_text(size = 14)) +
           ggplot2::theme_minimal()
           )
   }

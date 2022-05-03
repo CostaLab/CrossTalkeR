@@ -91,7 +91,6 @@ for(i in 1:length(names(all_data@pca))){
                                             'pdf', 'print'),
                                autoWidth = FALSE
                              ))\n\n```")
-     message(knit_expanded)
      out <- c(out,knit_expanded)
      out1[[curr]] <-knit_expanded
    }  
@@ -130,7 +129,7 @@ for(i in names(all_data@annot)){
 
 ## LR analysis data
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=T}
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
 out <- c()
 out1 <- list()
 for(i in 1:length(names(all_data@tables))){

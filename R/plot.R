@@ -723,42 +723,18 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         )
       )
 
-    data$Pagerank_Score = mapply(
+    data_RTF = data %>%
+      filter(type_gene_B == "Transcription Factor")
+    data_RTF$Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$ligpair, pagerank_table$nodes)]
+    data_RTF$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$recpair, pagerank_table$nodes)]
 
-      map_Pagerank_sankey <- function(gene_name_A, gene_name_B) {
-        if (grepl("|R", gene_name_A, fixed = TRUE)) {
-          pagerank = pagerank_table %>%
-            filter(nodes == as.character(gene_name_A)) %>%
-            select(Pagerank)
-          return(pagerank)
-        } else {
-          pagerank = pagerank_table %>%
-            filter(nodes == as.character(gene_name_B)) %>%
-            select(Pagerank)
-          return(pagerank)
-        }
-      }
+    data_TFL = data %>%
+      filter(type_gene_A == "Transcription Factor")
+    data_TFL$Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$recpair, pagerank_table$nodes)]
+    data_TFL$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$ligpair, pagerank_table$nodes)]
 
-      , data$ligpair, data$recpair)
-    data <- as.data.frame(lapply(data, unlist))
+    data = rbind(data_RTF, data_TFL)
 
-    data$TF_Pagerank_Score = mapply(
-
-      map_Pagerank_sankey <- function(gene_name_A, gene_name_B) {
-        if (grepl("|R", gene_name_A, fixed = TRUE)) {
-          pagerank = pagerank_table %>%
-            filter(nodes == as.character(gene_name_B)) %>%
-            select(Pagerank)
-          return(pagerank)
-        } else {
-          pagerank = pagerank_table %>%
-            filter(nodes == as.character(gene_name_A)) %>%
-            select(Pagerank)
-          return(pagerank)
-        }
-      }
-
-      , data$ligpair, data$recpair)
     data <- as.data.frame(lapply(data, unlist))
 
     data_group1 <- subset(data, type_gene_A %in% c("Receptor"))

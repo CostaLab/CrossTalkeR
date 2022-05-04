@@ -2,14 +2,14 @@
 title: "Report diferential analysis"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
-      toc: yes
-      toc_depth: 3
-      theme: simplex
+html_document:
+toc: yes
+toc_depth: 3
+theme: simplex
 
 params:
-  obj1: "path to obj"
-  thr: 'percentage edges to plot'
+obj1: "path to obj"
+thr: 'percentage edges to plot'
 
 ---
 
@@ -42,17 +42,17 @@ extrafont::loadfonts()
 #### PC1 and PC2
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
-      
-     map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-     colnames(map_df) <- c("gene")
-     map_df$mapping <- sapply(map_df$gene, function(gene) {
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+
+    map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
+    colnames(map_df) <- c("gene")
+    map_df$mapping <- sapply(map_df$gene, function(gene) {
       if (grepl("|R", gene, fixed = TRUE)) {
         txt <- "Receptor"
       } else if (grepl("|L", gene, fixed = TRUE)) {
@@ -61,29 +61,29 @@ for(i in 1:length(names(all_data@pca))){
         txt <- "Transcription Factor"
       }
       return(txt)
-     })
-     
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca')
-     x <- max(abs(all_data@pca[[curr]]$x[,1]))
-     y <- max(abs(all_data@pca[[curr]]$x[,2]))
-     z_x <- data@pca[[curr]]$x[,1]
-     z_y <- data@pca[[curr]]$x[,2]
-     ver_zx <- ifelse(abs(z_x)>=(2*data@pca[[curr]]$sdev[1]),1,0)
-     ver_zy <- ifelse(abs(z_y)>=(2*data@pca[[curr]]$sdev[2]),1,0)
-     print(fviz_pca_biplot(data@pca[[curr]],
-                    axes = c(1,2),
-                    pointshape = 20, pointsize = 2,labelsize = 10,
-                    repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-                    geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(data@pca[[curr]]$x),NA)),size = 5)+
-                    xlim(-x, x)+
-                    ylim(-y, y)+
-                    ggtitle(curr)+
-                    theme(text = element_text(size = 7.5),
-                          axis.title = element_text(size = 7.5),
-                          axis.text = element_text(size = 7.5)))
+    })
 
-   }  
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 1]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    z_x <- data@pca[[curr]]$x[, 1]
+    z_y <- data@pca[[curr]]$x[, 2]
+    ver_zx <- ifelse(abs(z_x) >= (2 * data@pca[[curr]]$sdev[1]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * data@pca[[curr]]$sdev[2]), 1, 0)
+    print(fviz_pca_biplot(data@pca[[curr]],
+                          axes = c(1, 2),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
+            theme(text = element_text(size = 7.5),
+                  axis.title = element_text(size = 7.5),
+                  axis.text = element_text(size = 7.5)))
+
+  }
 }
 
 ```
@@ -91,17 +91,17 @@ for(i in 1:length(names(all_data@pca))){
 #### PC2 and PC3
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
-     
-     map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-     colnames(map_df) <- c("gene")
-     map_df$mapping <- sapply(map_df$gene, function(gene) {
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+
+    map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
+    colnames(map_df) <- c("gene")
+    map_df$mapping <- sapply(map_df$gene, function(gene) {
       if (grepl("|R", gene, fixed = TRUE)) {
         txt <- "Receptor"
       } else if (grepl("|L", gene, fixed = TRUE)) {
@@ -110,29 +110,29 @@ for(i in 1:length(names(all_data@pca))){
         txt <- "Transcription Factor"
       }
       return(txt)
-     })
-       
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca')
-     x <- max(abs(all_data@pca[[curr]]$x[,2]))
-     y <- max(abs(all_data@pca[[curr]]$x[,3]))
-     z_x <- data@pca[[curr]]$x[,2]
-     z_y <- data@pca[[curr]]$x[,3]
-     ver_zx <- ifelse(abs(z_x)>=(2*data@pca[[curr]]$sdev[2]),1,0)
-     ver_zy <- ifelse(abs(z_y)>=(2*data@pca[[curr]]$sdev[3]),1,0)
-     print(fviz_pca_biplot(data@pca[[curr]],
-                    axes = c(2,3),
-                    pointshape = 20, pointsize = 2,labelsize = 10,
-                    repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-                    geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(data@pca[[curr]]$x),NA)),size = 5)+
-                    xlim(-x, x)+
-                    ylim(-y, y)+
-                    ggtitle(curr)+
-                    theme(text = element_text(size = 7.5),
-                          axis.title = element_text(size = 7.5),
-                          axis.text = element_text(size = 7.5)))
+    })
 
-   }  
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    z_x <- data@pca[[curr]]$x[, 2]
+    z_y <- data@pca[[curr]]$x[, 3]
+    ver_zx <- ifelse(abs(z_x) >= (2 * data@pca[[curr]]$sdev[2]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * data@pca[[curr]]$sdev[3]), 1, 0)
+    print(fviz_pca_biplot(data@pca[[curr]],
+                          axes = c(2, 3),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
+            theme(text = element_text(size = 7.5),
+                  axis.title = element_text(size = 7.5),
+                  axis.text = element_text(size = 7.5)))
+
+  }
 }
 
 ```
@@ -140,17 +140,17 @@ for(i in 1:length(names(all_data@pca))){
 #### PC3 and PC4
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
-       
-     map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-     colnames(map_df) <- c("gene")
-     map_df$mapping <- sapply(map_df$gene, function(gene) {
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+
+    map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
+    colnames(map_df) <- c("gene")
+    map_df$mapping <- sapply(map_df$gene, function(gene) {
       if (grepl("|R", gene, fixed = TRUE)) {
         txt <- "Receptor"
       } else if (grepl("|L", gene, fixed = TRUE)) {
@@ -159,29 +159,29 @@ for(i in 1:length(names(all_data@pca))){
         txt <- "Transcription Factor"
       }
       return(txt)
-     })
-       
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca')
-     x <- max(abs(all_data@pca[[curr]]$x[,3]))
-     y <- max(abs(all_data@pca[[curr]]$x[,4]))
-     z_x <- data@pca[[curr]]$x[,3]
-     z_y <- data@pca[[curr]]$x[,4]
-     ver_zx <- ifelse(abs(z_x)>=(2*data@pca[[curr]]$sdev[3]),1,0)
-     ver_zy <- ifelse(abs(z_y)>=(2*data@pca[[curr]]$sdev[4]),1,0)
-     print(fviz_pca_biplot(data@pca[[curr]],
-                    axes = c(3,4),
-                    pointshape = 20, pointsize = 2,labelsize = 10,
-                    repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-                    geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(data@pca[[curr]]$x),NA)),size = 5)+
-                    xlim(-x, x)+
-                    ylim(-y, y)+
-                    ggtitle(curr)+
-                    theme(text = element_text(size = 7.5),
-                          axis.title = element_text(size = 7.5),
-                          axis.text = element_text(size = 7.5)))
+    })
 
-   }  
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 4]))
+    z_x <- data@pca[[curr]]$x[, 3]
+    z_y <- data@pca[[curr]]$x[, 4]
+    ver_zx <- ifelse(abs(z_x) >= (2 * data@pca[[curr]]$sdev[3]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * data@pca[[curr]]$sdev[4]), 1, 0)
+    print(fviz_pca_biplot(data@pca[[curr]],
+                          axes = c(3, 4),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
+            theme(text = element_text(size = 7.5),
+                  axis.title = element_text(size = 7.5),
+                  axis.text = element_text(size = 7.5)))
+
+  }
 }
 
 ```
@@ -191,15 +191,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -218,22 +218,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,1]))
-    y <- max(abs(all_data@pca[[curr]]$x[,2]))
-    z_x <- all_data@pca[[curr]]$x[,1]
-    z_y <- all_data@pca[[curr]]$x[,2]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[1]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[2]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 1]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    z_x <- all_data@pca[[curr]]$x[, 1]
+    z_y <- all_data@pca[[curr]]$x[, 2]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[1]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[2]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(1,2),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(1, 2),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -247,15 +247,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -274,22 +274,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,2]))
-    y <- max(abs(all_data@pca[[curr]]$x[,3]))
-    z_x <- all_data@pca[[curr]]$x[,2]
-    z_y <- all_data@pca[[curr]]$x[,3]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[2]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[3]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    z_x <- all_data@pca[[curr]]$x[, 2]
+    z_y <- all_data@pca[[curr]]$x[, 3]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[2]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[3]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(2,3),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(2, 3),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -303,15 +303,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -330,22 +330,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,3]))
-    y <- max(abs(all_data@pca[[curr]]$x[,4]))
-    z_x <- all_data@pca[[curr]]$x[,3]
-    z_y <- all_data@pca[[curr]]$x[,4]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[3]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[4]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 4]))
+    z_x <- all_data@pca[[curr]]$x[, 3]
+    z_y <- all_data@pca[[curr]]$x[, 4]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[3]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[4]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(3,4),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(3, 4),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -359,15 +359,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -386,22 +386,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,1]))
-    y <- max(abs(all_data@pca[[curr]]$x[,2]))
-    z_x <- all_data@pca[[curr]]$x[,1]
-    z_y <- all_data@pca[[curr]]$x[,2]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[1]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[2]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 1]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    z_x <- all_data@pca[[curr]]$x[, 1]
+    z_y <- all_data@pca[[curr]]$x[, 2]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[1]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[2]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(1,2),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(1, 2),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -415,15 +415,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -442,22 +442,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,2]))
-    y <- max(abs(all_data@pca[[curr]]$x[,3]))
-    z_x <- all_data@pca[[curr]]$x[,2]
-    z_y <- all_data@pca[[curr]]$x[,3]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[2]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[3]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 2]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    z_x <- all_data@pca[[curr]]$x[, 2]
+    z_y <- all_data@pca[[curr]]$x[, 3]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[2]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[3]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(2,3),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(2, 3),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -471,15 +471,15 @@ for(i in 1:length(names(all_data@pca))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
+for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-    pca_split = all_data@pca[[curr]]$x[,1]
+    pca_split = all_data@pca[[curr]]$x[, 1]
     pca_split_names = names(pca_split)
     result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
     col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
@@ -498,22 +498,22 @@ for(i in 1:length(names(all_data@pca))){
       return(txt)
     })
 
-    rmd_title <- paste0(curr,'_tbl')
-    rmd_title1 <- paste0(curr,'_pca')
-    x <- max(abs(all_data@pca[[curr]]$x[,3]))
-    y <- max(abs(all_data@pca[[curr]]$x[,4]))
-    z_x <- all_data@pca[[curr]]$x[,3]
-    z_y <- all_data@pca[[curr]]$x[,4]
-    ver_zx <- ifelse(abs(z_x)>=(2*all_data@pca[[curr]]$sdev[3]),1,0)
-    ver_zy <- ifelse(abs(z_y)>=(2*all_data@pca[[curr]]$sdev[4]),1,0)
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    x <- max(abs(all_data@pca[[curr]]$x[, 3]))
+    y <- max(abs(all_data@pca[[curr]]$x[, 4]))
+    z_x <- all_data@pca[[curr]]$x[, 3]
+    z_y <- all_data@pca[[curr]]$x[, 4]
+    ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[3]), 1, 0)
+    ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[4]), 1, 0)
     print(fviz_pca_biplot(all_data@pca[[curr]],
-                          axes = c(3,4),
-                          pointshape = 20, pointsize = 2,labelsize = 10,
-                          repel = FALSE,max.overlaps=100,label='var', habillage = map_df$mapping)+
-            geom_label_repel(aes(label=ifelse((ver_zx | ver_zy),rownames(all_data@pca[[curr]]$x),NA)),size = 5)+
-            xlim(-x, x)+
-            ylim(-y, y)+
-            ggtitle(curr)+
+                          axes = c(3, 4),
+                          pointshape = 20, pointsize = 2, labelsize = 10,
+                          repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
+            geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
+            xlim(-x, x) +
+            ylim(-y, y) +
+            ggtitle(curr) +
             theme(text = element_text(size = 7.5),
                   axis.title = element_text(size = 7.5),
                   axis.text = element_text(size = 7.5)))
@@ -528,16 +528,16 @@ for(i in 1:length(names(all_data@pca))){
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
 all_data <- readRDS(path)
-for(i in 2:length(names(all_data@rankings))){
+for (i in 2:length(names(all_data@rankings))) {
   curr <- names(all_data@rankings)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)){
-    tmp <- top_n(all_data@rankings[[curr]],20,abs(.data$Pagerank))
-    signal <- ifelse(tmp$Pagerank < 0, 'negative','positive')
-    print(ggplot(tmp, aes(x=Pagerank,y=reorder(nodes,Pagerank),fill=signal))+
-        geom_bar(stat="identity")+
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-        theme_minimal())
-  }  
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)) {
+    tmp <- top_n(all_data@rankings[[curr]], 20, abs(.data$Pagerank))
+    signal <- ifelse(tmp$Pagerank < 0, 'negative', 'positive')
+    print(ggplot(tmp, aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
+            geom_bar(stat = "identity") +
+            scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
+            theme_minimal())
+  }
 }
 ```
 
@@ -551,19 +551,19 @@ for(i in 2:length(names(all_data@rankings))){
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)){
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca')
-     title <- paste0('\n\n#### Table PCA CGI ',curr)
-     knit_expanded <- paste0("```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
-         pca <- all_data@pca[['",curr,"']]$x[,1:2]
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    title <- paste0('\n\n#### Table PCA CGI ', curr)
+    knit_expanded <- paste0("```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
+         pca <- all_data@pca[['", curr, "']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
          pca[,2] <- round(pca[,2],6)
-         ranking <- cbind(all_data@rankings[['",curr,"']][,2:dim(all_data@rankings[['",curr,"']])[2]],pca[all_data@rankings[['",curr,"']]$nodes,])
+         ranking <- cbind(all_data@rankings[['", curr, "']][,2:dim(all_data@rankings[['", curr, "']])[2]],pca[all_data@rankings[['", curr, "']]$nodes,])
          datatable(ranking,
-                 caption='",curr,"',
+                 caption='", curr, "',
                  extensions = 'Buttons',
                  options = list(dom = 'Bfrtip',
                                 buttons = c('copy',
@@ -575,9 +575,9 @@ for(i in 1:length(names(all_data@pca))){
                 )
 
      ```")
-     out <- c(out,knit_expanded)
-     out1[[curr]] <-knit_expanded
-   }  
+    out <- c(out, knit_expanded)
+    out1[[curr]] <- knit_expanded
+  }
 }
 
 ```
@@ -591,21 +591,21 @@ for(i in 1:length(names(all_data@pca))){
 
 ```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F}
 all_data <- readRDS(path)
-for(i in names(all_data@annot)){
-  if( grepl('_x_',i) & grepl('ggi',i) ){
-    paths <- read.csv(system.file("extdata","selected_KEGG.csv",package = "CrossTalkeR"),header=F)
-    filtered <- all_data@annot[[i]][grepl(paste(paths$V1,collapse='|'), all_data@annot[[i]]$ID),]
-    filtered <- filtered[filtered$p.adjust<=0.05,]
+for (i in names(all_data@annot)) {
+  if (grepl('_x_', i) & grepl('ggi', i)) {
+    paths <- read.csv(system.file("extdata", "selected_KEGG.csv", package = "CrossTalkeR"), header = F)
+    filtered <- all_data@annot[[i]][grepl(paste(paths$V1, collapse = '|'), all_data@annot[[i]]$ID),]
+    filtered <- filtered[filtered$p.adjust <= 0.05,]
     filtered <- na.omit(filtered)
-    if(dim(filtered)[1] >=2){
-    mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
-    mat[is.na(mat)]=1
-    p1<-Heatmap(-log10(mat), col =c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='-log10(p.adjust)')
-    draw(p1)
-   }
-   else{
-     print('Unnable to do the enrichment')
-   }  
+    if (dim(filtered)[1] >= 2) {
+      mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
+      mat[is.na(mat)] = 1
+      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = '-log10(p.adjust)')
+      draw(p1)
+    }
+    else {
+      print('Unnable to do the enrichment')
+    }
   }
 }
 
@@ -618,13 +618,13 @@ for(i in names(all_data@annot)){
 
 ```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@tables))){
+for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
-  if(str_detect(curr, '_x_', negate = FALSE)){
-      for(gene in params$obj2){
-        suppressWarnings({plot_sankey(all_data@tables[[curr]],
-                    target=gene,plt_name=paste0(curr,' ',gene))})
-      }
+  if (str_detect(curr, '_x_', negate = FALSE)) {
+    for (gene in params$obj2) {
+      suppressWarnings({ plot_sankey(all_data@tables[[curr]],
+                                     target = gene, plt_name = paste0(curr, ' ', gene)) })
+    }
   }
 }
 ```
@@ -637,12 +637,12 @@ for(i in 1:length(names(all_data@tables))){
 ```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
 all_data <- readRDS(path)
 
-for(i in 1:length(names(all_data@rankings))){
+for (i in 1:length(names(all_data@rankings))) {
   curr_pagerank <- names(all_data@pca)[i]
-  if(str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)){
+  if (str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)) {
     pagerank_table = all_data@rankings[[curr_pagerank]] %>%
       select(c("nodes", "Pagerank"))
-  }}
+  } }
 
 for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
@@ -666,7 +666,7 @@ for (i in 1:length(names(all_data@tables))) {
           Cluster = Ligand.Cluster,
           TFScore = LRScore
         )
-      
+
       table_tfl = all_data@tables[[curr]] %>%
         filter(type_gene_A == "Transcription Factor") %>%
         subset(
@@ -685,21 +685,108 @@ for (i in 1:length(names(all_data@tables))) {
           Cluster = Ligand.Cluster,
           TFScore = LRScore
         )
-      
+
       df_combined = left_join(table_rtfs, table_tfl, by = "TF", all = TRUE) %>%
         na.omit()
       suppressWarnings({
         plot_sankey_tf_pagerank(df_combined,
-                    pagerank_table,
-                    target = gene[[2]],
-                    cluster = gene[[3]],
-                    target_type = gene[[1]],
-                    plt_name = paste0(curr, ' ', gene[[2]]),
-                    save_path = path)
+                                pagerank_table,
+                                target = gene[[2]],
+                                cluster = gene[[3]],
+                                target_type = gene[[1]],
+                                plt_name = paste0(curr, ' ', gene[[2]]),
+                                save_path = path)
       })
     }
   }
 }
+```
+
+
+
+## Transkription Factor Sankey Plot: Transcription Factor-based intra cellular interactions
+
+
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+all_data <- readRDS(path)
+
+for (i in 1:length(names(all_data@rankings))) {
+  curr_pagerank <- names(all_data@pca)[i]
+  if (str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)) {
+    pagerank_table = all_data@rankings[[curr_pagerank]] %>%
+      select(c("nodes", "Pagerank"))
+    pagerank_table = as.data.frame(pagerank_table)
+    rownames(pagerank_table) = pagerank_table$nodes
+  } }
+
+for (i in 1:length(names(all_data@tables))) {
+  curr <- names(all_data@tables)[i]
+  if (str_detect(curr, '_x_', negate = FALSE)) {
+    for (gene in params$obj3) {
+      rtfl_table = all_data@tables[[curr]] %>%
+        filter(type_gene_B == "Transcription Factor" | type_gene_A == "Transcription Factor") %>%
+        subset(
+          select = c(
+            "Ligand",
+            "Receptor",
+            "type_gene_A",
+            "type_gene_B",
+            "Ligand.Cluster",
+            "ligpair",
+            "recpair",
+            "LRScore"
+          )
+        )
+
+      suppressWarnings({
+        plot_sankey_tf_pagerank(df_combined,
+                                pagerank_table,
+                                target = gene[[2]],
+                                cluster = gene[[3]],
+                                target_type = gene[[1]],
+                                plt_name = paste0(curr, ' ', gene[[2]]),
+                                save_path = path)
+      })
+    }
+  }
+}
+```
+
+
+
+## Transkription Factor New Custom Sankey Plot: Transcription Factor-based intra cellular interactions
+
+
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+all_data <- readRDS(path)
+
+for (i in 1:length(names(all_data@rankings))) {
+  curr_pagerank <- names(all_data@pca)[i]
+  if (str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)) {
+    pagerank_table = all_data@rankings[[curr_pagerank]] %>%
+      select(c("nodes", "Pagerank"))
+    pagerank_table = as.data.frame(pagerank_table)
+    rownames(pagerank_table) = pagerank_table$nodes
+  } }
+
+for (i in 1:length(names(all_data@tables))) {
+  curr <- names(all_data@tables)[i]
+  if (str_detect(curr, '_x_', negate = FALSE)) {
+    for (gene in params$obj3) {
+      rtfl_table = all_data@tables[[curr]]
+      suppressWarnings({
+        plot_graph_sankey_tf(rtfl_table,
+                             pagerank_table,
+                             target = gene[[2]],
+                             cluster = gene[[3]],
+                             target_type = gene[[1]],
+                             plt_name = paste0(curr, ' ', gene[[2]]),
+                             save_path = path)
+      })
+      }
+    }
+  }
+
 ```
 
 
@@ -710,18 +797,18 @@ for (i in 1:length(names(all_data@tables))) {
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@tables))){
-     curr <- names(all_data@tables)[i]
-     if(str_detect(curr, '_x_', negate = FALSE)){
+for (i in 1:length(names(all_data@tables))) {
+  curr <- names(all_data@tables)[i]
+  if (str_detect(curr, '_x_', negate = FALSE)) {
 
-     rmd_title <- paste0(curr,'_tbl')
-     knit_expanded <- paste0("```{r results='",rmd_title,"', echo=FALSE, warning=FALSE}
-                             \n\n                          datatable(all_data@tables[['",curr,"']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'LRScore')],caption='",curr,"', extensions = 'Buttons', options = list(
+    rmd_title <- paste0(curr, '_tbl')
+    knit_expanded <- paste0("```{r results='", rmd_title, "', echo=FALSE, warning=FALSE}
+                             \n\n                          datatable(all_data@tables[['", curr, "']][,c('Ligand.Cluster','Receptor.Cluster','Ligand','Receptor' ,'LRScore')],caption='", curr, "', extensions = 'Buttons', options = list(
     dom = 'Bfrtip',
     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
-     out <- c(out,knit_expanded)
-     out1[[curr]] <-knit_expanded
-   }
+    out <- c(out, knit_expanded)
+    out1[[curr]] <- knit_expanded
+  }
 }
 
 ```

@@ -773,7 +773,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       graph1 <- igraph::graph_from_data_frame(graph_df[, c("Ligand", "Receptor", "Pagerank_Score")])
 
 
-      recptors_coord = gene_list1 %>%
+      receptors_coord = gene_list1 %>%
         select(Ligand) %>%
         rename(gene = Ligand) %>%
         unique()

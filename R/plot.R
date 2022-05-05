@@ -794,9 +794,22 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
         unique()
 
-      res_df = set_coords(ligands_coord, "L")
-      res_df = rbind(res_df, set_coords(tf_coord, "TF"))
-      res_df = rbind(res_df, set_coords(recptors_coord, "R"))
+      if (dim(ligands_coord)[1] > 0){
+        res_df = set_coords(ligands_coord, "L")
+      }
+
+      if (exists('res_df')){
+        res_df = rbind(res_df, set_coords(tf_coord, "TF"))
+      } else {
+        res_df = set_coords(tf_coord, "TF")
+      }
+
+      if (exists('res_df')){
+        res_df = rbind(res_df, set_coords(recptors_coord, "R"))
+      } else {
+        res_df = set_coords(recptors_coord, "R")
+      }
+
       rownames(res_df) = res_df$gene
 
       for (vertice in V(graph1)) {
@@ -848,7 +861,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       print(paste0("Target gene ", target, " not found in selected cluster ", cluster, "!"))
     }
 
-  } else {
+  }else {
     print("Please provide an target gene to filter the interactions!")
   }
 }

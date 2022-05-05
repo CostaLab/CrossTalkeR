@@ -797,6 +797,8 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       res_df = set_coords(ligands_coord, "L")
       res_df = rbind(res_df, set_coords(tf_coord, "TF"))
       res_df = rbind(res_df, set_coords(recptors_coord, "R"))
+      res_df = res_df %>%
+        unique()
       rownames(res_df) = res_df$gene
 
       for (vertice in V(graph1)) {

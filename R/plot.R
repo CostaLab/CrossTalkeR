@@ -619,7 +619,7 @@ set_coords <- function(df, type) {
     x = length(df$gene) / 2 * 5
     coords = seq(-x + 2.5, x - 2.5, by = 5)
   } else {
-    x = (round(length(df$gene) / 2, digits = 0)) * 5
+    x = (floor(length(df$gene) / 2)) * 5
     coords = seq(-x, x, by = 5)
   }
   df$y = rev(coords)

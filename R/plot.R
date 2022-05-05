@@ -723,109 +723,110 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         )
       )
 
-    data_RTF = data %>%
-      filter(type_gene_B == "Transcription Factor")
-    data_RTF$Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$ligpair, pagerank_table$nodes)]
-    data_RTF$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$recpair, pagerank_table$nodes)]
+    if (dim(data)[1] > 0) {
+      print(length(data))
+      data_RTF = data %>%
+        filter(type_gene_B == "Transcription Factor")
+      data_RTF$Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$ligpair, pagerank_table$nodes)]
+      data_RTF$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$recpair, pagerank_table$nodes)]
 
-    data_TFL = data %>%
-      filter(type_gene_A == "Transcription Factor")
-    data_TFL$Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$recpair, pagerank_table$nodes)]
-    data_TFL$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$ligpair, pagerank_table$nodes)]
+      data_TFL = data %>%
+        filter(type_gene_A == "Transcription Factor")
+      data_TFL$Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$recpair, pagerank_table$nodes)]
+      data_TFL$TF_Pagerank_Score <- pagerank_table$Pagerank[match(data_TFL$ligpair, pagerank_table$nodes)]
 
-    data = rbind(data_RTF, data_TFL)
+      data = rbind(data_RTF, data_TFL)
 
-    data <- as.data.frame(lapply(data, unlist))
+      data <- as.data.frame(lapply(data, unlist))
 
-    data_group1 <- subset(data, type_gene_A %in% c("Receptor"))
-    data_group2 <- subset(data, type_gene_A %in% c("Transcription Factor"))
+      data_group1 <- subset(data, type_gene_A %in% c("Receptor"))
+      data_group2 <- subset(data, type_gene_A %in% c("Transcription Factor"))
 
-    if (target_type == "TF") {
-      gene_list1 <- data_group1 %>%
-        arrange(desc(abs(Pagerank_Score))) %>%
-        head(10)
+      if (target_type == "TF") {
+        gene_list1 <- data_group1 %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
+          head(10)
 
-      gene_list2 <- data_group2 %>%
-        arrange(desc(abs(Pagerank_Score))) %>%
-        head(10)
-    } else if (target_type == "R") {
-      gene_list1 <- data_group1 %>%
-        arrange(desc(abs(TF_Pagerank_Score))) %>%
-        head(10)
+        gene_list2 <- data_group2 %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
+          head(10)
+      } else if (target_type == "R") {
+        gene_list1 <- data_group1 %>%
+          arrange(desc(abs(TF_Pagerank_Score))) %>%
+          head(10)
 
-      gene_list2 <- data_group2 %>%
-        arrange(desc(abs(Pagerank_Score))) %>%
-        head(10)
-    } else {
-      gene_list1 <- data_group1 %>%
-        arrange(desc(abs(Pagerank_Score))) %>%
-        head(10)
-
-      gene_list2 <- data_group2 %>%
-        arrange(desc(abs(TF_Pagerank_Score))) %>%
-        head(10)
-    }
-
-    graph_df = rbind(gene_list1, gene_list2)
-
-    graph1 <- igraph::graph_from_data_frame(graph_df[, c("Ligand", "Receptor", "Pagerank_Score")])
-
-
-    recptors_coord = gene_list1 %>%
-      select(Ligand, Pagerank_Score) %>%
-      rename(gene = Ligand) %>%
-      unique()
-
-    ligands_coord = gene_list2 %>%
-      select(Receptor, Pagerank_Score) %>%
-      rename(gene = Receptor) %>%
-      unique()
-
-    tf_coord_r = gene_list1 %>%
-      select(Receptor, LRScore) %>%
-      rename(gene = Receptor, Pagerank_Score = LRScore) %>%
-      unique()
-    tf_coord_l = gene_list2 %>%
-      select(Ligand, LRScore) %>%
-      rename(gene = Ligand, Pagerank_Score = LRScore) %>%
-      unique()
-    tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
-      unique()
-
-    res_df = set_coords(ligands_coord, "L")
-    res_df = rbind(res_df, set_coords(tf_coord, "TF"))
-    res_df = rbind(res_df, set_coords(recptors_coord, "R"))
-    rownames(res_df) = res_df$gene
-
-    for (vertice in V(graph1)) {
-      name = vertex_attr(graph1, "name", vertice)
-      if (grepl("|R", name, fixed = TRUE)) {
-        vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Receptor"
-        vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
-        vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
-      } else if (grepl("|L", name, fixed = TRUE)) {
-        vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Ligand"
-        vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
-        vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
+        gene_list2 <- data_group2 %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
+          head(10)
       } else {
-        vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Transcription Factor"
-        vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
-        vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
+        gene_list1 <- data_group1 %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
+          head(10)
+
+        gene_list2 <- data_group2 %>%
+          arrange(desc(abs(TF_Pagerank_Score))) %>%
+          head(10)
       }
-    }
 
-    test_result_pg = pagerank_table$Pagerank[V(graph1)$clustername]
-    igraph::V(graph1)$size <- scales::rescale(test_result_pg, c(1, 60))
+      graph_df = rbind(gene_list1, gene_list2)
 
-    mat_coords <- matrix(, nrow = length(V(graph1)), ncol = 2)
-
-    for (vertice in V(graph1)) {
-      name = vertex_attr(graph1, "name", vertice)
-      mat_coords[vertice,] = c(res_df[name,]$x, res_df[name,]$y)
-    }
+      graph1 <- igraph::graph_from_data_frame(graph_df[, c("Ligand", "Receptor", "Pagerank_Score")])
 
 
-    if (dim(data)[1] >= 1) {
+      recptors_coord = gene_list1 %>%
+        select(Ligand, Pagerank_Score) %>%
+        rename(gene = Ligand) %>%
+        unique()
+
+      ligands_coord = gene_list2 %>%
+        select(Receptor, Pagerank_Score) %>%
+        rename(gene = Receptor) %>%
+        unique()
+
+      tf_coord_r = gene_list1 %>%
+        select(Receptor, LRScore) %>%
+        rename(gene = Receptor, Pagerank_Score = LRScore) %>%
+        unique()
+      tf_coord_l = gene_list2 %>%
+        select(Ligand, LRScore) %>%
+        rename(gene = Ligand, Pagerank_Score = LRScore) %>%
+        unique()
+      tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
+        unique()
+
+      res_df = set_coords(ligands_coord, "L")
+      res_df = rbind(res_df, set_coords(tf_coord, "TF"))
+      res_df = rbind(res_df, set_coords(recptors_coord, "R"))
+      rownames(res_df) = res_df$gene
+
+      for (vertice in V(graph1)) {
+        name = vertex_attr(graph1, "name", vertice)
+        if (grepl("|R", name, fixed = TRUE)) {
+          vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Receptor"
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
+          vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
+        } else if (grepl("|L", name, fixed = TRUE)) {
+          vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Ligand"
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
+          vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
+        } else {
+          vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Transcription Factor"
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, name),]
+          vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
+        }
+      }
+
+      test_result_pg = pagerank_table$Pagerank[V(graph1)$clustername]
+      igraph::V(graph1)$size <- scales::rescale(test_result_pg, c(1, 60))
+
+      mat_coords <- matrix(, nrow = length(V(graph1)), ncol = 2)
+
+      for (vertice in V(graph1)) {
+        name = vertex_attr(graph1, "name", vertice)
+        mat_coords[vertice,] = c(res_df[name,]$x, res_df[name,]$y)
+      }
+
+
       data$freq <- 1
       # tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
       #                                  dim(data)[1]), abs(.data$TFScore.x))
@@ -846,12 +847,12 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
               annotate(geom = "text", x = 25, y = max(res_df$y) + 5, label = "Ligand", size = 5, fontface = "bold") +
               theme(plot.margin = unit(rep(30, 4), "points"))
       )
+
+    } else {
+      print(paste0("Target gene ", target, " not found in selected cluster ", cluster, "!"))
     }
-    else {
-      print(paste0("Gene->", target, "Not Found"))
-    }
-  }
-  else {
+
+  } else {
     print("Please provide an target gene to filter the interactions!")
   }
 }

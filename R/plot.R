@@ -622,7 +622,7 @@ set_coords <- function(df, type) {
     x = (floor(length(df$gene) / 2)) * 5
     coords = seq(-x, x, by = 5)
   }
-  df$y = rev(coords)
+  df$y = coords
   if (type == "R") {
     df$x = 5
   } else if (type == "TF") {

@@ -774,22 +774,22 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
 
       receptors_coord = gene_list1 %>%
-        select(Ligand) %>%
-        rename(gene = Ligand) %>%
+        select(Ligand, Pagerank_Score) %>%
+        rename(gene = Ligand, score = Pagerank_Score) %>%
         unique()
 
       ligands_coord = gene_list2 %>%
-        select(Receptor) %>%
-        rename(gene = Receptor) %>%
+        select(Receptor, Pagerank_Score) %>%
+        rename(gene = Receptor, score = Pagerank_Score) %>%
         unique()
 
       tf_coord_r = gene_list1 %>%
-        select(Receptor) %>%
-        rename(gene = Receptor) %>%
+        select(Receptor, TF_Pagerank_Score) %>%
+        rename(gene = Receptor, score = TF_Pagerank_Score) %>%
         unique()
       tf_coord_l = gene_list2 %>%
-        select(Ligand) %>%
-        rename(gene = Ligand) %>%
+        select(Ligand, TF_Pagerank_Score) %>%
+        rename(gene = Ligand, score = TF_Pagerank_Score) %>%
         unique()
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
         unique()

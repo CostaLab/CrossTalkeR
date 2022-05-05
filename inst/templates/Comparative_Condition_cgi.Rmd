@@ -780,7 +780,7 @@ for (i in 1:length(names(all_data@tables))) {
                              target = gene[[2]],
                              cluster = gene[[3]],
                              target_type = gene[[1]],
-                             plt_name = paste0(curr, ' ', gene[[2]]),
+                             plt_name = paste0(curr, ' ', gene[[2]], ' ', gene[[3]]),
                              save_path = path)
       })
       }

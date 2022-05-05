@@ -622,7 +622,7 @@ set_coords <- function(df, type) {
     x = (floor(length(df$gene) / 2)) * 5
     coords = seq(-x, x, by = 5)
   }
-  df$y = coords
+  df$y = rev(coords)
   if (type == "R") {
     df$x = 5
   } else if (type == "TF") {
@@ -772,15 +772,16 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       graph1 <- igraph::graph_from_data_frame(graph_df[, c("Ligand", "Receptor", "Pagerank_Score")])
 
-
       receptors_coord = gene_list1 %>%
         select(Ligand, Pagerank_Score) %>%
         rename(gene = Ligand, score = Pagerank_Score) %>%
+        arrange(desc(score)) %>%
         unique()
 
       ligands_coord = gene_list2 %>%
         select(Receptor, Pagerank_Score) %>%
         rename(gene = Receptor, score = Pagerank_Score) %>%
+        arrange(desc(score)) %>%
         unique()
 
       tf_coord_r = gene_list1 %>%
@@ -792,6 +793,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         rename(gene = Ligand, score = TF_Pagerank_Score) %>%
         unique()
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
+        arrange(desc(score)) %>%
         unique()
 
       if (dim(ligands_coord)[1] > 0) {
@@ -859,7 +861,8 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
               annotate(geom = "text", x = 5, y = max(res_df$y) + 5, label = "Receptor", size = 5, fontface = "bold") +
               annotate(geom = "text", x = 15, y = max(res_df$y) + 5, label = "Transcription Factor", size = 5, fontface = "bold") +
               annotate(geom = "text", x = 25, y = max(res_df$y) + 5, label = "Ligand", size = 5, fontface = "bold") +
-              theme(plot.margin = unit(rep(30, 4), "points"))
+              theme(plot.margin = unit(rep(30, 4), "points")) +
+              ggtitle(plt_name)
       )
 
     } else {

@@ -794,20 +794,24 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
         unique()
 
-      if (dim(ligands_coord)[1] > 0){
+      if (dim(ligands_coord)[1] > 0) {
         res_df = set_coords(ligands_coord, "L")
       }
 
-      if (exists('res_df')){
-        res_df = rbind(res_df, set_coords(tf_coord, "TF"))
-      } else {
-        res_df = set_coords(tf_coord, "TF")
+      if (dim(tf_coord) > 0) {
+        if (exists('res_df')) {
+          res_df = rbind(res_df, set_coords(tf_coord, "TF"))
+        } else {
+          res_df = set_coords(tf_coord, "TF")
+        }
       }
 
-      if (exists('res_df')){
-        res_df = rbind(res_df, set_coords(recptors_coord, "R"))
-      } else {
-        res_df = set_coords(recptors_coord, "R")
+      if (dim(receptors_coord)[1] > 0) {
+        if (exists('res_df')) {
+          res_df = rbind(res_df, set_coords(receptors_coord, "R"))
+        } else {
+          res_df = set_coords(receptors_coord, "R")
+        }
       }
 
       rownames(res_df) = res_df$gene
@@ -829,7 +833,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         }
       }
 
-      pagerank_list= setNames(as.list(pagerank_table$Pagerank), pagerank_table$nodes)
+      pagerank_list = setNames(as.list(pagerank_table$Pagerank), pagerank_table$nodes)
       test_result_pg = pagerank_list[V(graph1)$clustername]
       igraph::V(graph1)$size <- scales::rescale(unlist(test_result_pg), c(1, 60))
 

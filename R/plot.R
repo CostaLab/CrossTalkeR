@@ -667,7 +667,31 @@ set_coords <- function(df, type) {
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
-nd %in% receptor_interactions$Receptor)
+plot_graph_sankey_tf <- function(lrobj_tbl,
+                                 pagerank_table,
+                                 target = NULL,
+                                 cluster = NULL,
+                                 target_type = NULL,
+                                 plt_name = NULL,
+                                 threshold = 50,
+                                 save_path = NULL) {
+
+
+  if (!is.null(target)) {
+    if (target_type == "TF") {
+
+      data = lrobj_tbl %>%
+        filter(type_gene_B == "Transcription Factor" | type_gene_A == "Transcription Factor") %>%
+        filter(Receptor == target | Ligand == target)
+
+    } else if (target_type == "R") {
+
+      receptor_interactions = lrobj_tbl %>%
+        filter(type_gene_B == "Transcription Factor") %>%
+        filter(Ligand == target)
+      ligand_interactions = lrobj_tbl %>%
+        filter(type_gene_A == "Transcription Factor") %>%
+        filter(Ligand %in% receptor_interactions$Receptor)
 
       data = rbind(receptor_interactions, ligand_interactions)
 

@@ -721,10 +721,10 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
           "recpair",
           "LRScore"
         )
-      )
+      ) %>%
+      filter(!(type_gene_B == "Transcription Factor" & type_gene_A == "Transcription Factor"))
 
     if (dim(data)[1] > 0) {
-      print(length(data))
       data_RTF = data %>%
         filter(type_gene_B == "Transcription Factor")
       data_RTF$Pagerank_Score <- pagerank_table$Pagerank[match(data_RTF$ligpair, pagerank_table$nodes)]
@@ -774,22 +774,22 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
 
       recptors_coord = gene_list1 %>%
-        select(Ligand, Pagerank_Score) %>%
+        select(Ligand) %>%
         rename(gene = Ligand) %>%
         unique()
 
       ligands_coord = gene_list2 %>%
-        select(Receptor, Pagerank_Score) %>%
+        select(Receptor) %>%
         rename(gene = Receptor) %>%
         unique()
 
       tf_coord_r = gene_list1 %>%
-        select(Receptor, LRScore) %>%
-        rename(gene = Receptor, Pagerank_Score = LRScore) %>%
+        select(Receptor) %>%
+        rename(gene = Receptor) %>%
         unique()
       tf_coord_l = gene_list2 %>%
-        select(Ligand, LRScore) %>%
-        rename(gene = Ligand, Pagerank_Score = LRScore) %>%
+        select(Ligand) %>%
+        rename(gene = Ligand) %>%
         unique()
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
         unique()
@@ -797,8 +797,6 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       res_df = set_coords(ligands_coord, "L")
       res_df = rbind(res_df, set_coords(tf_coord, "TF"))
       res_df = rbind(res_df, set_coords(recptors_coord, "R"))
-      res_df = res_df %>%
-        unique()
       rownames(res_df) = res_df$gene
 
       for (vertice in V(graph1)) {
@@ -829,10 +827,6 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       }
 
 
-      data$freq <- 1
-      # tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
-      #                                  dim(data)[1]), abs(.data$TFScore.x))
-      tmp <- data
       print(ggraph(graph1, layout = mat_coords) +
               geom_edge_fan(aes(colour = Pagerank_Score), width = 2, arrow = arrow(angle = 30, length = unit(4, "mm"))) +
               geom_node_point(aes(size = size)) +

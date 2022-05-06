@@ -35,7 +35,7 @@ Ivan G. Costa<sup>1*</sup>
 
 ## Install
 
-You can install CrossTalkeR with the simple comands below:
+You can install CrossTalkeR with the simple commands below:
 
 
 ```{r}

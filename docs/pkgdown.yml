@@ -1,9 +1,7 @@
-pandoc: '2.5'
-pkgdown: 1.6.1.9001
-pkgdown_sha: 3dd1a1ad7740977491241c89eee15d9b58e75866
+pandoc: 2.14.0.3
+pkgdown: 2.0.3
+pkgdown_sha: ~
 articles:
   CrossTalkeR: CrossTalkeR.html
-  html/Output_Samples: Output_Samples.html
-  html/Output_Samples1: Output_Samples1.html
-last_built: 2021-04-15T12:43Z
+last_built: 2022-05-06T12:57Z
 

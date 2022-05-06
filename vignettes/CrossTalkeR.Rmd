@@ -76,14 +76,13 @@ paths <- c('CTR' = system.file("extdata",
                                "exp_nils_bm_human_newformat.csv",
                                package = "CrossTalkeR"))
 genes <- c('TGFB1')
-output =  system.file("extdata", package = "CrossTalkeR")
 data <- generate_report(paths,
                         genes,
-                        out_path=paste0(output,'/'),
+                        out_path=paste0(getwd(),'/html/'),
                         threshold=0,
                         out_file = 'vignettes_example.html',
                         output_fmt = "html_document",
-                        report = FALSE)
+                        report = TRUE)
 ```
 
 # Individual Visualization
@@ -114,6 +113,12 @@ plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
             plt_name = "TGFB1")
 
 ```
+
+## Report Samples
+
+[Single](Single_vignettes_example.html)
+
+[Comparative](Comparative_vignettes_example.html)
 
 
 # Session information {.unnumbered}

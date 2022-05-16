@@ -22,7 +22,7 @@ always_allow_html: true
 ---
 
 ```{r, echo=FALSE}
-imgpath <- system.file("figures","logo1_40.png",package = "CrossTalkeR")
+imgpath <- system.file("man/figures","logo1_40.png",package = "CrossTalkeR")
 htmltools::img(src = knitr::image_uri(imgpath),
                alt = 'logo',
                style = 'position:absolute; top:0; right:0; padding:10px;;width:100;height:100')

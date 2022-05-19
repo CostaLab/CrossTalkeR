@@ -800,7 +800,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         res_df = set_coords(ligands_coord, "L")
       }
 
-      if (dim(tf_coord) > 0) {
+      if (dim(tf_coord)[1] > 0) {
         if (exists('res_df')) {
           res_df = rbind(res_df, set_coords(tf_coord, "TF"))
         } else {

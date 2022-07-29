@@ -854,7 +854,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
               scale_size_area(name = "Node Pageank") +
               geom_node_text(aes(label = name), size = 4, nudge_y = 1) +
               scale_edge_color_gradient2(low = colorBlindness::Blue2DarkOrange18Steps[4],
-                                         mid = colorBlindness::Blue2DarkOrange18Steps[10],
+                                         mid = "white",
                                          high = colorBlindness::Blue2DarkOrange18Steps[14], midpoint = 0, name = "Pagerank Score") +
               coord_cartesian(clip = "off") +
               theme_void() +

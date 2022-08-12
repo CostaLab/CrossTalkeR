@@ -744,27 +744,27 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       if (target_type == "TF") {
         gene_list1 <- data_group1 %>%
-          arrange(desc(Pagerank_Score)) %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
           head(10)
 
         gene_list2 <- data_group2 %>%
-          arrange(desc(Pagerank_Score)) %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
           head(10)
       } else if (target_type == "R") {
         gene_list1 <- data_group1 %>%
-          arrange(desc(TF_Pagerank_Score)) %>%
+          arrange(desc(abs(TF_Pagerank_Score))) %>%
           head(10)
 
         gene_list2 <- data_group2 %>%
-          arrange(desc(Pagerank_Score)) %>%
+          arrange(desc(abs(Pagerank_Score)))%>%
           head(10)
       } else {
         gene_list1 <- data_group1 %>%
-          arrange(desc(Pagerank_Score)) %>%
+          arrange(desc(abs(Pagerank_Score))) %>%
           head(10)
 
         gene_list2 <- data_group2 %>%
-          arrange(desc(TF_Pagerank_Score)) %>%
+          arrange(desc(abs(TF_Pagerank_Score))) %>%
           head(10)
       }
 

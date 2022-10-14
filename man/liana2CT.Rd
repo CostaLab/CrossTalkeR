@@ -4,24 +4,20 @@
 \alias{liana2CT}
 \title{Format liana2CT}
 \usage{
-liana2CT(data, gene_Ai, gene_Bi, measure)
+liana2CT(data, source = "source", target = "target", gene_Ai, gene_Bi, measure)
 }
 \arguments{
 \item{data}{datafromliana}
-
-\item{measure}{measure to be considered}
 
 \item{source}{source cell population}
 
 \item{target}{target cell population}
 
-\item{gene_A}{source gene population}
+\item{gene_Ai}{source gene population}
 
-\item{gene_B}{target gene population}
+\item{gene_Bi}{target gene population}
 
-\item{type_gene_A}{type source gene population}
-
-\item{type_gene_B}{type target gene population}
+\item{measure}{measure to be considered}
 }
 \value{
 tibble

@@ -12,7 +12,7 @@
 #'@param sep character used to divide the columns on input file
 #'@param colors colorlist
 #'@importFrom tidyr %>%
-#'@import tibble dplyr
+#'@import tibble dplyr assertthat
 #'@return LRObject
 read_lr_single_condition <- function(lrpaths,
                                      sel_columns,
@@ -45,10 +45,9 @@ read_lr_single_condition <- function(lrpaths,
                               remove = FALSE,
                               sep='/')  %>%
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
-                 tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                 tidyr::separate(ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                 tidyr::separate(recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
-
+                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
       }else{
         tmp <- data1[[sel_columns[5]]]
         data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
@@ -67,9 +66,9 @@ read_lr_single_condition <- function(lrpaths,
                               remove = FALSE,
                               sep='/')  %>%
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
-                 tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                 tidyr::separate(ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                 tidyr::separate(recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
 
 
       }
@@ -87,7 +86,7 @@ read_lr_single_condition <- function(lrpaths,
       clusters_num <- unique(c(unique(data1[[sel_columns[1]]]),
                                unique(data1[[sel_columns[2]]])))
       final <- final %>%
-           tidyr::separate(.data$cellpair, c("u", "v"), "_")
+        tidyr::separate(.data$cellpair, c("u", "v"), "_")
       final$pair <- aux
       filtervar <- grepl('Transcription',data1[[sel_columns[5]]])| grepl('Transcription',data1[[sel_columns[6]]])
       raw_inter <- table(data1$cellpair[!filtervar])

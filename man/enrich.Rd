@@ -4,7 +4,7 @@
 \alias{enrich}
 \title{Ranking the most interactive gene (ligand or receptor)}
 \usage{
-enrich(list, name, org = org.Hs.eg.db, univ = NULL)
+enrich(list, name, db = org.Hs.eg.db, org = "hsa", univ = NULL)
 }
 \arguments{
 \item{list}{list of genes}

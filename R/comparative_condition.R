@@ -14,34 +14,34 @@ create_diff_table1 <- function(data, out_path) {
     exp_table <- data@tables[[exp_name]]
     tmp_data <- merge(exp_table,ctr_table,by='allpair',all = TRUE)
     tmp_data <- tmp_data %>%
-                tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                tidyr::separate(ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                tidyr::separate(recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+                tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
+                tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
+                tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
     tmp_data$LRScore.x[is.na(tmp_data$LRScore.x)] <- 0
     tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
     final_data <- tmp_data %>%
-                  dplyr::mutate(LRScore = LRScore.x-LRScore.y) %>%
-                  dplyr::mutate(cellpair = paste0(Ligand.Cluster,"_",Receptor.Cluster)) %>%
-                  dplyr::select(c(Ligand,Ligand.Cluster,
-                                  Receptor,
-                                  Receptor.Cluster,
-                                  LRScore,
-                                  cellpair,
-                                  ligpair,
-                                  recpair,
-                                  allpair,
-                                  type_gene_A.x,
-                                  type_gene_B.x,
-                                  type_gene_A.y,
-                                  type_gene_B.y))
+                  dplyr::mutate(LRScore = .data$LRScore.x-.data$LRScore.y) %>%
+                  dplyr::mutate(cellpair = paste0(.data$Ligand.Cluster,"_",.data$Receptor.Cluster)) %>%
+                  dplyr::select(c(.data$Ligand,.data$Ligand.Cluster,
+                                  .data$Receptor,
+                                  .data$Receptor.Cluster,
+                                  .data$LRScore,
+                                  .data$cellpair,
+                                  .data$ligpair,
+                                  .data$recpair,
+                                  .data$allpair,
+                                  .data$type_gene_A.x,
+                                  .data$type_gene_B.x,
+                                  .data$type_gene_A.y,
+                                  .data$type_gene_B.y))
     final_data <- final_data[final_data$LRScore!=0,]
     final_data <- final_data %>%
-      dplyr::mutate(type_gene_A = coalesce(type_gene_A.x, type_gene_A.y)) %>%
-      dplyr::mutate(type_gene_B = coalesce(type_gene_B.x, type_gene_B.y)) %>%
-      dplyr::select(-type_gene_A.x, -type_gene_A.y, -type_gene_B.x, -type_gene_B.y)
+      dplyr::mutate(type_gene_A = coalesce(.data$type_gene_A.x, .data$type_gene_A.y)) %>%
+      dplyr::mutate(type_gene_B = coalesce(.data$type_gene_B.x, .data$type_gene_B.y)) %>%
+      dplyr::select(-.data$type_gene_A.x, -.data$type_gene_A.y, -.data$type_gene_B.x, -.data$type_gene_B.y)
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
-        dplyr::mutate(ccitype = paste(.data$type_gene_A,.data$type_gene_B)) %>%
+      dplyr::mutate(ccitype = paste(.data$type_gene_A,.data$type_gene_B)) %>%
         dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
         dplyr::group_by(.data$cellpair) %>%
         dplyr::summarise(LRScore=sum(.data$LRScore))
@@ -65,71 +65,6 @@ create_diff_table1 <- function(data, out_path) {
                                                            "LRScore")])
     igraph::E(graph1)$weight <- igraph::E(graph1)$LRScore
     igraph::E(graph1)$mean <- igraph::E(graph1)$LRScore
-    data@graphs_ggi[[cmp_name]] <- graph1
-  }
-  saveRDS(data,file.path(out_path, "LR_data_step2.Rds"))
-  return(data)
-}
-
-
-
-#'Read the lrobject and generate the comparative tables
-#'
-#'@param data LRObj with single condition
-#'@param out_path output path
-#'@return LRObject
-#'@importFrom tidyr %>%
-create_diff_table <- function(data, out_path) {
-  ctr_name <- names(data@tables)[1]
-  ctr_table <- data@tables[[ctr_name]]
-  for (i in 2:length(data@tables)) {
-    exp_name <- names(data@tables)[i]
-    cmp_name <- paste0(exp_name, "_x_", ctr_name)
-    exp_table <- data@tables[[exp_name]]
-    tmp_data <- merge(exp_table,ctr_table,by='allpair',all = TRUE)
-    tmp_data <- tmp_data %>%
-                tidyr::separate(allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                tidyr::separate(ligpair ,c('Ligand','Ligand.Cluster'),sep = '/',remove = F) %>%
-                tidyr::separate(recpair ,c('Receptor','Receptor.Cluster'),sep = '/',remove = F)
-    tmp_data$MeanLR.x[is.na(tmp_data$MeanLR.x)] <- 0
-    tmp_data$MeanLR.y[is.na(tmp_data$MeanLR.y)] <- 0
-    final_data <- tmp_data %>%
-                  dplyr::mutate(MeanLR = MeanLR.x-MeanLR.y) %>%
-                  dplyr::mutate(cellpair = paste0(Ligand.Cluster,"_",Receptor.Cluster)) %>%
-                  dplyr::select(c(Ligand,Ligand.Cluster,
-                           Receptor,
-                           Receptor.Cluster,
-                           MeanLR,
-                           cellpair,
-                           ligpair,
-                           recpair,
-                           allpair))
-    final_data <- final_data[final_data$MeanLR!=0,]
-    data@tables[[cmp_name]] <- final_data
-    final <- final_data %>%
-      dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
-      dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
-      dplyr::group_by(.data$cellpair) %>%
-      dplyr::summarise(LRScore=sum(.data$LRScore))
-    final <- final %>%
-      tidyr::separate(.data$cellpair, c("u", "v"), sep="_",remove = F)
-    raw_inter <- table(final_data$cellpair)
-    freq <- ((table(data1$cellpair[!filtervar])- min(table(data1$cellpair[!filtervar]))))
-    freq <- freq/(max(table(data1$cellpair[!filtervar])) -min(table(data1$cellpair[!filtervar])))+0.1
-    final$freq <- as.array(freq)[final$cellpair]
-    final$pair <- final$cellpair
-    final <- dplyr::arrange(final, abs(final$MeanLR))
-    graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "MeanLR")])
-    igraph::E(graph1)$inter <- final$freq #setting thickness and weight
-    igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$cellpair] #setting thickness and weight
-    igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
-    igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
-    data@graphs[[cmp_name]] <- graph1
-    graph1 <- igraph::graph_from_data_frame(final_data[, c("ligpair",
-                                                           "recpair",
-                                                           "MeanLR")])
-    igraph::E(graph1)$weight <- igraph::E(graph1)$MeanLR
-    igraph::E(graph1)$mean <- igraph::E(graph1)$MeanLR
     data@graphs_ggi[[cmp_name]] <- graph1
   }
   saveRDS(data,file.path(out_path, "LR_data_step2.Rds"))

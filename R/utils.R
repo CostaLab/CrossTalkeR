@@ -182,6 +182,7 @@ ranking_net <- function(graph,mode=TRUE) {
 #'@param org organism to be considered
 #'@import clusterProfiler
 #'@import org.Hs.eg.db
+#'@import org.Mm.eg.db
 #'@importFrom tidyr %>%
 kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg.db, org='hsa',n=100) {
   rkg <- slot(data, slot)
@@ -192,7 +193,7 @@ kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg
           sel <-rkg[[x]][!grepl("tf-",rkg[[x]]$nodes),]
           top <- sel %>%
                    dplyr::top_n(n,wt=sel[[i]])
-          topenrich <- enrich(top$nodes,name=i)
+          topenrich <- enrich(top$nodes,name=i,db=database,org=org)
           all[[i]] <- topenrich
       }else if(i != 'nodes' & grepl('ggi',x) & grepl('_x_',x)){
             sel <-rkg[[x]][!grepl("tf-",rkg[[x]]$nodes),]
@@ -200,8 +201,8 @@ kegg_annotation <- function(data, slot,out_path,database=org.Hs.eg.db::org.Hs.eg
                     dplyr::top_n(n,wt=sel[[i]])
             topn <- sel %>%
                       dplyr::top_n(-n,wt=sel[[i]])
-            topenrich <- enrich(top$nodes,name=paste0(i,' up'))
-            topnenrich <- enrich(topn$nodes,name=paste0(i,' down'))
+            topenrich <- enrich(top$nodes,name=paste0(i,' up'),db=database,org=org)
+            topnenrich <- enrich(topn$nodes,name=paste0(i,' down'),db=database,org=org)
             all[[i]] <- dplyr::bind_rows(topenrich,topnenrich)
         }
     }
@@ -297,45 +298,64 @@ comparative_med<- function(rankings,slotname,graphname,curr.rkg){
 #'@import stringr
 #'@import clusterProfiler
 #'@return list
-enrich <- function(list,name,org=org.Hs.eg.db, univ=NULL){
+enrich <- function(list,name,db=org.Hs.eg.db, org='hsa',univ=NULL){
  lrdb <- system.file("extdata",
                         "lrDB.csv",
                         package = "CrossTalkeR")
   lr <- read.csv(lrdb)
-  univ <- clusterProfiler::bitr(unique(union(lr$ligand,lr$receptor)),
-                                fromType="SYMBOL",
-                                toType=c("ENTREZID","ENSEMBL"),
-                                OrgDb=org.Hs.eg.db)
-  fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
-  fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
-  nodesentrez <- clusterProfiler::bitr(fgenes$y,
-                                       fromType="SYMBOL",
-                                       toType=c("ENTREZID","ENSEMBL"),
-                                       OrgDb=org)
-  enriched <- clusterProfiler::enrichKEGG(nodesentrez$ENTREZID,
-                                            organism = 'hsa',
-                                            universe=univ$ENTREZID)
+  ## Univ to be implemented mmu
+
+  if(org=='hsa'){
+    fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
+    fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
+    nodesentrez <- clusterProfiler::bitr(fgenes$y,
+                                         fromType="SYMBOL",
+                                         toType=c("ENTREZID","ENSEMBL"),
+                                         OrgDb=db)
+    univ <- clusterProfiler::bitr(unique(union(lr$ligand,lr$receptor)),
+                                  fromType="SYMBOL",
+                                  toType=c("ENTREZID","ENSEMBL"),
+                                  OrgDb=db)
+    enriched <- clusterProfiler::enrichKEGG(nodesentrez$ENTREZID,
+                                              organism = org,
+                                              universe=univ$ENTREZID)
+  }else{
+    fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
+    fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
+    nodesentrez <- clusterProfiler::bitr(fgenes$y,
+                                         fromType="SYMBOL",
+                                         toType=c("ENTREZID","ENSEMBL"),
+                                         OrgDb=db)
+    fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
+    fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
+    nodesentrez <- clusterProfiler::bitr(fgenes$y,
+                                         fromType="SYMBOL",
+                                         toType=c("ENTREZID","ENSEMBL"),
+                                         OrgDb=db)
+
+    enriched <- clusterProfiler::enrichKEGG(nodesentrez$ENTREZID,
+                                            organism = org)
+  }
   enriched <- enriched@result
   enriched$type <-name
   return(enriched)
 }
 
+
 #'Format liana2CT
 #'@param data datafromliana
 #'@param source source cell population
 #'@param target target cell population
-#'@param gene_A source gene population
-#'@param gene_B target gene population
-#'@param type_gene_A type source gene population
-#'@param type_gene_B type target gene population
+#'@param gene_Ai source gene population
+#'@param gene_Bi target gene population
 #'@param measure measure to be considered
 #'@importFrom tidyr %>%
 #'@import tibble dplyr
 #'@return tibble
-liana2CT <- function(data,gene_Ai,gene_Bi,measure){
+liana2CT <- function(data,source='source',target='target',gene_Ai,gene_Bi,measure){
   data <- data %>%
-    dplyr::mutate(source=as.character(data[['source']])) %>%
-    dplyr::mutate(target=as.character(data[['target']])) %>%
+    dplyr::mutate(source=as.character(data[[source]])) %>%
+    dplyr::mutate(target=as.character(data[[target]])) %>%
     dplyr::mutate(gene_A=data[[gene_Ai]]) %>%
     dplyr::mutate(gene_B=data[[gene_Bi]]) %>%
     dplyr::mutate(type_gene_A=gene_Ai) %>%
@@ -363,7 +383,7 @@ fisher_test_cci <- function(data,measure,out_path){
             if(!str_detect(names(data@tables)[i],'_x_')){
             e <- data@tables[[i]] %>%
               dplyr::group_by(cellpair) %>%
-              dplyr::select(c(Ligand.Cluster,Receptor.Cluster,measure)) %>%
+              dplyr::select(c(.data$Ligand.Cluster,.data$Receptor.Cluster,measure)) %>%
               dplyr::summarise(measure=n())
             joined <- merge(c,e,by.x='cellpair',by.y='cellpair',keep='all')
             pval <- list()

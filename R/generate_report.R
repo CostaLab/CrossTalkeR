@@ -14,6 +14,8 @@
 #'@param report decide if a report is generated or not
 #'@param output_fmt rmarkdown render output format parameter
 #'@param sel_columns columns from data
+#'@import org.Mm.eg.db
+#'@import org.Hs.eg.db
 #'@importFrom tidyr %>%
 #'@return Rmarkdown report all objects from each step
 #'@export
@@ -42,7 +44,8 @@ generate_report <- function(lrpaths,
                             out_file = NULL,
                             report = TRUE,
                             output_fmt = "html_document",
-                            sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR')) {
+                            sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
+                            org = 'hsa') {
   # Creating the single condition Object
   index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",
@@ -68,8 +71,14 @@ generate_report <- function(lrpaths,
   message("Calculating GCI Ranking")
   data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs_ggi")})
   message("Annotating the top Cell Genes")
-  data <- suppressWarnings({kegg_annotation(data=data,
-                          slot='rankings',out_path=out_path)})
+  if(org=='hsa'){
+    data <- suppressWarnings({kegg_annotation(data=data,
+                            slot='rankings',out_path=out_path,database=org.Hs.eg.db::org.Hs.eg.db,org=org)})
+  }
+  else{
+    data <- suppressWarnings({kegg_annotation(data=data,
+                            slot='rankings',out_path=out_path,database=org.Mm.eg.db::org.Mm.eg.db, org=org)})
+  }
 
   message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,

@@ -16,7 +16,8 @@ generate_report(
   report = TRUE,
   output_fmt = "html_document",
   sel_columns = c("source", "target", "gene_A", "gene_B", "type_gene_A", "type_gene_B",
-    "MeanLR")
+    "MeanLR"),
+  org = "hsa"
 )
 }
 \arguments{

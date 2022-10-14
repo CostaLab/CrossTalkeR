@@ -44,22 +44,22 @@ for(i in 1:length(names(all_data@pca))){
      rmd_title1 <- paste0(curr,'_pca')
      x <- max(abs(all_data@pca[[curr]]$x[,1]))
      y <- max(abs(all_data@pca[[curr]]$x[,2]))
-     z_x <- data@pca[[curr]]$x[,1]
-     z_y <- data@pca[[curr]]$x[,2]
+     z_x <- all_data@pca[[curr]]$x[,1]
+     z_y <- all_data@pca[[curr]]$x[,2]
      ver_zx <- ifelse(abs(z_x)>2*data@pca[[curr]]$sdev[1],1,0)
      ver_zy <- ifelse(abs(z_y)>2*data@pca[[curr]]$sdev[2],1,0)
      print(fviz_pca_biplot(data@pca[[curr]],
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 12,
                     repel = TRUE,max.overlaps=100,label='var')+
-                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
+                    geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(all_data@pca[[curr]]$x),NA)),hjust=0, vjust=0,size = 7)+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(curr)+
                     theme(text = element_text(size = 7.5),
                           axis.title = element_text(size = 7.5),
                           axis.text = element_text(size = 7.5)))
-   }  
+   }
 }
 ```
 
@@ -90,16 +90,13 @@ for(i in 1:length(names(all_data@pca))){
                                             'excel',
                                             'pdf', 'print'),
                                autoWidth = FALSE
-                               )
-                )
-
-     ```")
+                             ))\n\n```")
      out <- c(out,knit_expanded)
      out1[[curr]] <-knit_expanded
-   }  
+   }
 }
-
 ```
+
 `r paste(knitr::knit(text = out), collapse = '\n')`
 
 ### Most significant deregulated pathway per topological measure
@@ -125,14 +122,14 @@ for(i in names(all_data@annot)){
             },
         error=function(cond){
             message("Significant enrichment not found")
-        })    
+        })
   }
 }
 ```
 
 ## LR analysis data
 
-```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=T}
+```{r fig.align='center', fig.height=5, fig.width=8,warning=FALSE,echo=F}
 out <- c()
 out1 <- list()
 for(i in 1:length(names(all_data@tables))){

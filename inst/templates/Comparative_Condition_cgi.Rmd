@@ -137,7 +137,7 @@ for(i in 1:length(names(all_data@pca))){
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
-```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=False}
+```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F}
 all_data <- readRDS(path)
 for(i in names(all_data@annot)){
   if( grepl('_x_',i) & grepl('ggi',i) ){

@@ -137,7 +137,7 @@ for(i in 1:length(names(all_data@pca))){
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
-```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F}
+```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=False}
 all_data <- readRDS(path)
 for(i in names(all_data@annot)){
   if( grepl('_x_',i) & grepl('ggi',i) ){
@@ -147,7 +147,7 @@ for(i in names(all_data@annot)){
     if(dim(filtered)[1] >=2){
     mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
     mat[is.na(mat)]=1
-    p1<-Heatmap(-log10(mat), col =c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='-log10(p.adjust)')
+    p1<-Heatmap(-log10(mat), col =c('#FFFFFF',Blue2DarkOrange18Steps[11:18]), column_title =i,name='enrich signficance')
     draw(p1)
    }
    else{
@@ -162,7 +162,7 @@ for(i in names(all_data@annot)){
 
 ## Genes Sankey Plot: Gene-based cell-cell interaction
 
-```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=False}
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]

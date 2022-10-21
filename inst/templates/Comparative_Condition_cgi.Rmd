@@ -162,7 +162,7 @@ for(i in names(all_data@annot)){
 
 ## Genes Sankey Plot: Gene-based cell-cell interaction
 
-```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=False}
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
 all_data <- readRDS(path)
 for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]

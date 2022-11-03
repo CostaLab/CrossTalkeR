@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_graph_sankey_tf}
 \alias{plot_graph_sankey_tf}
-\title{This function selected gene transcription factor interaction related sankey plot}
+\title{This function creates a sankey plot for a selected gene including transcription factor interactions.}
 \usage{
 plot_graph_sankey_tf(
   lrobj_tbl,
@@ -32,7 +32,7 @@ plot_graph_sankey_tf(
 R default plot
 }
 \description{
-This function selected gene transcription factor interaction related sankey plot
+This function creates a sankey plot for a selected gene including transcription factor interactions.
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",

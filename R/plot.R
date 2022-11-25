@@ -223,83 +223,7 @@ plot_cci <- function(graph,
 }
 
 
-#'This function do a ggi plot and higest degree nodes
-#'
-#'@param graph graph
-#'@param color cluster color
-#'@param name plot header
-#'@import ggplot2
-#'@import ggraph
-#'@import igraph
-#'@import colorBlindness
-#'@import graphlayouts
-#'@return R default plot
-#'@importFrom tidyr %>%
-#'@export
-#'@examples
-#'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"),
-#'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
-#'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
-#'genes <- c('TGFB1')
-#'data <- generate_report(paths,
-#'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
-#'                        out_file = 'vignettes_example.html',
-#'                        output_fmt = "html_document",
-#'                        report = FALSE)
-#'plot_ggi(graph = data@graphs_ggi$EXP_x_CTR,
-#'         color = data@colors,name="EXP_x_CTR")
-plot_ggi <- function(graph, color, name) {
-  deg <- igraph::degree(graph)
-  v_names <- igraph::V(graph)$name
-  v_names <- tibble::as_tibble(v_names)
-  v_names <- v_names %>%
-    tidyr::separate(.data$value, c("genes", "cluster"), "/")
-  igraph::V(graph)$genes <- v_names$genes
-  igraph::V(graph)$cluster <- v_names$cluster
-  lr2col <- round(oce::rescale(igraph::E(graph)$LRScore,
-                               xlow = min(igraph::E(graph)$LRScore),
-                               rlow = 1,
-                               rhigh = 25
-  )
-  )
-  ecolors <- rev(grDevices::colorRampPalette(colorBlindness::Blue2DarkOrange18Steps)(25))[lr2col]
-  igraph::E(graph)$colors <- ecolors
-  cls <- names(color)
-  names(color) <- NULL
-  ewidth <- abs(igraph::E(graph)$LRScore) - mean(abs(igraph::E(graph)$LRScore))
-  ewidth <- ewidth / stats::sd(abs(igraph::E(graph)$LRScore))
-  ewidth <- (ewidth - min(ewidth)) / (max(ewidth) - min(ewidth))
-  print(ggraph::ggraph(graph, layout = "stress") +
-          ggraph::geom_edge_link0(ggplot2::aes(edge_width = ewidth,
-                                               alpha = ewidth)) +
-          ggraph::geom_node_point(size = ((deg / max(deg)) * 10),
-                                  alpha = 1,
-                                  ggplot2::aes(color = igraph::V(graph)$cluster)
-          ) +
-          ggplot2::scale_colour_manual(values = color,
-                                       labels = cls,
-                                       name = "Clusters") +
-          ggraph::geom_node_label(ggplot2::aes(filter = deg > deg[order(deg, decreasing = TRUE)][ifelse(length(deg) > 100, 100, length(deg))] & igraph::V(graph) %in% igraph::articulation.points(graph),
-                                               label = igraph::V(graph)$genes,
-                                               color = igraph::V(graph)$cluster
-          ),
-                                  repel = TRUE,
-                                  hjust = "inward",
-                                  size = 7,
-                                  show.legend = FALSE) +
-          ggraph::scale_edge_width_continuous(range = c(0, 1)) +
-          ggplot2::ggtitle(name) +
-          #scale_size(range = c(1,6))+
-          ggraph::theme_graph(base_family = "sans") +
-          ggplot2::theme(legend.position = "left"))
 
-}
 
 
 #'This function selected genes sankey plot
@@ -311,6 +235,7 @@ plot_ggi <- function(graph, color, name) {
 #'@param plt_name plot title
 #'@param threshold top_n n value
 #'@import ggplot2
+#'@import stringr
 #'@import dplyr
 #'@import colorBlindness
 #'@import ggalluvial
@@ -342,8 +267,7 @@ plot_sankey <- function(lrobj_tbl,
                         plt_name = NULL,
                         threshold = 50) {
 
-  target_type = str_split(target, "\\|")[[1]][[2]]
-
+  target_type = stringr::str_split(target, "\\|")[[1]][[2]]
   if (!is.null(target)) {
     #data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
 
@@ -446,7 +370,7 @@ set_coords <- function(df, type) {
 #'                               "ctr_nils_bm_human.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human.csv",
+#'                               "exp_nils_bm_human_newformat.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -666,68 +590,75 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 }
 
 
-#'This function selected genes correlation
+#'This function is a proxy to the PCA plot
 #'
-#'@param data Seurat object
-#'@param lrobject LRObj object
-#'@param pair pair of interest
-#'@param lrslot table from lrobject
-#'@param assay Seurat assay
-#'@import Seurat ggsci ggnewscale tibble ggridges gtools Rmagic
+#'@param lrobj_tbl LRobject table with all data
+#'@param curr table entry
+#'@param dims PCA dims
+#'@param ret return plot
+#'@param ggi GGI mode 
+#'@import ggplot2
+#'@import ggrepel
+#'@import factoextra
 #'@importFrom tidyr %>%
 #'@importFrom stats reorder
 #'@return R default plot
 #'@export
-plotInterInfo <- function(data, lrobject, pair, lrslot, assay = 'RNA') {
-  Seurat::DefaultAssay(data) <- assay
-  pair <- lrobject@tables[[lrslot]][grepl(pair, datalr@tables$EXP_x_CTR$allpair),]
-  sender <- pair$Ligand.Cluster
-  receiver <- pair$Receptor.Cluster
-  exp <- Seurat::GetAssayData(data)
-  lpair <- tibble::tibble(cells = names(exp[pair$Ligand, grepl(sender, Idents(data))]),
-                          expr = exp[pair$Ligand, grepl(sender, Idents(data))],
-                          cellpop = pair$ligpair,
-                          stage = data@meta.data[names(exp[pair$Ligand, grepl(sender, Idents(data))]),]$protocol)
-  rpair <- tibble::tibble(cells = names(exp[pair$Receptor, grepl(receiver, Idents(data))]),
-                          expr = exp[pair$Receptor, grepl(receiver, Idents(data))],
-                          cellpop = pair$recpair,
-                          stage = data@meta.data[names(exp[pair$Receptor, grepl(receiver, Idents(data))]),]$protocol)
-  pairt <- dplyr::bind_rows(lpair, rpair)
-  p1 <- ggplot2::ggplot(pairt, aes(x = expr, y = cellpop, fill = stage)) +
-    ggridges::geom_density_ridges() +
-    ggplot2::facet_grid(. ~ stage) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(title = 'Expression density plot')
-  tmp <- Seurat::Embeddings(data, 'umap')
-  tmp <- tibble::tibble(c1 = tmp[, "UMAP_1"], c2 = tmp[, "UMAP_2"], cells = rownames(tmp))
-  joined <- merge(tmp, pairt, by = 'cells', all = T)
-  joined$l <- gtools::na.replace(joined$expr, 0)
-  joined$l[joined$cellpop == pair$recpair] = 0
-  joined$r <- gtools::na.replace(joined$expr, 0)
-  joined$r[joined$cellpop == pair$ligpair] = 0
-  sel <- unique(joined$cellpop)
-  p2 <- ggplot2::ggplot(joined, aes(x = c1, y = c2, l)) +
-    ggplot2::geom_point(data = subset(joined, cellpop == pair$ligpair), aes(color = l, alpha = l), size = 2) +
-    ggplot2::scale_color_gradient(low = 'gray', high = 'blue') +
-    ggplot2::labs(color = 'ligand') +
-    ggnewscale::new_scale_color() +
-    ggplot2::geom_point(data = subset(joined, cellpop == pair$recpair), aes(color = r, alpha = r), size = 2) +
-    ggplot2::scale_color_gradient(low = 'gray', high = 'red') +
-    ggplot2::labs(color = 'receptor') +
-    ggnewscale::new_scale_color() +
-    ggplot2::geom_point(data = subset(joined, !(cellpop %in% c(pair$ligpair, pair$recpair))), aes(color = expr), size = 2) +
-    ggplot2::scale_color_gradient(low = 'black', high = 'black') +
-    ggplot2::labs(color = 'unselected') +
-    ggplot2::theme_minimal() +
-    ggplot2::xlab('UMAP_1') +
-    ggplot2::ylab('UMAP_2') +
-    ggplot2::labs(title = 'LR pair expression')
-  impulr <- Rmagic::magic(data, genes = c(pair$Ligand, pair$Receptor))
-  Seurat::DefaultAssay(impulr) <- 'MAGIC_RNA'
-  scells <- unique(na.omit(joined$cells[joined$expr != 0]))
-  p3 <- Seurat::FeatureScatter(impulr, feature1 = pair$Ligand, feature2 = pair$Receptor, cells = scells, cols = ggsci::pal_d3()(2), pt.size = 2)
-  p3 <- p3 + ggplot2::labs(title = 'Imputed Matrix Feature Plot')
-  return(p1 +
-           p2 +
-           p3 * theme(plot.title = element_text(face = "plain")))
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human_newformat.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+plot_pca <- function(lrobj_tblPCA,curr,dims=c(1,2),ret=F,ggi=TRUE){ ## Pweeseee Test me!!!
+      x <- max(abs(lrobj_tblPCA[[curr]]$x[,dims[1]]))
+      y <- max(abs(lrobj_tblPCA[[curr]]$x[,dims[2]]))
+      if(ggi){
+        z_x <- lrobj_tblPCA[[curr]]$x[,dims[1]]
+        z_y <- lrobj_tblPCA[[curr]]$x[,dims[2]]
+        ver_zx <- ifelse(abs(z_x)>2*lrobj_tblPCA[[curr]]$sdev[1],1,0)
+        ver_zy <- ifelse(abs(z_y)>2*lrobj_tblPCA[[curr]]$sdev[2],1,0)
+        plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
+                      axes = dims,
+                      pointshape = 21, pointsize = 0.5,labelsize = 3,
+                      repel = TRUE,max.overlaps=100,label='var')+
+                      ggrepel::geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(lrobj_tblPCA[[curr]]$x),NA)),
+                                                hjust=0, vjust=0,size = 3,max.overlaps=100)+
+                      xlim(-x, x)+
+                      ylim(-y, y)+
+                      ggtitle(curr)+
+                      theme(text = element_text(size = 3),
+                            axis.title = element_text(size = 7.5),
+                            axis.text = element_text(size = 12))
+
+      }else{
+        plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
+              axes = dims,
+              pointshape = 21, pointsize = 0.5,labelsize = 6,
+              repel = TRUE,max.overlaps=100,label='var')+
+              ggrepel::geom_text_repel(aes(label=rownames(lrobj_tblPCA[[curr]]$x)))+
+              xlim(-x, x)+
+              ylim(-y, y)+
+              ggtitle(curr)+
+              theme(text = element_text(size = 7.5),
+                    axis.title = element_text(size = 7.5),
+                    axis.text = element_text(size = 12))
+
+      }
+      if(ret){
+        return(plt1)
+      }
 }
+
+

@@ -41,6 +41,5 @@ htmltools::img(src = knitr::image_uri(imgpath),
 
 ## GCI - Gene Cell Interaction
 
-
-```{r cci, child='Single_Condition_cgi.Rmd'}
+```{r cgi, child='Single_Condition_cgi.Rmd'}
 ```

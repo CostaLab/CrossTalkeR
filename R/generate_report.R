@@ -45,7 +45,7 @@ generate_report <- function(lrpaths,
                             report = TRUE,
                             output_fmt = "html_document",
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
-                            org = 'hsa') {
+                            org='hsa') {
   # Creating the single condition Object
   index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",
@@ -79,7 +79,6 @@ generate_report <- function(lrpaths,
     data <- suppressWarnings({kegg_annotation(data=data,
                             slot='rankings',out_path=out_path,database=org.Mm.eg.db::org.Mm.eg.db, org=org)})
   }
-
   message("Defining templates")
   param_single <- list(obj1 = lrobj_path1,
                        obj2 = genes,

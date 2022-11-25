@@ -1,4 +1,4 @@
-# CrossTalkeR <img src="inst/figures/logo1.png" align="right" width="200" />
+# CrossTalkeR <img src="man/figures/logo1.png" align="right" width="200" />
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4740646.svg)](https://doi.org/10.5281/zenodo.4740646)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity)
@@ -25,7 +25,7 @@ Ivan G. Costa<sup>1*</sup>
 
 <sup>6</sup>Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands
 
-![](inst/CrossTalkeR_only_A.png)
+![](man/figures/CrossTalkeR_only_A.png)
 
 
 
@@ -35,7 +35,7 @@ Ivan G. Costa<sup>1*</sup>
 
 ## Install
 
-You can install CrossTalkeR with the simple comands below:
+You can install CrossTalkeR with the simple commands below:
 
 
 ```{r}
@@ -96,4 +96,3 @@ We provide here a tutorial on how to integrate preditions from CellPhoneDB into 
 [2] Heterogeneous bone-marrow stromal progenitors drive myelofibrosis via a druggable alarmin axis. [link](https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(20)30542-7#secsectitle0115)
 
 [3] Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data [link](https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.full)
-

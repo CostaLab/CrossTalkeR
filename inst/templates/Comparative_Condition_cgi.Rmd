@@ -8,9 +8,11 @@ toc_depth: 3
 theme: simplex
 
 params:
-obj1: "path to obj"
-obj2: "target gene"
-thr: 'percentage edges to plot'
+
+  obj1: "path to obj"
+  obj2: "target gene"
+  obj3: "target tf-gene"
+  thr: 'percentage edges to plot'
 
 ---
 
@@ -32,6 +34,10 @@ require(ggrepel)
 require(extrafont)
 extrafont::loadfonts()
 
+
+
+
+
 ```
 
 
@@ -47,6 +53,9 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
+tfFlag <- FALSE
+
+
 for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
   if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
@@ -59,10 +68,10 @@ for (i in 1:length(names(all_data@pca))) {
         txt <- "Ligand"
       } else {
         txt <- "Transcription Factor"
+        tfFlag <- TRUE
       }
       return(txt)
     })
-
     rmd_title <- paste0(curr, '_tbl')
     rmd_title1 <- paste0(curr, '_pca')
     for (i in 2:dim(all_data@pca[[curr]]$x)[2]) {
@@ -257,6 +266,7 @@ for (i in 1:length(names(all_data@pca))) {
     out <- c(out, knit_expanded)
     out1[[curr]] <- knit_expanded
   }
+
 }
 
 ```
@@ -268,7 +278,7 @@ for (i in 1:length(names(all_data@pca))) {
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
-```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F}
+```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F,eval=FALSE}
 all_data <- readRDS(path)
 for (i in names(all_data@annot)) {
   if (grepl('_x_', i) & grepl('ggi', i)) {
@@ -293,7 +303,7 @@ for (i in names(all_data@annot)) {
 
 ## Genes Sankey Plot: Gene-based cell-cell interaction
 
-```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=FALSE,eval=TRUE }
 all_data <- readRDS(path)
 for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
@@ -302,7 +312,6 @@ for (i in 1:length(names(all_data@tables))) {
       p1 <- plot_sankey(all_data@tables[[curr]],
                         target = gene,
                         plt_name = paste0(curr, ' ', gene))
-      print(p1)
     }
   }
 }
@@ -310,12 +319,11 @@ for (i in 1:length(names(all_data@tables))) {
 
 
 
-## Transkription Factor Sankey Plot: Transcription Factor-based intra cellular interactions
+## Transcription Factor Sankey Plot: Transcription Factor-based intra cellular interactions
 
-
-```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F}
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F,eval=TRUE}
 all_data <- readRDS(path)
-if (!is.null(params$obj3)) {
+#if (!is.null(params$obj3)) {
   for (i in 1:length(names(all_data@rankings))) {
     curr_pagerank <- names(all_data@pca)[i]
     if (str_detect(curr_pagerank, '_x_', negate = FALSE) & str_detect(curr_pagerank, '_ggi', negate = FALSE)) {
@@ -342,7 +350,7 @@ if (!is.null(params$obj3)) {
       }
     }
   }
-}
+#}
 ```
 
 

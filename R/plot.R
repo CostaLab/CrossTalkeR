@@ -54,19 +54,19 @@
 #'        vfactor = 12,
 #'        vnames = TRUE)
 plot_cci <- function(graph,
-                    colors,
-                    plt_name,
-                    coords,
-                    emax = NULL,
-                    leg = FALSE,
-                    low = 25,
-                    high = 75,
-                    ignore_alpha = FALSE,
-                    log = FALSE,
-                    efactor = 8,
-                    vfactor = 12,
-                    vnames = T,
-                    pg = NULL) {
+                     colors,
+                     plt_name,
+                     coords,
+                     emax = NULL,
+                     leg = FALSE,
+                     low = 25,
+                     high = 75,
+                     ignore_alpha = FALSE,
+                     log = FALSE,
+                     efactor = 8,
+                     vfactor = 12,
+                     vnames = T,
+                     pg = NULL) {
 
   # Check Maximal Weight
   if (is.null(emax)) {
@@ -84,63 +84,63 @@ plot_cci <- function(graph,
   # Scale nodes coordinates
   if (nrow(coords) != 1) {
     coords_scale <- scale(coords)
-  }else{
+  }else {
     coords_scale <- coords
   }
   # It will make the loops in a correct angle
   loop_angle <- ifelse(coords_scale[igraph::V(graph)$name, 1] > 0,
                        -atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1]),
-                       pi-atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1])
-                       )
+                       pi - atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1])
+  )
   # Setting node colors
   igraph::V(graph)$color <- colors[igraph::V(graph)$name]
   ## Color scheme
   we <- round(oce::rescale(igraph::E(graph)$weight,
-              xlow = (-emax),
-              xhigh = emax,
-              rlow = 1,
-              rhigh = 200,
-              clip = TRUE),
+                           xlow = (-emax),
+                           xhigh = emax,
+                           rlow = 1,
+                           rhigh = 200,
+                           clip = TRUE),
               0)
   igraph::E(graph)$color <- col_pallet[we]
   alpha_cond <- (igraph::E(graph)$inter > low) & (igraph::E(graph)$inter < high)
   alpha <- ifelse(alpha_cond, 0, igraph::E(graph)$inter)
   subgraph <- igraph::delete.edges(graph,
                                    igraph::E(graph)[alpha == 0 | is.na(alpha)]
-                                  )
+  )
   if (!ignore_alpha) {
     igraph::E(graph)$color <- scales::alpha(igraph::E(graph)$color, alpha)
   }
   ## Thickness and arrow size
-  if(is.null(pg)){
-    igraph::V(graph)$size <-  60
+  if (is.null(pg)) {
+    igraph::V(graph)$size <- 60
   }
-  else{
-    igraph::V(graph)$size <-  scales::rescale(pg,c(1,60))
+  else {
+    igraph::V(graph)$size <- scales::rescale(pg, c(1, 60))
   }
 
   if (log) {
-        igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
-                                         log2(1 + igraph::E(graph)$inter),
-                                          0) * efactor
-  }else{
-        igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
-                                         igraph::E(graph)$inter,
-                                         0) * efactor
+    igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
+                                     log2(1 + igraph::E(graph)$inter),
+                                     0) * efactor
+  }else {
+    igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
+                                     igraph::E(graph)$inter,
+                                     0) * efactor
   }
   igraph::E(graph)$arrow.size <- 0.4
-  igraph::E(graph)$arrow.width <- igraph::E(graph)$width+0.8
+  igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.8
   if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
-    igraph::E(graph)$loop.angle[which(edge_start[,2]==edge_start[,1])]<-loop_angle[edge_start[which(edge_start[,2]==edge_start[,1]),1]]
-    igraph::E(graph)$loop.angle[which(edge_start[,2]!=edge_start[,1])]<-0
+    igraph::E(graph)$loop.angle[which(edge_start[, 2] == edge_start[, 1])] <- loop_angle[edge_start[which(edge_start[, 2] == edge_start[, 1]), 1]]
+    igraph::E(graph)$loop.angle[which(edge_start[, 2] != edge_start[, 1])] <- 0
   }
-  coords_scale[,1] <- scales::rescale(coords_scale[,1],from=c(-1,1),to=c(-2,2))
-  coords_scale[,2] <- scales::rescale(coords_scale[,2],from=c(-1,1),to=c(-2,2))
+  coords_scale[, 1] <- scales::rescale(coords_scale[, 1], from = c(-1, 1), to = c(-2, 2))
+  coords_scale[, 2] <- scales::rescale(coords_scale[, 2], from = c(-1, 1), to = c(-2, 2))
   plot(graph,
        layout = coords_scale,
        xlim = c(-4, 4),
        ylim = c(-4, 4),
-       rescale=F,
+       rescale = F,
        edge.curved = 0.5,
        vertex.label = NA,
        vertex.shape = "circle",
@@ -148,7 +148,7 @@ plot_cci <- function(graph,
        loop.angle = igraph::E(graph)$loop.angle,
        edge.label = NA,
        main = plt_name
-       )
+  )
   # Thicknesse legend
   amin <- min(igraph::E(graph)$inter[igraph::E(graph)$inter != 0])
   amax <- max(igraph::E(graph)$inter)
@@ -156,74 +156,71 @@ plot_cci <- function(graph,
                 amin + amax / 2,
                 amax)
   graphics::legend("topleft",
-         legend = round(e_wid_sp, 1),
-         col = "black",
-         title = "Percentage of the interactions",
-         pch = NA,
-         bty = "n",
-         cex = 1,
-         lwd = e_wid_sp,
-         lty = c(1, 1, 1),
-         horiz = FALSE)
+                   legend = round(e_wid_sp, 1),
+                   col = "black",
+                   title = "Percentage of the interactions",
+                   pch = NA,
+                   bty = "n",
+                   cex = 1,
+                   lwd = e_wid_sp,
+                   lty = c(1, 1, 1),
+                   horiz = FALSE)
 
   v <- igraph::V(graph)$size
-  if(!is.null(pg)){
+  if (!is.null(pg)) {
     a <- graphics::legend('bottomleft',
-                          title="Node Pagerank",
-                          legend=c("","",""),
-                          pt.cex=c(min(v)+1,mean(v),max(v))/12,col='black',
-                 pch=21, pt.bg='black',box.lwd = 0,y.intersp=2)
+                          title = "Node Pagerank",
+                          legend = c("", "", ""),
+                          pt.cex = c(min(v) + 1, mean(v), max(v)) / 12, col = 'black',
+                          pch = 21, pt.bg = 'black', box.lwd = 0, y.intersp = 2)
     graphics::text(a$rect$left + a$rect$w, a$text$y,
-                    c(round(min(pg),2),round(mean(pg),2),round(max(pg),2)), pos = 2)
+                   c(round(min(pg), 2), round(mean(pg), 2), round(max(pg), 2)), pos = 2)
   }
   x <- coords_scale[, 1] * 1.2
   y <- coords_scale[, 2] * 1.2
   coord_ratio <- coords_scale[, 1] / coords_scale[, 2]
   angle <- ifelse(
-              atan(-coord_ratio) * (180 / pi) < 0,
-              90 + atan(-coord_ratio) * (180 / pi),
-              270 + atan(-coord_ratio) * (180 / pi))
-  if(vnames){
-      for (i in seq_len(length(x))) {
-        graphics::text(x = x[i],
-             y = y[i],
-             labels = igraph::V(graph)$name[i],
-             adj = NULL,
-             pos = NULL,
-             cex = 0.8,
-             col = "black",
-             xpd = TRUE)
-      }
+    atan(-coord_ratio) * (180 / pi) < 0,
+    90 + atan(-coord_ratio) * (180 / pi),
+    270 + atan(-coord_ratio) * (180 / pi))
+  if (vnames) {
+    for (i in seq_len(length(x))) {
+      graphics::text(x = x[i],
+                     y = y[i],
+                     labels = igraph::V(graph)$name[i],
+                     adj = NULL,
+                     pos = NULL,
+                     cex = 0.8,
+                     col = "black",
+                     xpd = TRUE)
+    }
   }
   if (leg) {
-      # Edge Colormap
-      if(min(igraph::E(graph)$weight) < 0){
-        netdiffuseR::drawColorKey(seq(1, 200),
-                                  tick.marks = c(1,101,200),
-                                  color.palette = col_pallet,
-                                  labels = c(-round(emax, 3),0,round(emax, 3)),
-                                  nlevels = 200,
-                                  main = "Weights",
-                                  pos = 2,
-                                  key.pos = c(0.98, 1.0, 0.0, 0.2),
-                                  border = "transparent")
-      }
-      else{
-        netdiffuseR::drawColorKey(seq(100, 200),
-                                  tick.marks = c(100, 200),
-                                  color.palette = col_pallet[100:201],
-                                  labels = c(0, round(emax, 3)),
-                                  nlevels =100,
-                                  main = "Weights",
-                                  pos = 2,
-                                  key.pos = c(0.98, 1.0, 0.0, 0.2),
-                                  border = "transparent")
-      }
+    # Edge Colormap
+    if (min(igraph::E(graph)$weight) < 0) {
+      netdiffuseR::drawColorKey(seq(1, 200),
+                                tick.marks = c(1, 101, 200),
+                                color.palette = col_pallet,
+                                labels = c(-round(emax, 3), 0, round(emax, 3)),
+                                nlevels = 200,
+                                main = "Weights",
+                                pos = 2,
+                                key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                border = "transparent")
+    }
+    else {
+      netdiffuseR::drawColorKey(seq(100, 200),
+                                tick.marks = c(100, 200),
+                                color.palette = col_pallet[100:201],
+                                labels = c(0, round(emax, 3)),
+                                nlevels = 100,
+                                main = "Weights",
+                                pos = 2,
+                                key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                border = "transparent")
+    }
   }
 }
-
-
-
 
 
 #'This function selected genes sankey plot
@@ -471,7 +468,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
           head(10)
 
         gene_list2 <- data_group2 %>%
-          arrange(desc(abs(Pagerank_Score)))%>%
+          arrange(desc(abs(Pagerank_Score))) %>%
           head(10)
       } else {
         gene_list1 <- data_group1 %>%
@@ -621,44 +618,178 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
-plot_pca <- function(lrobj_tblPCA,curr,dims=c(1,2),ret=F,ggi=TRUE){ ## Pweeseee Test me!!!
-      x <- max(abs(lrobj_tblPCA[[curr]]$x[,dims[1]]))
-      y <- max(abs(lrobj_tblPCA[[curr]]$x[,dims[2]]))
-      if(ggi){
-        z_x <- lrobj_tblPCA[[curr]]$x[,dims[1]]
-        z_y <- lrobj_tblPCA[[curr]]$x[,dims[2]]
-        ver_zx <- ifelse(abs(z_x)>2*lrobj_tblPCA[[curr]]$sdev[1],1,0)
-        ver_zy <- ifelse(abs(z_y)>2*lrobj_tblPCA[[curr]]$sdev[2],1,0)
-        plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
-                      axes = dims,
-                      pointshape = 21, pointsize = 0.5,labelsize = 3,
-                      repel = TRUE,max.overlaps=100,label='var')+
-                      ggrepel::geom_label_repel(aes(label=ifelse(ver_zx & ver_zy,rownames(lrobj_tblPCA[[curr]]$x),NA)),
-                                                hjust=0, vjust=0,size = 3,max.overlaps=100)+
-                      xlim(-x, x)+
-                      ylim(-y, y)+
-                      ggtitle(curr)+
-                      theme(text = element_text(size = 3),
-                            axis.title = element_text(size = 7.5),
-                            axis.text = element_text(size = 12))
+plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { ## Pweeseee Test me!!!
+  x <- max(abs(lrobj_tblPCA[[curr]]$x[, dims[1]]))
+  y <- max(abs(lrobj_tblPCA[[curr]]$x[, dims[2]]))
+  if (ggi) {
+    z_x <- lrobj_tblPCA[[curr]]$x[, dims[1]]
+    z_y <- lrobj_tblPCA[[curr]]$x[, dims[2]]
+    ver_zx <- ifelse(abs(z_x) > 2 * lrobj_tblPCA[[curr]]$sdev[1], 1, 0)
+    ver_zy <- ifelse(abs(z_y) > 2 * lrobj_tblPCA[[curr]]$sdev[2], 1, 0)
+    plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
+                                        axes = dims,
+                                        pointshape = 21, pointsize = 0.5, labelsize = 3,
+                                        repel = TRUE, max.overlaps = 100, label = 'var') +
+      ggrepel::geom_label_repel(aes(label = ifelse(ver_zx & ver_zy, rownames(lrobj_tblPCA[[curr]]$x), NA)),
+                                hjust = 0, vjust = 0, size = 3, max.overlaps = 100) +
+      xlim(-x, x) +
+      ylim(-y, y) +
+      ggtitle(curr) +
+      theme(text = element_text(size = 3),
+            axis.title = element_text(size = 7.5),
+            axis.text = element_text(size = 12))
 
-      }else{
-        plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
-              axes = dims,
-              pointshape = 21, pointsize = 0.5,labelsize = 6,
-              repel = TRUE,max.overlaps=100,label='var')+
-              ggrepel::geom_text_repel(aes(label=rownames(lrobj_tblPCA[[curr]]$x)))+
-              xlim(-x, x)+
-              ylim(-y, y)+
-              ggtitle(curr)+
-              theme(text = element_text(size = 7.5),
-                    axis.title = element_text(size = 7.5),
-                    axis.text = element_text(size = 12))
+  }else {
+    plt1 <- factoextra::fviz_pca_biplot(lrobj_tblPCA[[curr]],
+                                        axes = dims,
+                                        pointshape = 21, pointsize = 0.5, labelsize = 6,
+                                        repel = TRUE, max.overlaps = 100, label = 'var') +
+      ggrepel::geom_text_repel(aes(label = rownames(lrobj_tblPCA[[curr]]$x))) +
+      xlim(-x, x) +
+      ylim(-y, y) +
+      ggtitle(curr) +
+      theme(text = element_text(size = 7.5),
+            axis.title = element_text(size = 7.5),
+            axis.text = element_text(size = 12))
 
-      }
-      if(ret){
-        return(plt1)
-      }
+  }
+  if (ret) {
+    return(plt1)
+  }
 }
 
+#'This function is a proxy to the PCA plot in comparative conditions
+#'
+#'@param lrobj_tbl LRobject table with all data
+#'@param curr table entry
+#'@param dims PCA dims
+#'@param ret return plot
+#'@param ggi GGI mode
+#'@import ggplot2
+#'@import ggrepel
+#'@import factoextra
+#'@importFrom tidyr %>%
+#'@importFrom stats reorder
+#'@return R default plot
+#'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "exp_nils_bm_human_newformat.csv",
+#'                               package = "CrossTalkeR"))
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'genes <- c('TGFB1')
+#'
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
+
+  if(ggi){
+    pca_table = names(lrobj_tblPCA@pca)[which(
+    grepl("_x_", names(lrobj_tblPCA@pca))
+      & grepl("_ggi", names(lrobj_tblPCA@pca)))]
+
+  #Filter for LR or TF
+  if (gene_types == "LR") {
+    pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
+    pca_split_names = names(pca_split)
+    result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
+    col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
+    lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
+
+  } else if (gene_types == "TF") {
+    pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
+    pca_split_names = names(pca_split)
+    result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
+    col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
+    lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
+  }
+
+  #Mapping_Table
+  if (include_tf) {
+    map_df <- as.data.frame(rownames(lrobj_tblPCA@pca[[pca_table]]$x))
+    colnames(map_df) <- c("gene")
+    map_df$mapping <- sapply(map_df$gene, function(gene) {
+      if (grepl("|R", gene, fixed = TRUE)) {
+        txt <- "Receptor"
+      } else if (grepl("|L", gene, fixed = TRUE)) {
+        txt <- "Ligand"
+      } else {
+        txt <- "Transcription Factor"
+      }
+      return(txt)
+    })
+    color_groups = c("#f8756b", "#00b835", "#619cff")
+  }else {
+    l_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
+      grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+      select(ligpair, type_gene_A) %>%
+      rename(gene = ligpair, mapping = type_gene_A) %>%
+      distinct()
+
+    r_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
+      grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+      select(recpair, type_gene_B) %>%
+      rename(gene = recpair, mapping = type_gene_B) %>%
+      distinct()
+
+    map_df = rbind(l_mapping, r_mapping)
+    map_df = dplyr::filter(map_df, gene %in% rownames(lrobj_tblPCA@pca[[pca_table]]$x))
+    map_df = map_df[!duplicated(map_df$gene),]
+    color_groups = c("#f8756b", "#00b835")
+  }
+
+  rmd_title <- paste0(pca_table, '_tbl')
+  rmd_title1 <- paste0(pca_table, '_pca')
+  x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
+  y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]))
+  z_x <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]
+  z_y <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]
+  ver_zx <- ifelse(abs(z_x) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[1]]]), 1, 0)
+  ver_zy <- ifelse(abs(z_y) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[2]]]), 1, 0)
+  pca_plot <- fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
+                              axes = c(dims[[1]], dims[[2]]),
+                              pointshape = 20, pointsize = 2, labelsize = 10,
+                              repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping, palette = color_groups) +
+    geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(lrobj_tblPCA@pca[[pca_table]]$x), NA)), size = 5) +
+    xlim(-x, x) +
+    ylim(-y, y) +
+    ggtitle(pca_table) +
+    theme(text = element_text(size = 7.5),
+          axis.title = element_text(size = 7.5),
+          axis.text = element_text(size = 7.5))
+  } else {
+     pca_table = names(lrobj_tblPCA@pca)[which(
+    grepl("_x_", names(lrobj_tblPCA@pca))
+      & grepl("_cci", names(lrobj_tblPCA@pca)))]
+
+     rmd_title <- paste0(pca_table,'_tbl')
+     rmd_title1 <- paste0(pca_table,'_pca1')
+     x <- max(abs(all_data@pca[[pca_table]]$x[,dims[[1]]]))
+     y <- max(abs(all_data@pca[[pca_table]]$x[,dims[[2]]]))
+     print(fviz_pca_biplot(data@pca[[pca_table]],
+                    axes = c(1,2),
+                    pointshape = 21, pointsize = 0.5,labelsize = 6,
+                    repel = TRUE,max.overlaps=100,label='var')+
+                    geom_text_repel(aes(label=rownames(all_data@pca[[pca_table]]$x)))+
+                    xlim(-x, x)+
+                    ylim(-y, y)+
+                    ggtitle(pca_table)+
+                    theme(text = element_text(size = 7.5),
+                          axis.title = element_text(size = 7.5),
+                          axis.text = element_text(size = 7.5)))
+  }
+
+
+  if (ret) {
+    return(pca_plot)
+  }
+}
 

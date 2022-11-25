@@ -34,7 +34,11 @@ require(ggrepel)
 require(extrafont)
 extrafont::loadfonts()
 
-
+if(is.null(params$obj3)){
+  tfFlag <- FALSE
+}else {
+  tfFlag <- TRUE
+}
 
 
 
@@ -48,169 +52,48 @@ extrafont::loadfonts()
 
 #### PCA GCI All Genes
 
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
+```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5}
 path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-tfFlag <- FALSE
 
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag)
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag)
+print(p1+p2    )
 
-for (i in 1:length(names(all_data@pca))) {
-  curr <- names(all_data@pca)[i]
-  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
-    map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-    colnames(map_df) <- c("gene")
-    map_df$mapping <- sapply(map_df$gene, function(gene) {
-      if (grepl("|R", gene, fixed = TRUE)) {
-        txt <- "Receptor"
-      } else if (grepl("|L", gene, fixed = TRUE)) {
-        txt <- "Ligand"
-      } else {
-        txt <- "Transcription Factor"
-        tfFlag <- TRUE
-      }
-      return(txt)
-    })
-    rmd_title <- paste0(curr, '_tbl')
-    rmd_title1 <- paste0(curr, '_pca')
-    for (i in 2:dim(all_data@pca[[curr]]$x)[2]) {
-      x <- max(abs(all_data@pca[[curr]]$x[, i - 1]))
-      y <- max(abs(all_data@pca[[curr]]$x[, i]))
-      z_x <- all_data@pca[[curr]]$x[, i - 1]
-      z_y <- all_data@pca[[curr]]$x[, i]
-      ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[i - 1]), 1, 0)
-      ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[i]), 1, 0)
-      print(fviz_pca_biplot(all_data@pca[[curr]],
-                            axes = c(i - 1, i),
-                            pointshape = 20, pointsize = 2, labelsize = 10,
-                            repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
-              geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
-              xlim(-x, x) +
-              ylim(-y, y) +
-              ggtitle(curr) +
-              theme(text = element_text(size = 7.5),
-                    axis.title = element_text(size = 7.5),
-                    axis.text = element_text(size = 7.5)))
-    }
-
-  }
-}
-
-```
-#### PCA GCI Ligand and Receptor Genes
-
-
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
-path <- params$obj1
-out <- c()
-out1 <- list()
-all_data <- readRDS(path)
-for (i in 1:length(names(all_data@pca))) {
-  curr <- names(all_data@pca)[i]
-  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
-
-    pca_split = all_data@pca[[curr]]$x[, 1]
-    pca_split_names = names(pca_split)
-    result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
-    col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
-    all_data@pca[[curr]]$x <- all_data@pca[[curr]]$x[sort(c(col.num)),]
-
-    map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-    colnames(map_df) <- c("gene")
-    map_df$mapping <- sapply(map_df$gene, function(gene) {
-      if (grepl("|R", gene, fixed = TRUE)) {
-        txt <- "Receptor"
-      } else if (grepl("|L", gene, fixed = TRUE)) {
-        txt <- "Ligand"
-      } else {
-        txt <- "Transcription Factor"
-      }
-      return(txt)
-    })
-
-    rmd_title <- paste0(curr, '_tbl')
-    rmd_title1 <- paste0(curr, '_pca')
-    for (i in 2:dim(all_data@pca[[curr]]$x)[2]) {
-      x <- max(abs(all_data@pca[[curr]]$x[, i - 1]))
-      y <- max(abs(all_data@pca[[curr]]$x[, i]))
-      z_x <- all_data@pca[[curr]]$x[, i - 1]
-      z_y <- all_data@pca[[curr]]$x[, i]
-      ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[i - 1]), 1, 0)
-      ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[i]), 1, 0)
-      print(fviz_pca_biplot(all_data@pca[[curr]],
-                            axes = c(i - 1, i),
-                            pointshape = 20, pointsize = 2, labelsize = 10,
-                            repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
-              geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
-              xlim(-x, x) +
-              ylim(-y, y) +
-              ggtitle(curr) +
-              theme(text = element_text(size = 7.5),
-                    axis.title = element_text(size = 7.5),
-                    axis.text = element_text(size = 7.5)))
-    }
-  }
-}
 ```
 
 
-#### PCA GCI Transcription Factor Genes
 
-
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=12,fig.height=12}
+```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = tfFlag}
+asis_output("#### PCA GCI Ligand and Receptor Genes\\n")
 path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-if (!is.null(params$obj3)) {
-  for (i in 1:length(names(all_data@pca))) {
-    curr <- names(all_data@pca)[i]
-    if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
 
-      pca_split = all_data@pca[[curr]]$x[, 1]
-      pca_split_names = names(pca_split)
-      result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
-      col.num <- which(rownames(all_data@pca[[curr]]$x) %in% result_split_names)
-      all_data@pca[[curr]]$x <- all_data@pca[[curr]]$x[sort(c(col.num)),]
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
+print(p1+p2    )
 
-      map_df <- as.data.frame(rownames(all_data@pca[[curr]]$x))
-      colnames(map_df) <- c("gene")
-      map_df$mapping <- sapply(map_df$gene, function(gene) {
-        if (grepl("|R", gene, fixed = TRUE)) {
-          txt <- "Receptor"
-        } else if (grepl("|L", gene, fixed = TRUE)) {
-          txt <- "Ligand"
-        } else {
-          txt <- "Transcription Factor"
-        }
-        return(txt)
-      })
+```
 
-      rmd_title <- paste0(curr, '_tbl')
-      rmd_title1 <- paste0(curr, '_pca')
-      for (i in 2:dim(all_data@pca[[curr]]$x)[2]) {
-        x <- max(abs(all_data@pca[[curr]]$x[, i - 1]))
-        y <- max(abs(all_data@pca[[curr]]$x[, i]))
-        z_x <- all_data@pca[[curr]]$x[, i - 1]
-        z_y <- all_data@pca[[curr]]$x[, i]
-        ver_zx <- ifelse(abs(z_x) >= (2 * all_data@pca[[curr]]$sdev[i - 1]), 1, 0)
-        ver_zy <- ifelse(abs(z_y) >= (2 * all_data@pca[[curr]]$sdev[i]), 1, 0)
-        print(fviz_pca_biplot(all_data@pca[[curr]],
-                              axes = c(i - 1, i),
-                              pointshape = 20, pointsize = 2, labelsize = 10,
-                              repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping) +
-                geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(all_data@pca[[curr]]$x), NA)), size = 5) +
-                xlim(-x, x) +
-                ylim(-y, y) +
-                ggtitle(curr) +
-                theme(text = element_text(size = 7.5),
-                      axis.title = element_text(size = 7.5),
-                      axis.text = element_text(size = 7.5)))
-      }
-    }
-  }
-}
+
+
+
+
+```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = tfFlag}
+asis_output("#### PCA GCI Transcription Factor Genes\\n")
+path <- params$obj1
+out <- c()
+out1 <- list()
+all_data <- readRDS(path)
+
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "TF")
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "TF")
+print(p1+p2    )
+
 ```
 
 

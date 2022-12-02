@@ -10,7 +10,8 @@ plot_sankey(
   ligand_cluster = NULL,
   receptor_cluster = NULL,
   plt_name = NULL,
-  threshold = 50
+  threshold = 50,
+  tfflag = TRUE
 )
 }
 \arguments{

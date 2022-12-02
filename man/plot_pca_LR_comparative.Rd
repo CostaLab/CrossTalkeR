@@ -14,13 +14,17 @@ plot_pca_LR_comparative(
 )
 }
 \arguments{
+\item{lrobj_tblPCA}{LRobject table with all data}
+
 \item{dims}{PCA dims}
 
 \item{ret}{return plot}
 
 \item{ggi}{GGI mode}
 
-\item{lrobj_tbl}{LRobject table with all data}
+\item{include_tf}{intracellular option}
+
+\item{gene_types}{filter option of genes}
 
 \item{curr}{table entry}
 }

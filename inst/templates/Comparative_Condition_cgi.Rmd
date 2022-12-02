@@ -31,6 +31,7 @@ require(factoextra)
 require("DT")
 require(ComplexHeatmap)
 require(ggrepel)
+require(knitr)
 require(extrafont)
 extrafont::loadfonts()
 
@@ -57,10 +58,9 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-
 p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag)
 p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag)
-print(p1+p2    )
+print(p1+p2 )
 
 ```
 
@@ -72,10 +72,9 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-
 p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
 p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
-print(p1+p2    )
+print(p1+p2)
 
 ```
 
@@ -100,7 +99,7 @@ print(p1+p2    )
 ### Pagerank Log Ratio
 
 
-```{r fig.align='center',warning=FALSE,echo=FALSE}
+```{r fig.align='center',warning=FALSE,echo=FALSE,eval=TRUE}
 all_data <- readRDS(path)
 for (i in 2:length(names(all_data@rankings))) {
   curr <- names(all_data@rankings)[i]
@@ -194,7 +193,7 @@ for (i in 1:length(names(all_data@tables))) {
     for (gene in params$obj2) {
       p1 <- plot_sankey(all_data@tables[[curr]],
                         target = gene,
-                        plt_name = paste0(curr, ' ', gene))
+                        plt_name = paste0(curr, ' ', gene),tfflag=tfFlag)
     }
   }
 }
@@ -202,9 +201,9 @@ for (i in 1:length(names(all_data@tables))) {
 
 
 
-## Transcription Factor Sankey Plot: Transcription Factor-based intra cellular interactions
+```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F, eval = tfFlag}
+asis_output("## Transcription Factor Sankey Plot: Transcription Factor-based intra cellular interactions\n")
 
-```{r fig.align='center', fig.height=5, fig.width=10 ,message=FALSE, warning=FALSE, echo=F,eval=TRUE}
 all_data <- readRDS(path)
 #if (!is.null(params$obj3)) {
   for (i in 1:length(names(all_data@rankings))) {

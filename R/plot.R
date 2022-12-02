@@ -262,18 +262,17 @@ plot_sankey <- function(lrobj_tbl,
                         ligand_cluster = NULL,
                         receptor_cluster = NULL,
                         plt_name = NULL,
-                        threshold = 50) {
-
+                        threshold = 50,tfflag=TRUE) {
   target_type = stringr::str_split(target, "\\|")[[1]][[2]]
   if (!is.null(target)) {
     #data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
 
     if (target_type == "R") {
       data <- lrobj_tbl %>%
-        filter(Receptor == target)
+        filter(Receptor == stringr::str_split(target, "\\|")[[1]][[1]])
     } else if (target_type == "L") {
       data <- lrobj_tbl %>%
-        filter(Ligand == target)
+        filter(Ligand == stringr::str_split(target, "\\|")[[1]][[1]])
     }
   }
   else {
@@ -660,11 +659,13 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 
 #'This function is a proxy to the PCA plot in comparative conditions
 #'
-#'@param lrobj_tbl LRobject table with all data
+#'@param lrobj_tblPCA LRobject table with all data
 #'@param curr table entry
 #'@param dims PCA dims
 #'@param ret return plot
 #'@param ggi GGI mode
+#'@param include_tf intracellular option
+#'@param gene_types filter option of genes
 #'@import ggplot2
 #'@import ggrepel
 #'@import factoextra
@@ -767,24 +768,24 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi =
           axis.text = element_text(size = 7.5))
   } else {
      pca_table = names(lrobj_tblPCA@pca)[which(
-    grepl("_x_", names(lrobj_tblPCA@pca))
-      & grepl("_cci", names(lrobj_tblPCA@pca)))]
+      grepl("_x_", names(lrobj_tblPCA@pca))
+      & !grepl("_ggi", names(lrobj_tblPCA@pca)))]
 
      rmd_title <- paste0(pca_table,'_tbl')
-     rmd_title1 <- paste0(pca_table,'_pca1')
-     x <- max(abs(all_data@pca[[pca_table]]$x[,dims[[1]]]))
-     y <- max(abs(all_data@pca[[pca_table]]$x[,dims[[2]]]))
-     print(fviz_pca_biplot(data@pca[[pca_table]],
+     rmd_title1 <- paste0(pca_table,'_pca')
+     x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[,dims[[1]]]))
+     y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[,dims[[2]]]))
+     pca_plot<-fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
                     axes = c(1,2),
                     pointshape = 21, pointsize = 0.5,labelsize = 6,
                     repel = TRUE,max.overlaps=100,label='var')+
-                    geom_text_repel(aes(label=rownames(all_data@pca[[pca_table]]$x)))+
+                    geom_text_repel(aes(label=rownames(lrobj_tblPCA@pca[[pca_table]]$x)))+
                     xlim(-x, x)+
                     ylim(-y, y)+
                     ggtitle(pca_table)+
                     theme(text = element_text(size = 7.5),
                           axis.title = element_text(size = 7.5),
-                          axis.text = element_text(size = 7.5)))
+                          axis.text = element_text(size = 7.5))
   }
 
 

@@ -19,21 +19,26 @@ read_lr_single_condition <- function(lrpaths,
                                      out_path = "/tmp/",
                                      sep = ",",
                                      colors = NULL) {
-  data <- graphs <-graphs_ggi <- list()
   assertthat::assert_that(assertthat::not_empty(lrpaths))
   assertthat::assert_that(!is.null(names(lrpaths)))
+
+  data <- graphs <-graphs_ggi <- list()
   conds <- names(lrpaths)
   max <- max_nodes <-0
   unif_celltypes <- c()
   for (i in seq_len(length(lrpaths))){
       ## Reading from tables
       if(is.character(lrpaths[[conds[i]]])){
-        data1 <- tibble::tibble(utils::read.csv(lrpaths[[conds[i]]], sep = sep)) # Reading csv
-      }else if(is.data.frame(lrpaths[[conds[i]]]) | tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
+        data1 <- tibble::tibble(utils::read.csv(lrpaths[[conds[i]]], 
+                                                sep = sep)) # Reading csv
+      }else if(is.data.frame(lrpaths[[conds[i]]]) | 
+               tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
         data1 <- tibble(lrpaths[[conds[i]]])
       }
       data1 <- data1 %>%
-          tidyr::unite("cellpair", c(sel_columns[1],sel_columns[2]), remove = FALSE,sep='_')
+          tidyr::unite("cellpair", 
+                       c(sel_columns[1],sel_columns[2]), 
+                       remove = FALSE,sep='_')
       if('Ligand' %in% data1[[sel_columns[5]]]){
         data1 <- data1 %>%
                  tidyr::unite("ligpair",
@@ -45,9 +50,15 @@ read_lr_single_condition <- function(lrpaths,
                               remove = FALSE,
                               sep='/')  %>%
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
-                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+                 tidyr::separate(.data$allpair,
+                                 c('ligpair','recpair'),
+                                 sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair,
+                                 c('Ligand.Cluster','Ligand'),
+                                 sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair,
+                                 c('Receptor.Cluster','Receptor'),
+                                 sep = '/',remove = F)
       }else{
         tmp <- data1[[sel_columns[5]]]
         data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
@@ -65,9 +76,15 @@ read_lr_single_condition <- function(lrpaths,
                               remove = FALSE,
                               sep='/')  %>%
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
-                 tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                 tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                 tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+                 tidyr::separate(.data$allpair ,
+                                 c('ligpair','recpair'),
+                                 sep = '_',remove = F) %>%
+                 tidyr::separate(.data$ligpair ,
+                                 c('Ligand.Cluster','Ligand'),
+                                 sep = '/',remove = F) %>%
+                 tidyr::separate(.data$recpair,
+                                 c('Receptor.Cluster','Receptor'),
+                                 sep = '/',remove = F)
 
 
       }
@@ -76,11 +93,11 @@ read_lr_single_condition <- function(lrpaths,
                                  unif_celltypes)
                                )
       data1 <-data1 %>% dplyr::mutate(LRScore=data1[[sel_columns[length(sel_columns)]]])
-      final <- data1 %>%
-        dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
-        dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
-        dplyr::group_by(.data$cellpair) %>%
-        dplyr::summarise(LRScore=sum(.data$LRScore))
+      final <- data1 %>%  
+              dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
+              dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
+              dplyr::group_by(.data$cellpair) %>%
+              dplyr::summarise(LRScore=sum(.data$LRScore))
       aux <- final$cellpair
       clusters_num <- unique(c(unique(data1[[sel_columns[1]]]),
                                unique(data1[[sel_columns[2]]])))

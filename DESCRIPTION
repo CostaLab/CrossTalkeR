@@ -70,7 +70,6 @@ Imports:
     ggnewscale (>= 0.4.5),
     gtools (>= 3.9.2),
     ggsci (>= 2.9),
-    Rmagic (>= 2.0.3),
     methods,
     rstatix,
     assertthat,

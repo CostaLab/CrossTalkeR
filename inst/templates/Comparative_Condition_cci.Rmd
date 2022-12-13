@@ -52,7 +52,6 @@ for(i in 1:length(names(all_data@tables))){
       f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
       curr_net<-all_data@graphs[[curr]]
       #curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '_'),nomatch = F)])
-        #low <- thr
         #E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
         par(cex.axis=7, cex.lab=7)
         plot_cci(graph=curr_net,
@@ -61,7 +60,7 @@ for(i in 1:length(names(all_data@tables))){
                  plt_name=paste0(curr,' CCI'),
                  leg=TRUE,
                  low=0,
-                 high=low/100,
+                 high=0,
                  log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
      }
 }

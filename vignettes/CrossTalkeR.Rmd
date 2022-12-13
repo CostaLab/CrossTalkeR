@@ -108,7 +108,7 @@ plot_cci(graph = data@graphs$CTR,
 ## Sankey plot
 ```{r vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=10}
 plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
-            target = c("TGFB1"),
+            target = c("TGFB1|L"),
             ligand_cluster = NULL,
             receptor_cluster = NULL,
             plt_name = "TGFB1")

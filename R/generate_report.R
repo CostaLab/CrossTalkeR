@@ -36,6 +36,7 @@
 #'
 generate_report <- function(lrpaths,
                             genes = NULL,
+                            tf_genes = NULL,
                             out_path,
                             sep = ",",
                             threshold = 0,
@@ -85,6 +86,7 @@ generate_report <- function(lrpaths,
                        sel = sel_columns)
   param_comp <- list(obj1 = lrobj_path1,
                      obj2 = genes,
+                     obj3 = tf_genes,
                      thr = threshold,
                      sel = sel_columns)
   if (length(lrpaths) > 1) {

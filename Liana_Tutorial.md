@@ -1,4 +1,4 @@
-## CellPhoneDB CookBook
+ ## CellPhoneDB CookBook
 
 *by James Nagai*
 
@@ -229,7 +229,7 @@ data <- generate_report(paths,
                         output_fmt = "html_document",
                         report = FALSE)
 
-````
+````    
 
 
 

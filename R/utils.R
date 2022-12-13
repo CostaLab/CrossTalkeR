@@ -307,6 +307,7 @@ enrich <- function(list,name,db=org.Hs.eg.db, org='hsa',univ=NULL){
 
   if(org=='hsa'){
     fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
+    fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
     nodesentrez <- clusterProfiler::bitr(fgenes$y,
                                          fromType="SYMBOL",
                                          toType=c("ENTREZID","ENSEMBL"),
@@ -320,6 +321,7 @@ enrich <- function(list,name,db=org.Hs.eg.db, org='hsa',univ=NULL){
                                               universe=univ$ENTREZID)
   }else{
     fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
+    fgenes[["y"]]<-gsub("\\|.*","",fgenes[["y"]])
     nodesentrez <- clusterProfiler::bitr(fgenes$y,
                                          fromType="SYMBOL",
                                          toType=c("ENTREZID","ENSEMBL"),

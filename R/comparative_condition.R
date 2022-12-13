@@ -14,15 +14,23 @@ create_diff_table1 <- function(data, out_path) {
     exp_table <- data@tables[[exp_name]]
     tmp_data <- merge(exp_table,ctr_table,by='allpair',all = TRUE)
     tmp_data <- tmp_data %>%
-                tidyr::separate(.data$allpair ,c('ligpair','recpair'),sep = '_',remove = F) %>%
-                tidyr::separate(.data$ligpair ,c('Ligand.Cluster','Ligand'),sep = '/',remove = F) %>%
-                tidyr::separate(.data$recpair ,c('Receptor.Cluster','Receptor'),sep = '/',remove = F)
+                tidyr::separate(.data$allpair ,
+                                c('ligpair','recpair'),
+                                sep = '_',remove = F) %>%
+                tidyr::separate(.data$ligpair ,
+                                c('Ligand.Cluster','Ligand'),
+                                sep = '/',remove = F) %>%
+                tidyr::separate(.data$recpair, 
+                                c('Receptor.Cluster','Receptor'),
+                                sep = '/',remove = F)
     tmp_data$LRScore.x[is.na(tmp_data$LRScore.x)] <- 0
     tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
     final_data <- tmp_data %>%
                   dplyr::mutate(LRScore = .data$LRScore.x-.data$LRScore.y) %>%
-                  dplyr::mutate(cellpair = paste0(.data$Ligand.Cluster,"_",.data$Receptor.Cluster)) %>%
-                  dplyr::select(c(.data$Ligand,.data$Ligand.Cluster,
+                  dplyr::mutate(cellpair = paste0(.data$Ligand.Cluster,"_",
+                                                  .data$Receptor.Cluster)) %>%
+                  dplyr::select(c(.data$Ligand,
+                                  .data$Ligand.Cluster,
                                   .data$Receptor,
                                   .data$Receptor.Cluster,
                                   .data$LRScore,
@@ -36,17 +44,26 @@ create_diff_table1 <- function(data, out_path) {
                                   .data$type_gene_B.y))
     final_data <- final_data[final_data$LRScore!=0,]
     final_data <- final_data %>%
-      dplyr::mutate(type_gene_A = coalesce(.data$type_gene_A.x, .data$type_gene_A.y)) %>%
-      dplyr::mutate(type_gene_B = coalesce(.data$type_gene_B.x, .data$type_gene_B.y)) %>%
-      dplyr::select(-.data$type_gene_A.x, -.data$type_gene_A.y, -.data$type_gene_B.x, -.data$type_gene_B.y)
+      dplyr::mutate(type_gene_A = coalesce(.data$type_gene_A.x, 
+                                           .data$type_gene_A.y)) %>%
+      dplyr::mutate(type_gene_B = coalesce(.data$type_gene_B.x, 
+                                           .data$type_gene_B.y)) %>%
+      dplyr::select(-.data$type_gene_A.x, 
+                    -.data$type_gene_A.y, 
+                    -.data$type_gene_B.x, 
+                    -.data$type_gene_B.y)
     data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
-      dplyr::group_by(.data$cellpair) %>%
-      dplyr::summarise(LRScore = sum(.data$LRScore))
+             dplyr::mutate(ccitype = paste(.data$type_gene_A,.data$type_gene_B)) %>%
+             dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%
+             dplyr::group_by(.data$cellpair) %>%
+             dplyr::summarise(LRScore=sum(.data$LRScore))
     final <- final %>%
       tidyr::separate(.data$cellpair, c("u", "v"), sep="_",remove = F)
-    raw_inter <- table(final_data$cellpair)
-    freq <- table(final_data$cellpair) / max(table(final_data$cellpair))
+    filtervar <- grepl('Transcription',final_data[['type_gene_A']]) | grepl('Transcription',final_data[['type_gene_B']])
+    raw_inter <- table(final_data$cellpair[!filtervar])
+    freq <- as.array(raw_inter)[final$cellpair]- min(as.array(raw_inter)[final$cellpair])
+    freq <- freq/(max(as.array(raw_inter)[final$cellpair]) -min(as.array(raw_inter)[final$cellpair]))+0.1
     final$freq <- as.array(freq)[final$cellpair]
     final$pair <- final$cellpair
     final <- dplyr::arrange(final, abs(final$LRScore))

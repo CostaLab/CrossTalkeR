@@ -160,7 +160,7 @@ for (i in 1:length(names(all_data@pca))) {
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
-```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F,eval=FALSE}
+```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F,eval=TRUE}
 all_data <- readRDS(path)
 for (i in names(all_data@annot)) {
   if (grepl('_x_', i) & grepl('ggi', i)) {
@@ -170,11 +170,11 @@ for (i in names(all_data@annot)) {
     if (dim(filtered)[1] >= 2) {
       mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
       mat[is.na(mat)] = 1
-      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = '-log10(p.adjust)')
+      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = 'NES_pval')
       draw(p1)
     }
     else {
-      print('Unnable to do the enrichment')
+      print('Unable to do the enrichment')
     }
   }
 }
@@ -191,6 +191,7 @@ for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
   if (str_detect(curr, '_x_', negate = FALSE)) {
     for (gene in params$obj2) {
+      print(params$obj2)
       p1 <- plot_sankey(all_data@tables[[curr]],
                         target = gene,
                         plt_name = paste0(curr, ' ', gene),tfflag=tfFlag)

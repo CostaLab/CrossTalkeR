@@ -263,16 +263,17 @@ plot_sankey <- function(lrobj_tbl,
                         receptor_cluster = NULL,
                         plt_name = NULL,
                         threshold = 50,tfflag=TRUE) {
+  message(target)
   target_type = stringr::str_split(target, "\\|")[[1]][[2]]
   if (!is.null(target)) {
     #data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
 
     if (target_type == "R") {
       data <- lrobj_tbl %>%
-        filter(Receptor == stringr::str_split(target, "\\|")[[1]][[1]])
+        filter(Receptor == ifelse(tfflag,target,stringr::str_split(target, "\\|")[[1]][[1]])) 
     } else if (target_type == "L") {
       data <- lrobj_tbl %>%
-        filter(Ligand == stringr::str_split(target, "\\|")[[1]][[1]])
+        filter(Ligand == ifelse(tfflag,target,stringr::str_split(target,"\\|")[[1]][[1]]))
     }
   }
   else {

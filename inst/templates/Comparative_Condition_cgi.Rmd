@@ -42,9 +42,9 @@ if(is.null(params$obj3)){
 }
 
 all_data <- readRDS(params$obj1)
-genes_table = names(params$obj1@tables)[which(grepl("_x_", names(data@tables)))]
+genes_table = names(all_data@tables)[which(grepl("_x_", names(data@tables)))]
 
-if(("Transcription Factor" %in% data@tables[[genes_table]]$type_gene_A) | ("Transcription Factor" %in% data@tables[[genes_table]]$type_gene_A)){
+if(("Transcription Factor" %in% all_data@tables[[genes_table]]$type_gene_A) | ("Transcription Factor" %in% all_data@tables[[genes_table]]$type_gene_A)){
   PCA_TF_flag <- TRUE
 }else {
   PCA_TF_flag <- FALSE

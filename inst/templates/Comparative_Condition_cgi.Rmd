@@ -41,6 +41,11 @@ if(is.null(params$obj3)){
   tfFlag <- TRUE
 }
 
+if(is.null(params$obj3)){
+  tfFlag <- FALSE
+}else {
+  tfFlag <- TRUE
+}
 
 
 ```

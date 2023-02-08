@@ -41,12 +41,14 @@ if(is.null(params$obj3)){
   tfFlag <- TRUE
 }
 
-if(is.null(params$obj3)){
-  tfFlag <- FALSE
-}else {
-  tfFlag <- TRUE
-}
+all_data <- readRDS(params$obj1)
+genes_table = names(params$obj1@tables)[which(grepl("_x_", names(data@tables)))]
 
+if(("Transcription Factor" %in% data@tables[[genes_table]]$type_gene_A) | ("Transcription Factor" %in% data@tables[[genes_table]]$type_gene_A)){
+  PCA_TF_flag <- TRUE
+}else {
+  PCA_TF_flag <- FALSE
+}
 
 ```
 
@@ -63,22 +65,23 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag)
-p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag)
+
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=PCA_TF_flag)
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=PCA_TF_flag)
 print(p1+p2 )
 
 ```
 
 
 
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = tfFlag}
+```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = PCA_TF_flag}
 asis_output("#### PCA GCI Ligand and Receptor Genes\\n")
 path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
-p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "LR")
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=PCA_TF_flag,gene_types = "LR")
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=PCA_TF_flag,gene_types = "LR")
 print(p1+p2)
 
 ```
@@ -87,15 +90,15 @@ print(p1+p2)
 
 
 
-```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = tfFlag}
+```{r fig.align='center',warning=FALSE,echo=FALSE,fig.width=10,fig.height=5, eval = PCA_TF_flag}
 asis_output("#### PCA GCI Transcription Factor Genes\\n")
 path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
 
-p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "TF")
-p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=tfFlag,gene_types = "TF")
+p1 <- plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=TRUE,include_tf=PCA_TF_flag,gene_types = "TF")
+p2 <- plot_pca_LR_comparative(all_data,dims=c(3,4),ret=T,ggi=TRUE,include_tf=PCA_TF_flag,gene_types = "TF")
 print(p1+p2    )
 
 ```

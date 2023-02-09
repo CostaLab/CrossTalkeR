@@ -264,10 +264,9 @@ plot_sankey <- function(lrobj_tbl,
                         plt_name = NULL,
                         threshold = 50,tfflag=TRUE) {
   message(target)
-  target_type = stringr::str_split(target, "\\|")[[1]][[2]]
   if (!is.null(target)) {
     #data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
-
+     target_type = stringr::str_split(target, "\\|")[[1]][[2]]
     if (target_type == "R") {
       data <- lrobj_tbl %>%
         filter(Receptor == ifelse(tfflag,target,stringr::str_split(target, "\\|")[[1]][[1]])) 

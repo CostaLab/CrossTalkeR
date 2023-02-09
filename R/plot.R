@@ -265,7 +265,7 @@ plot_sankey <- function(lrobj_tbl,
                         threshold = 50, tfflag = TRUE) {
   message(target)
   if (!is.null(target)) {
-    if (length(sapply(table_check$allpair, grep, pattern = "|")) == length(rownames(table_check))) {
+    if (length(sapply(lrobj_tbl$allpair, grep, pattern = "|")) == length(rownames(lrobj_tbl))) {
       target_type = stringr::str_split(target, "\\|")[[1]][[2]]
       if (target_type == "R") {
         data <- lrobj_tbl %>%

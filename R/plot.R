@@ -265,17 +265,29 @@ plot_sankey <- function(lrobj_tbl,
                         threshold = 50, tfflag = TRUE) {
   message(target)
   if (!is.null(target)) {
-    if (length(sapply(lrobj_tbl$allpair, grep, pattern = "|")) == length(rownames(lrobj_tbl))) {
+    if (length(stringr::str_split(target, "\\|")) > 1) {
       target_type = stringr::str_split(target, "\\|")[[1]][[2]]
       if (target_type == "R") {
-        data <- lrobj_tbl %>%
-          filter(Receptor == target)
+        if (length(which(grepl("\\|", lrobj_tbl$Receptor))) > 0) {
+          data <- lrobj_tbl %>%
+            filter(Receptor == target)
+        } else {
+          target = stringr::str_split(target, "\\|")[[1]][[1]]
+          data <- lrobj_tbl %>%
+            filter(Receptor == target)
+        }
       } else if (target_type == "L") {
-        data <- lrobj_tbl %>%
-          filter(Ligand == target)
+        if (length(which(grepl("\\|", lrobj_tbl$Ligand))) > 0) {
+          data <- lrobj_tbl %>%
+            filter(Ligand == target)
+        } else {
+          target = stringr::str_split(target, "\\|")[[1]][[1]]
+          data <- lrobj_tbl %>%
+            filter(Ligand == target)
+        }
       }
     } else {
-      data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair), ]
+      data <- lrobj_tbl[grepl(target, lrobj_tbl$allpair),]
     }
   }
   else {

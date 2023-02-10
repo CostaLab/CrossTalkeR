@@ -263,7 +263,7 @@ plot_sankey <- function(lrobj_tbl,
                         receptor_cluster = NULL,
                         plt_name = NULL,
                         threshold = 50, tfflag = TRUE) {
-  message(target)
+
   if (!is.null(target)) {
     if (length(stringr::str_split(target, "\\|")) > 1) {
       target_type = stringr::str_split(target, "\\|")[[1]][[2]]

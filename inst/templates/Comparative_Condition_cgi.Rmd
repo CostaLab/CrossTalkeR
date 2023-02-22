@@ -72,9 +72,12 @@ pca_table = names(all_data@pca)[which(
 p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag)
 if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
   p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag)
-  print(p1 + p2)
+  print(p1)
+  print(p2)
+}else{
+  print(p1)
 }
-print(p1)
+
 
 ```
 
@@ -92,7 +95,8 @@ pca_table = names(all_data@pca)[which(
 p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "LR")
 if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
   p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "LR")
-  print(p1 + p2)
+  print(p1)
+  print(p2)
 } else {
   print(p1)
 }
@@ -115,7 +119,8 @@ pca_table = names(all_data@pca)[which(
 p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF")
 if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
   p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF")
-  print(p1 + p2)
+  print(p1)
+  print(p2)
 } else {
   print(p1)
 }
@@ -218,7 +223,6 @@ for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
   if (str_detect(curr, '_x_', negate = FALSE)) {
     for (gene in params$obj2) {
-      print(params$obj2)
       p1 <- plot_sankey(all_data@tables[[curr]],
                         target = gene,
                         plt_name = paste0(curr, ' ', gene), tfflag = tfFlag)

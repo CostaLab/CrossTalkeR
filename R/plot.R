@@ -549,15 +549,15 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         name = vertex_attr(graph1, "name", vertice)
         if (grepl("|R", name, fixed = TRUE)) {
           vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Receptor"
-          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, pca_name), "Pagerank"]
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, "/",name),"Pagerank"]
           vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
         } else if (grepl("|L", name, fixed = TRUE)) {
           vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Ligand"
-          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, pca_name), "Pagerank"]
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, "/",name),"Pagerank"]
           vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
         } else {
           vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Transcription Factor"
-          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, pca_name), "Pagerank"]
+          vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[paste0(cluster, "/",name),"Pagerank"]
           vertex_attr(graph = graph1, name = "clustername", index = vertice) <- paste0(cluster, "/", name)
         }
       }

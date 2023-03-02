@@ -92,9 +92,9 @@ all_data <- readRDS(path)
 pca_table = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
-p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "LR")
+p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR")
 if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
-  p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "LR")
+  p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR")
   print(p1)
   print(p2)
 } else {

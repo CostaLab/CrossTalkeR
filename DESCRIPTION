@@ -4,7 +4,7 @@ Version: 1.3.6
 Authors@R: c(
     person(given = "Vanessa",
                   family = "Kloeker",
-                  role = c("aut","cre"),
+                  role = c("aut"),
                   comment = c(ORCID ='0000-0002-7392-9094')),
     person(given = "James Shiniti",
            family = "Nagai",

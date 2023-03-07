@@ -326,12 +326,6 @@ enrich <- function(list,name,db=org.Hs.eg.db, org='hsa',univ=NULL){
                                          fromType="SYMBOL",
                                          toType=c("ENTREZID","ENSEMBL"),
                                          OrgDb=db)
-    fgenes<-list(x=gsub("/.*","",list),y=gsub(".*/","",list))
-    nodesentrez <- clusterProfiler::bitr(fgenes$y,
-                                         fromType="SYMBOL",
-                                         toType=c("ENTREZID","ENSEMBL"),
-                                         OrgDb=db)
-
     enriched <- clusterProfiler::enrichKEGG(nodesentrez$ENTREZID,
                                             organism = org)
   }

@@ -35,6 +35,7 @@ read_lr_single_condition <- function(lrpaths,
                tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
         data1 <- tibble(lrpaths[[conds[i]]])
       }
+      data1 <- add_node_type(data1)
       data1 <- data1 %>%
           tidyr::unite("cellpair", 
                        c(sel_columns[1],sel_columns[2]), 
@@ -52,13 +53,7 @@ read_lr_single_condition <- function(lrpaths,
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
                  tidyr::separate(.data$allpair,
                                  c('ligpair','recpair'),
-                                 sep = '_',remove = F) %>%
-                 tidyr::separate(.data$ligpair,
-                                 c('Ligand.Cluster','Ligand'),
-                                 sep = '/',remove = F) %>%
-                 tidyr::separate(.data$recpair,
-                                 c('Receptor.Cluster','Receptor'),
-                                 sep = '/',remove = F)
+                                 sep = '_',remove = F)
       }else{
         tmp <- data1[[sel_columns[5]]]
         data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
@@ -78,13 +73,7 @@ read_lr_single_condition <- function(lrpaths,
                  dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
                  tidyr::separate(.data$allpair ,
                                  c('ligpair','recpair'),
-                                 sep = '_',remove = F) %>%
-                 tidyr::separate(.data$ligpair ,
-                                 c('Ligand.Cluster','Ligand'),
-                                 sep = '/',remove = F) %>%
-                 tidyr::separate(.data$recpair,
-                                 c('Receptor.Cluster','Receptor'),
-                                 sep = '/',remove = F)
+                                 sep = '_',remove = F)
 
 
       }
@@ -93,6 +82,7 @@ read_lr_single_condition <- function(lrpaths,
                                  unif_celltypes)
                                )
       data1 <-data1 %>% dplyr::mutate(LRScore=data1[[sel_columns[length(sel_columns)]]])
+
       final <- data1 %>%  
               dplyr::mutate(ccitype = paste(data1[[sel_columns[5]]],data1[[sel_columns[6]]])) %>%
               dplyr::filter(!(str_detect(.data$ccitype,"Transcription Factor"))) %>%

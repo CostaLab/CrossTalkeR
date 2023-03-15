@@ -370,13 +370,13 @@ fisher_test_cci <- function(data,measure,out_path){
   if(length(data@tables)>=2){
       c <- data@tables[[1]] %>%
       group_by(cellpair) %>%
-      select(c(Ligand.Cluster,Receptor.Cluster,measure)) %>%
+      select(c(source,target,measure)) %>%
       summarise(measure=n())
       for(i in 2:length(names(data@tables))){
             if(!str_detect(names(data@tables)[i],'_x_')){
             e <- data@tables[[i]] %>%
               dplyr::group_by(cellpair) %>%
-              dplyr::select(c(.data$Ligand.Cluster,.data$Receptor.Cluster,measure)) %>%
+              dplyr::select(c(.data$source,.data$target,measure)) %>%
               dplyr::summarise(measure=n())
             joined <- merge(c,e,by.x='cellpair',by.y='cellpair',keep='all')
             pval <- list()
@@ -397,4 +397,25 @@ fisher_test_cci <- function(data,measure,out_path){
       saveRDS(data,file.path(out_path, "LR_data_final.Rds"))
       return(data)
     }
+}
+
+#' Adding genetype to the gene names to distinguish biological function
+#'@param df dataframe with interaction data
+#'@import tidyr
+#'@import tibble dplyr
+#'@return df
+add_node_type <- function(df) {
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Ligand", paste0(gene_A, "|L"), gene_A))
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Receptor", paste0(gene_A, "|R"), gene_A))
+  df = df %>%
+    mutate(gene_A = ifelse(type_gene_A == "Transcription Factor", paste0(gene_A, "|TF"), gene_A))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Ligand", paste0(gene_B, "|L"), gene_B))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Receptor", paste0(gene_B, "|R"), gene_B))
+  df = df %>%
+    mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
+  return(df)
 }

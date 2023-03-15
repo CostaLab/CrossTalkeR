@@ -269,22 +269,22 @@ plot_sankey <- function(lrobj_tbl,
     if (length(stringr::str_split(target, "\\|")[[1]]) > 1) {
       target_type = stringr::str_split(target, "\\|")[[1]][[2]]
       if (target_type == "R") {
-        if (length(which(grepl("\\|", lrobj_tbl$Receptor))) > 0) {
+        if (length(which(grepl("\\|", lrobj_tbl$gene_B))) > 0) {
           data <- lrobj_tbl %>%
-            filter(Receptor == target)
+            filter(gene_B == target)
         } else {
           target = stringr::str_split(target, "\\|")[[1]][[1]]
           data <- lrobj_tbl %>%
-            filter(Receptor == target)
+            filter(gene_B == target)
         }
       } else if (target_type == "L") {
-        if (length(which(grepl("\\|", lrobj_tbl$Ligand))) > 0) {
+        if (length(which(grepl("\\|", lrobj_tbl$gene_A))) > 0) {
           data <- lrobj_tbl %>%
-            filter(Ligand == target)
+            filter(gene_A == target)
         } else {
           target = stringr::str_split(target, "\\|")[[1]][[1]]
           data <- lrobj_tbl %>%
-            filter(Ligand == target)
+            filter(gene_A == target)
         }
       }
     } else {
@@ -309,10 +309,10 @@ plot_sankey <- function(lrobj_tbl,
     data$freq <- 1
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                                      dim(data)[1]), abs(.data$LRScore))
-    print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$Ligand.Cluster,
-                                   axis2 = stats::reorder(.data$Ligand, .data$LRScore),
-                                   axis3 = stats::reorder(.data$Receptor, .data$LRScore),
-                                   axis4 = .data$Receptor.Cluster)) +
+    print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
+                                   axis2 = stats::reorder(.data$gene_A, .data$LRScore),
+                                   axis3 = stats::reorder(.data$gene_B, .data$LRScore),
+                                   axis4 = .data$target)) +
             ggalluvial::geom_alluvium(aes(fill = .data$LRScore, color = 'b'),
                                       width = 1 / 12,
                                       discern = FALSE) +
@@ -409,16 +409,16 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       data = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor" | type_gene_A == "Transcription Factor") %>%
-        filter(Receptor == target | Ligand == target)
+        filter(gene_B == target | gene_A == target)
 
     } else if (target_type == "R") {
 
       receptor_interactions = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor") %>%
-        filter(Ligand == target)
+        filter(gene_A == target)
       ligand_interactions = lrobj_tbl %>%
         filter(type_gene_A == "Transcription Factor") %>%
-        filter(Ligand %in% receptor_interactions$Receptor)
+        filter(gene_A %in% receptor_interactions$gene_B)
 
       data = rbind(receptor_interactions, ligand_interactions)
 
@@ -426,24 +426,24 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       ligand_interactions = lrobj_tbl %>%
         filter(type_gene_A == "Transcription Factor") %>%
-        filter(Receptor == target)
+        filter(gene_B == target)
       receptor_interactions = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor") %>%
-        filter(Receptor %in% ligand_interactions$Ligand)
+        filter(gene_B %in% ligand_interactions$gene_A)
 
       data = rbind(receptor_interactions, ligand_interactions)
 
     }
 
     data = data %>%
-      filter(Ligand.Cluster == cluster) %>%
+      filter(source == cluster) %>%
       subset(
         select = c(
-          "Ligand",
-          "Receptor",
+          "gene_A",
+          "gene_B",
           "type_gene_A",
           "type_gene_B",
-          "Ligand.Cluster",
+          "source",
           "ligpair",
           "recpair",
           "LRScore"
@@ -497,27 +497,27 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       graph_df = rbind(gene_list1, gene_list2)
 
-      graph1 <- igraph::graph_from_data_frame(graph_df[, c("Ligand", "Receptor", "Pagerank_Score")])
+      graph1 <- igraph::graph_from_data_frame(graph_df[, c("gene_A", "gene_B", "Pagerank_Score")])
 
       receptors_coord = gene_list1 %>%
-        select(Ligand, Pagerank_Score) %>%
-        rename(gene = Ligand, score = Pagerank_Score) %>%
+        select(gene_A, Pagerank_Score) %>%
+        rename(gene = gene_A, score = Pagerank_Score) %>%
         arrange(desc(score)) %>%
         unique()
 
       ligands_coord = gene_list2 %>%
-        select(Receptor, Pagerank_Score) %>%
-        rename(gene = Receptor, score = Pagerank_Score) %>%
+        select(gene_B, Pagerank_Score) %>%
+        rename(gene = gene_B, score = Pagerank_Score) %>%
         arrange(desc(score)) %>%
         unique()
 
       tf_coord_r = gene_list1 %>%
-        select(Receptor, TF_Pagerank_Score) %>%
-        rename(gene = Receptor, score = TF_Pagerank_Score) %>%
+        select(gene_B, TF_Pagerank_Score) %>%
+        rename(gene = gene_B, score = TF_Pagerank_Score) %>%
         unique()
       tf_coord_l = gene_list2 %>%
-        select(Ligand, TF_Pagerank_Score) %>%
-        rename(gene = Ligand, score = TF_Pagerank_Score) %>%
+        select(gene_A, TF_Pagerank_Score) %>%
+        rename(gene = gene_A, score = TF_Pagerank_Score) %>%
         unique()
       tf_coord = rbind(tf_coord_r, tf_coord_l) %>%
         arrange(desc(score)) %>%

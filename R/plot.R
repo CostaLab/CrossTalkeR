@@ -271,20 +271,20 @@ plot_sankey <- function(lrobj_tbl,
       if (target_type == "R") {
         if (length(which(grepl("\\|", lrobj_tbl$gene_B))) > 0) {
           data <- lrobj_tbl %>%
-            filter(gene_B == target)
+            filter(gene_B == !!target)
         } else {
           target = stringr::str_split(target, "\\|")[[1]][[1]]
           data <- lrobj_tbl %>%
-            filter(gene_B == target)
+            filter(gene_B == !!target)
         }
       } else if (target_type == "L") {
         if (length(which(grepl("\\|", lrobj_tbl$gene_A))) > 0) {
           data <- lrobj_tbl %>%
-            filter(gene_A == target)
+            filter(gene_A == !!target)
         } else {
           target = stringr::str_split(target, "\\|")[[1]][[1]]
           data <- lrobj_tbl %>%
-            filter(gene_A == target)
+            filter(gene_A == !!target)
         }
       }
     } else {
@@ -409,13 +409,13 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       data = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor" | type_gene_A == "Transcription Factor") %>%
-        filter(gene_B == target | gene_A == target)
+        filter(gene_B == !!target | gene_A == !!target)
 
     } else if (target_type == "R") {
 
       receptor_interactions = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor") %>%
-        filter(gene_A == target)
+        filter(gene_A == !!target)
       ligand_interactions = lrobj_tbl %>%
         filter(type_gene_A == "Transcription Factor") %>%
         filter(gene_A %in% receptor_interactions$gene_B)
@@ -426,7 +426,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       ligand_interactions = lrobj_tbl %>%
         filter(type_gene_A == "Transcription Factor") %>%
-        filter(gene_B == target)
+        filter(gene_B == !!target)
       receptor_interactions = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor") %>%
         filter(gene_B %in% ligand_interactions$gene_A)

@@ -12,7 +12,7 @@
 #'@param sep character used to divide the columns on input file
 #'@param colors colorlist
 #'@importFrom tidyr %>%
-#'@import tibble dplyr assertthat
+#'@import tibble dplyr assertthat stringr
 #'@return LRObject
 read_lr_single_condition <- function(lrpaths,
                                      sel_columns,
@@ -35,7 +35,9 @@ read_lr_single_condition <- function(lrpaths,
                tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
         data1 <- tibble(lrpaths[[conds[i]]])
       }
-      data1 <- add_node_type(data1)
+      if(!(sum(str_detect(data1$gene_A, '\\|')) > 0)){
+         data1 <- add_node_type(data1)
+      }
       data1 <- data1 %>%
           tidyr::unite("cellpair", 
                        c(sel_columns[1],sel_columns[2]), 

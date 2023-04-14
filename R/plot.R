@@ -745,14 +745,12 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi =
         })
         color_groups = c("#f8756b", "#00b835", "#619cff")
       }else {
-        l_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
-          grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+        l_mapping = lrobj_tblPCA@tables[[gsub('_ggi','',pca_table)]] %>%
           select(ligpair, type_gene_A) %>%
           rename(gene = ligpair, mapping = type_gene_A) %>%
           distinct()
 
-        r_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
-          grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+        r_mapping = lrobj_tblPCA@tables[[gsub('_ggi','',pca_table)]] %>%
           select(recpair, type_gene_B) %>%
           rename(gene = recpair, mapping = type_gene_B) %>%
           distinct()

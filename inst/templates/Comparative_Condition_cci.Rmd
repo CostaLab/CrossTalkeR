@@ -111,7 +111,9 @@ for(i in 1:length(names(all_data@tables))){
 path <-params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
-lapply(plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=FALSE),print)
+p1<-plot_pca_LR_comparative(all_data,dims=c(1,2),ret=T,ggi=FALSE)
+p1
+#lapply(,print)
 ```
 
 

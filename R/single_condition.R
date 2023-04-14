@@ -40,10 +40,9 @@ read_lr_single_condition <- function(lrpaths,
       }
       message('NO Factor')
       data1 <- data1 %>%
-          dplyr::mutate_if(is.character,as.factor) %>%
           tidyr::unite("cellpair", 
                        c(sel_columns[1],sel_columns[2]), 
-                       remove = FALSE,sep='_')
+                       remove = FALSE,sep='@')
       if('Ligand' %in% data1[[sel_columns[5]]]){
         data1 <- data1 %>%
                  tidyr::unite("ligpair",
@@ -54,10 +53,10 @@ read_lr_single_condition <- function(lrpaths,
                               c(sel_columns[2],sel_columns[4]),
                               remove = FALSE,
                               sep='/')  %>%
-                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_'))%>%
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='@'))%>%
                  tidyr::separate(.data$allpair,
                                  c('ligpair','recpair'),
-                                 sep = '_',remove = F)
+                                 sep = '@',remove = F)
       }else{
         tmp <- data1[[sel_columns[5]]]
         data1[[sel_columns[5]]] <- data1[[sel_columns[6]]]
@@ -74,10 +73,10 @@ read_lr_single_condition <- function(lrpaths,
                               c(sel_columns[2],sel_columns[4]),
                               remove = FALSE,
                               sep='/')  %>%
-                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='_')) %>%
+                 dplyr::mutate(allpair=paste(.data$ligpair,.data$recpair,sep='@')) %>%
                  tidyr::separate(.data$allpair ,
                                  c('ligpair','recpair'),
-                                 sep = '_',remove = F)
+                                 sep = '@',remove = F)
 
 
       }
@@ -96,7 +95,7 @@ read_lr_single_condition <- function(lrpaths,
       clusters_num <- unique(c(unique(data1[[sel_columns[1]]]),
                                unique(data1[[sel_columns[2]]])))
       final <- final %>%
-        tidyr::separate(.data$cellpair, c("u", "v"), "_")
+        tidyr::separate(.data$cellpair, c("u", "v"), '@')
       final$pair <- aux
       filtervar <- grepl('Transcription',data1[[sel_columns[5]]])| grepl('Transcription',data1[[sel_columns[6]]])
       raw_inter <- table(data1$cellpair[!filtervar])

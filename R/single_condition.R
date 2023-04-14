@@ -38,7 +38,9 @@ read_lr_single_condition <- function(lrpaths,
       if(!(sum(str_detect(data1$gene_A, '\\|')) > 0)){
          data1 <- add_node_type(data1)
       }
+      message('NO Factor')
       data1 <- data1 %>%
+          dplyr::mutate_if(is.character,as.factor) %>%
           tidyr::unite("cellpair", 
                        c(sel_columns[1],sel_columns[2]), 
                        remove = FALSE,sep='_')

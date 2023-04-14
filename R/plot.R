@@ -707,101 +707,103 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
 plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
-
+  pca_plot <- list()
   if (ggi) {
-    pca_table = names(lrobj_tblPCA@pca)[which(
+    pca_tables = names(lrobj_tblPCA@pca)[which(
       grepl("_x_", names(lrobj_tblPCA@pca))
         & grepl("_ggi", names(lrobj_tblPCA@pca)))]
+    for(pca_table in pca_tables){
+      #Filter for LR or TF
+      if (gene_types == "LR") {
+        pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
+        pca_split_names = names(pca_split)
+        result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
+        col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
+        lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
 
-    #Filter for LR or TF
-    if (gene_types == "LR") {
-      pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
-      pca_split_names = names(pca_split)
-      result_split_names = pca_split_names[grepl("|R", pca_split_names, fixed = TRUE) | grepl("|L", pca_split_names, fixed = TRUE)]
-      col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
-      lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
+      } else if (gene_types == "TF") {
+        pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
+        pca_split_names = names(pca_split)
+        result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
+        col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
+        lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
+      }
 
-    } else if (gene_types == "TF") {
-      pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
-      pca_split_names = names(pca_split)
-      result_split_names = pca_split_names[grepl("|TF", pca_split_names, fixed = TRUE)]
-      col.num <- which(rownames(lrobj_tblPCA@pca[[pca_table]]$x) %in% result_split_names)
-      lrobj_tblPCA@pca[[pca_table]]$x <- lrobj_tblPCA@pca[[pca_table]]$x[sort(c(col.num)),]
-    }
+      #Mapping_Table
+      if (include_tf) {
+        map_df <- as.data.frame(rownames(lrobj_tblPCA@pca[[pca_table]]$x))
+        colnames(map_df) <- c("gene")
+        map_df$mapping <- sapply(map_df$gene, function(gene) {
+          if (grepl("|R", gene, fixed = TRUE)) {
+            txt <- "Receptor"
+          } else if (grepl("|L", gene, fixed = TRUE)) {
+            txt <- "Ligand"
+          } else {
+            txt <- "Transcription Factor"
+          }
+          return(txt)
+        })
+        color_groups = c("#f8756b", "#00b835", "#619cff")
+      }else {
+        l_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
+          grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+          select(ligpair, type_gene_A) %>%
+          rename(gene = ligpair, mapping = type_gene_A) %>%
+          distinct()
 
-    #Mapping_Table
-    if (include_tf) {
-      map_df <- as.data.frame(rownames(lrobj_tblPCA@pca[[pca_table]]$x))
-      colnames(map_df) <- c("gene")
-      map_df$mapping <- sapply(map_df$gene, function(gene) {
-        if (grepl("|R", gene, fixed = TRUE)) {
-          txt <- "Receptor"
-        } else if (grepl("|L", gene, fixed = TRUE)) {
-          txt <- "Ligand"
-        } else {
-          txt <- "Transcription Factor"
-        }
-        return(txt)
-      })
-      color_groups = c("#f8756b", "#00b835", "#619cff")
-    }else {
-      l_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
-        grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
-        select(ligpair, type_gene_A) %>%
-        rename(gene = ligpair, mapping = type_gene_A) %>%
-        distinct()
+        r_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
+          grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
+          select(recpair, type_gene_B) %>%
+          rename(gene = recpair, mapping = type_gene_B) %>%
+          distinct()
 
-      r_mapping = lrobj_tblPCA@tables[[names(lrobj_tblPCA@tables)[which(
-        grepl("_x_", names(lrobj_tblPCA@tables)))]]] %>%
-        select(recpair, type_gene_B) %>%
-        rename(gene = recpair, mapping = type_gene_B) %>%
-        distinct()
+        map_df = rbind(l_mapping, r_mapping)
+        map_df = dplyr::filter(map_df, gene %in% rownames(lrobj_tblPCA@pca[[pca_table]]$x))
+        map_df = map_df[!duplicated(map_df$gene),]
+        color_groups = c("#f8756b", "#00b835")
+      }
 
-      map_df = rbind(l_mapping, r_mapping)
-      map_df = dplyr::filter(map_df, gene %in% rownames(lrobj_tblPCA@pca[[pca_table]]$x))
-      map_df = map_df[!duplicated(map_df$gene),]
-      color_groups = c("#f8756b", "#00b835")
-    }
-
-    rmd_title <- paste0(pca_table, '_tbl')
-    rmd_title1 <- paste0(pca_table, '_pca')
-    x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
-    y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]))
-    z_x <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]
-    z_y <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]
-    ver_zx <- ifelse(abs(z_x) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[1]]]), 1, 0)
-    ver_zy <- ifelse(abs(z_y) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[2]]]), 1, 0)
-    pca_plot <- fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
-                                axes = c(dims[[1]], dims[[2]]),
-                                pointshape = 20, pointsize = 2, labelsize = 10,
-                                repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping, palette = color_groups) +
-      geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(lrobj_tblPCA@pca[[pca_table]]$x), NA)), size = 5) +
-      xlim(-x, x) +
-      ylim(-y, y) +
-      ggtitle(pca_table) +
-      theme(text = element_text(size = 7.5),
-            axis.title = element_text(size = 7.5),
-            axis.text = element_text(size = 7.5))
+      rmd_title <- paste0(pca_table, '_tbl')
+      rmd_title1 <- paste0(pca_table, '_pca')
+      x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
+      y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]))
+      z_x <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]
+      z_y <- lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]
+      ver_zx <- ifelse(abs(z_x) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[1]]]), 1, 0)
+      ver_zy <- ifelse(abs(z_y) >= (2 * lrobj_tblPCA@pca[[pca_table]]$sdev[dims[[2]]]), 1, 0)
+      pca_plot[[pca_table]] <- fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
+                                  axes = c(dims[[1]], dims[[2]]),
+                                  pointshape = 20, pointsize = 2, labelsize = 10,
+                                  repel = FALSE, max.overlaps = 100, label = 'var', habillage = map_df$mapping, palette = color_groups) +
+        geom_label_repel(aes(label = ifelse((ver_zx | ver_zy), rownames(lrobj_tblPCA@pca[[pca_table]]$x), NA)), size = 5) +
+        xlim(-x, x) +
+        ylim(-y, y) +
+        ggtitle(pca_table) +
+        theme(text = element_text(size = 7.5),
+              axis.title = element_text(size = 7.5),
+              axis.text = element_text(size = 7.5))
+      }
   } else {
-    pca_table = names(lrobj_tblPCA@pca)[which(
+    pca_tables = names(lrobj_tblPCA@pca)[which(
       grepl("_x_", names(lrobj_tblPCA@pca))
         & !grepl("_ggi", names(lrobj_tblPCA@pca)))]
-
-    rmd_title <- paste0(pca_table, '_tbl')
-    rmd_title1 <- paste0(pca_table, '_pca')
-    x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
-    y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]))
-    pca_plot <- fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
-                                axes = c(1, 2),
-                                pointshape = 21, pointsize = 0.5, labelsize = 6,
-                                repel = TRUE, max.overlaps = 100, label = 'var') +
-      geom_text_repel(aes(label = rownames(lrobj_tblPCA@pca[[pca_table]]$x))) +
-      xlim(-x, x) +
-      ylim(-y, y) +
-      ggtitle(pca_table) +
-      theme(text = element_text(size = 7.5),
-            axis.title = element_text(size = 7.5),
-            axis.text = element_text(size = 7.5))
+    for(pca_table in pca_tables){
+      rmd_title <- paste0(pca_table, '_tbl')
+      rmd_title1 <- paste0(pca_table, '_pca')
+      x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
+      y <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[2]]]))
+      pca_plot[[pca_table]] <- fviz_pca_biplot(lrobj_tblPCA@pca[[pca_table]],
+                                  axes = c(1, 2),
+                                  pointshape = 21, pointsize = 0.5, labelsize = 6,
+                                  repel = TRUE, max.overlaps = 100, label = 'var') +
+        geom_text_repel(aes(label = rownames(lrobj_tblPCA@pca[[pca_table]]$x))) +
+        xlim(-x, x) +
+        ylim(-y, y) +
+        ggtitle(pca_table) +
+        theme(text = element_text(size = 7.5),
+              axis.title = element_text(size = 7.5),
+              axis.text = element_text(size = 7.5))
+    }
   }
 
 

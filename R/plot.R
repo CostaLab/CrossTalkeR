@@ -676,7 +676,7 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 #'This function is a proxy to the PCA plot in comparative conditions
 #'
 #'@param lrobj_tblPCA LRobject table with all data
-#'@param curr table entry
+#'@param pca_table table entry
 #'@param dims PCA dims
 #'@param ret return plot
 #'@param ggi GGI mode
@@ -706,13 +706,9 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
-plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
+plot_pca_LR_comparative <- function(lrobj_tblPCA, pca_table, dims = c(1, 2), ret = F, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
   pca_plot <- list()
   if (ggi) {
-    pca_tables = names(lrobj_tblPCA@pca)[which(
-      grepl("_x_", names(lrobj_tblPCA@pca))
-        & grepl("_ggi", names(lrobj_tblPCA@pca)))]
-    for(pca_table in pca_tables){
       #Filter for LR or TF
       if (gene_types == "LR") {
         pca_split = lrobj_tblPCA@pca[[pca_table]]$x[, 1]
@@ -778,14 +774,10 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi =
         ylim(-y, y) +
         ggtitle(pca_table) +
         theme(text = element_text(size = 7.5),
-              axis.title = element_text(size = 7.5),
+              axis.title = element_text(size = 10),
               axis.text = element_text(size = 7.5))
-      }
+      
   } else {
-    pca_tables = names(lrobj_tblPCA@pca)[which(
-      grepl("_x_", names(lrobj_tblPCA@pca))
-        & !grepl("_ggi", names(lrobj_tblPCA@pca)))]
-    for(pca_table in pca_tables){
       rmd_title <- paste0(pca_table, '_tbl')
       rmd_title1 <- paste0(pca_table, '_pca')
       x <- max(abs(lrobj_tblPCA@pca[[pca_table]]$x[, dims[[1]]]))
@@ -801,7 +793,6 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, dims = c(1, 2), ret = F, ggi =
         theme(text = element_text(size = 7.5),
               axis.title = element_text(size = 7.5),
               axis.text = element_text(size = 7.5))
-    }
   }
 
 

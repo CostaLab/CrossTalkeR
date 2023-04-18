@@ -11,6 +11,7 @@
 #'@param out_path output path to save the results to
 #'@import Seurat liana dplyr stringr
 #'@return list of LR interaction tables by condition
+#' @export
 run_LR_analysis <- function(seurat_object, condition_ident, annotation_ident, organism, out_path) {
 
   Idents(seurat_object) <- condition_ident
@@ -65,6 +66,7 @@ run_LR_analysis <- function(seurat_object, condition_ident, annotation_ident, or
 #'@param LR_results tables with LR interactions by consitions
 #'@import Seurat rcompanion LR2TF
 #'@return list of LRTF interaction tables by condition
+#' @export
 run_TF_analysis <- function(seurat_object, parameters, LR_results = NA) {
 
   if (is.null(parameters[["comparison_list"]])) {
@@ -146,6 +148,7 @@ run_TF_analysis <- function(seurat_object, parameters, LR_results = NA) {
 #'@param parameters list of arguments that are needed to run the LR and TF analyses
 #'@import Seurat rcompanion LR2TF
 #'@return list of LRTF interaction tables by condition that can be used to run CrossTalkeR
+#' @export
 run_LRTF_analysis <- function(seurat_object, parameters){
   LR_tables <- run_LR_analysis(seurat_object, parameters[["condition_annotation"]], parameters[["celltype_annotation"]], parameters[["organism"]], parameters[["out_path"]])
   CTR_input <- run_TF_analysis(seurat_object, parameters, LR_tables)

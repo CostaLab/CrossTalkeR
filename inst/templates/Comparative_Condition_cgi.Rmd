@@ -65,18 +65,21 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-pca_table = names(all_data@pca)[which(
+
+pca_table1 = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
 
-p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag)
-if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
-  p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag)
-  print(p1)
-  print(p2)
-}else{
-  print(p1)
+for(pca_table in pca_table1){
+    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+    }else{
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+    }
 }
+
+
 
 
 ```
@@ -89,18 +92,20 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-pca_table = names(all_data@pca)[which(
+
+pca_table1 = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
-p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR")
-if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
-  p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR")
-  print(p1)
-  print(p2)
-} else {
-  print(p1)
-}
 
+
+for(pca_table in pca_table1){
+    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+    }else{
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+    }
+}
 ```
 
 
@@ -112,17 +117,21 @@ asis_output("#### PCA GCI Transcription Factor Genes\\n")
 path <- params$obj1
 out <- c()
 out1 <- list()
-all_data <- readRDS(path)
-pca_table = names(all_data@pca)[which(
+
+
+
+pca_table1 = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
-p1 <- plot_pca_LR_comparative(all_data, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF")
-if (length(colnames(all_data@pca[[pca_table]]$x)) >= 4) {
-  p2 <- plot_pca_LR_comparative(all_data, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF")
-  print(p1)
-  print(p2)
-} else {
-  print(p1)
+
+
+for(pca_table in pca_table1){
+    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+    }else{
+      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+    }
 }
 
 ```

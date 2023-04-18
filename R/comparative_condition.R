@@ -16,7 +16,7 @@ create_diff_table1 <- function(data, out_path) {
     tmp_data <- tmp_data %>%
       tidyr::separate(.data$allpair,
                       c('ligpair', 'recpair'),
-                      sep = '_', remove = F)
+                      sep = '@', remove = F)
     tmp_data$LRScore.x[is.na(tmp_data$LRScore.x)] <- 0
     tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
     final_data <- tmp_data %>%
@@ -63,7 +63,7 @@ create_diff_table1 <- function(data, out_path) {
                     -.data$source.y,
                     -.data$target.x,
                     -.data$target.y) %>%
-      dplyr::mutate(cellpair = paste0(.data$source, "_",
+      dplyr::mutate(cellpair = paste0(.data$source, "@",
                                       .data$target))
       data@tables[[cmp_name]] <- final_data
     final <- final_data %>%
@@ -72,7 +72,7 @@ create_diff_table1 <- function(data, out_path) {
       dplyr::group_by(.data$cellpair) %>%
       dplyr::summarise(LRScore = sum(.data$LRScore))
     final <- final %>%
-      tidyr::separate(.data$cellpair, c("u", "v"), sep = "_", remove = F)
+      tidyr::separate(.data$cellpair, c("u", "v"), sep = "@", remove = F)
     final <- na.omit(final, cols = c(u, v))
     filtervar <- grepl('Transcription', final_data[['type_gene_A']]) | grepl('Transcription', final_data[['type_gene_B']])
     raw_inter <- table(final_data$cellpair[!filtervar])

@@ -130,6 +130,7 @@ plot_cci <- function(graph,
   }
   igraph::E(graph)$arrow.size <- 0.4
   igraph::E(graph)$arrow.width <- igraph::E(graph)$width + 0.8
+  igraph::E(graph)$loop.angle <- NA
   if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
     igraph::E(graph)$loop.angle[which(edge_start[, 2] == edge_start[, 1])] <- loop_angle[edge_start[which(edge_start[, 2] == edge_start[, 1]), 1]]
     igraph::E(graph)$loop.angle[which(edge_start[, 2] != edge_start[, 1])] <- 0

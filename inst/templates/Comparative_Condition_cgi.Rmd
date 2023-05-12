@@ -201,17 +201,25 @@ for (i in 1:length(names(all_data@pca))) {
 ### Most significant deregulated pathway per topological measure
 *Generates a heatmap of the most significant differentially active KEGG-pathways based on the top 100 deregulated genes.*
 
-```{r annotdiff, fig.align='center', fig.height=7, fig.width=10,warning=FALSE,echo=F,eval=TRUE}
+```{r annotdiff, fig.align='center', fig.height=10, fig.width=10,warning=FALSE,echo=F,eval=TRUE}
 all_data <- readRDS(path)
 for (i in names(all_data@annot)) {
   if (grepl('_x_', i) & grepl('ggi', i)) {
     paths <- read.csv(system.file("extdata", "selected_KEGG.csv", package = "CrossTalkeR"), header = F)
     filtered <- all_data@annot[[i]][grepl(paste(paths$V1, collapse = '|'), all_data@annot[[i]]$ID),]
     filtered <- filtered[filtered$p.adjust <= 0.05,]
+    if (sum(str_detect(filtered$Description, 'house mouse')) > 0) {
+      filtered$Description <- substr(filtered$Description, 1, nchar(filtered$Description) - 29)
+    }
     if (dim(filtered)[1] >= 2) {
       mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
       mat[is.na(mat)] = 1
-      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = 'NES_pval')
+      log_mat <- -log10(mat)
+      p1 <- Heatmap(log_mat,
+                    col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]),
+                    column_title = i,
+                    name = 'NES_pval',
+                    row_names_gp = gpar(fontsize = 10))
       draw(p1)
     }
     else {

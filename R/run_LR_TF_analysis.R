@@ -20,16 +20,16 @@ run_LR_analysis <- function(seurat_object, condition_ident, annotation_ident, or
     ident_rename <- str_replace_all(ident, "[,;.:-]", "_")
     sub_obj <- subset(x = seurat_object, idents = ident)
 
-    if(organism=="human"){
+    if (organism == "human") {
       liana_cpdb_res <- liana_wrap(sub_obj, resource = c("Consensus"), idents_col = annotation_ident, method = "cellphonedb", expr_prop = 0, permutation.params =
-      list(
-        nperms = 1000
-      ))
-    } else if (organism=="mouse"){
+        list(
+          nperms = 1000
+        ))
+    } else if (organism == "mouse") {
       liana_cpdb_res <- liana_wrap(sub_obj, resource = c("MouseConsensus"), idents_col = annotation_ident, method = "cellphonedb", expr_prop = 0, permutation.params =
-      list(
-        nperms = 1000
-      ))
+        list(
+          nperms = 1000
+        ))
     } else {
       print("Unsopported organism defined. Currently only human and mouse data can be analyzed.")
       stop("exit execution of LR analysis")
@@ -105,20 +105,40 @@ run_TF_analysis <- function(seurat_object, parameters, LR_results = NA) {
         result_table <- LR2TF::generate_CrossTalkeR_input_significant_table(all_results[[con_rename]][["cluster"]],
                                                                             parameters[["confidence_level"]],
                                                                             all_results[[paste0(con_rename, "_average_expression")]])
+        R_TG_network <- LR2TF::generate_intracellular_network(all_results[[con_rename]][["cluster"]],
+                                                              parameters[["confidence_level"]],
+                                                              all_results[[paste0(con_rename, "_average_expression")]],
+                                                              parameters[["organism"]])
+        write.csv(R_TG_network, paste0(parameters[["out_path"]], "/receptome_", con_rename, ".csv"), row.names = FALSE)
       } else {
         result_table <- LR2TF::generate_CrossTalkeR_input_significant_table(all_results[[con_rename]][["condition"]],
                                                                             parameters[["confidence_level"]],
                                                                             all_results[[paste0(con_rename, "_average_expression")]])
+        R_TG_network <- LR2TF::generate_intracellular_network(all_results[[con_rename]][["condition"]],
+                                                              parameters[["confidence_level"]],
+                                                              all_results[[paste0(con_rename, "_average_expression")]],
+                                                              parameters[["organism"]])
+        write.csv(R_TG_network, paste0(parameters[["out_path"]], "/receptome_", con_rename, ".csv"), row.names = FALSE)
       }
     } else if (parameters[["organism"]] == "mouse") {
       if (is.null(all_results[[con_rename]][["condition"]])) {
         result_table <- LR2TF::generate_CrossTalkeR_input_mouse_significant_table(all_results[[con_rename]][["cluster"]],
                                                                                   parameters[["confidence_level"]],
                                                                                   all_results[[paste0(con_rename, "_average_expression")]])
+        R_TG_network <- LR2TF::generate_intracellular_network(all_results[[con_rename]][["cluster"]],
+                                                              parameters[["confidence_level"]],
+                                                              all_results[[paste0(con_rename, "_average_expression")]],
+                                                              parameters[["organism"]])
+        write.csv(R_TG_network, paste0(parameters[["out_path"]], "/receptome_", con_rename, ".csv"), row.names = FALSE)
       } else {
         result_table <- LR2TF::generate_CrossTalkeR_input_mouse_significant_table(all_results[[con_rename]][["condition"]],
                                                                                   parameters[["confidence_level"]],
                                                                                   all_results[[paste0(con_rename, "_average_expression")]])
+        R_TG_network <- LR2TF::generate_intracellular_network(all_results[[con_rename]][["condition"]],
+                                                              parameters[["confidence_level"]],
+                                                              all_results[[paste0(con_rename, "_average_expression")]],
+                                                              parameters[["organism"]])
+        write.csv(R_TG_network, paste0(parameters[["out_path"]], "/receptome_", con_rename, ".csv"), row.names = FALSE)
       }
     } else {
       print("Unsopported organism defined. Currently only human and mouse data can be analyzed.")
@@ -149,7 +169,7 @@ run_TF_analysis <- function(seurat_object, parameters, LR_results = NA) {
 #'@import Seurat rcompanion LR2TF
 #'@return list of LRTF interaction tables by condition that can be used to run CrossTalkeR
 #' @export
-run_LRTF_analysis <- function(seurat_object, parameters){
+run_LRTF_analysis <- function(seurat_object, parameters) {
   LR_tables <- run_LR_analysis(seurat_object, parameters[["condition_annotation"]], parameters[["celltype_annotation"]], parameters[["organism"]], parameters[["out_path"]])
   CTR_input <- run_TF_analysis(seurat_object, parameters, LR_tables)
 

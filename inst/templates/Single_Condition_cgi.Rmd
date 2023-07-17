@@ -105,6 +105,9 @@ for (i in names(all_data@annot)) {
     out <- tryCatch({
       filtered <- all_data@annot[[i]][grepl(paste(paths$V1, collapse = '|'), all_data@annot[[i]]$ID),]
       filtered <- filtered[filtered$p.adjust <= 0.05,]
+      if (sum(str_detect(filtered$Description, 'house mouse')) > 0) {
+        filtered$Description <- substr(filtered$Description, 1, nchar(filtered$Description) - 29)
+      }
       mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
       mat[is.na(mat)] = 1
       p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = '-log10(p.adjust)')

@@ -1,0 +1,308 @@
+---
+title: CrossTalkeR Example - Human Myelofibrosis
+author:
+- name: James S. Nagai
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Nils B. Leimkühler
+  affiliation: Department of Hematology and Stem Cell Transplantation,
+               University Hospital Essen,
+               Germany
+- name: Vanessa Klöker
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Michael T. Schaub
+  affiliation:
+     - Department of Computer Science,
+       RWTH Aachen University,
+       Aachen, Germany
+- name: Rebekka K. Schneider
+  affiliation:
+    - Department of Hematology,
+      Erasmus Medical Center,
+      Rotterdam, 3015GD,
+      the Netherlands
+    - Department of Cell Biology,
+      Institute for Biomedical Engineering,
+      Faculty of Medicine,
+      RWTH Aachen University,
+      Aachen, 52074 Germany
+    - Oncode Institute,
+      Erasmus Medical Center,
+      Rotterdam, 3015GD,
+      the Netherlands
+- name: Ivan G. Costa
+  affiliation:
+     - Institute for Computational Genomics,
+       Faculty of Medicine,
+       RWTH Aachen University,
+       Aachen, 52074 Germany
+output:
+     html_document
+vignette: |
+      %\VignetteIndexEntry{CrossTalkeR-HumanMyfib}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+---
+Human Myelofibrosis scRNA-seq data
+
+Ligand-Receptor interactions present in the package. Predicted with the liana package using the cellphoneDB method and Consensus database. Two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv).
+
+Fist defining a list of paths/dataframes for each condition of interest. Please note that it is possible to run CrossTalkeR with more than two conditions.
+```{r, warning=FALSE,message=F, output=FALSE}
+library(CrossTalkeR)
+paths <- c('CTR' = system.file("extdata",
+                               "CTR_LR.csv",
+                               package = "CrossTalkeR"),
+           'EXP' = system.file("extdata",
+                               "EXP_LR.csv",
+                               package = "CrossTalkeR"))
+```
+
+
+Then we can run CrossTalkeR and save the results to a user defined path (here named output):
+```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE}
+
+
+output <- system.file("extdata", package = "CrossTalkeR")
+data <- generate_report(paths,
+                        out_path=paste0(output,'/'),
+                        threshold=0,
+                        out_file = 'vignettes_example.html',
+                        output_fmt = "html_document",
+                        report = TRUE)
+```
+As result of the successful execution, we receive three seurat objects (LR_data.Rds, LR_data_step2.Rds and LR_data_final.Rds), as well as two html-reports(SingleCondition.html and ComparativeCondition.html). The LR_data_final.Rds contains all results produced by CrossTalkeR and the html-reports contain the visualization of the results. In the following we are going to take a look at the different plots within the reports, step by step.
+
+##Single Condition results
+CCI plots
+```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+PCA plots on gene level
+```{r vignete3, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+all_data <- data
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+    p1 <- plot_pca(all_data@pca, curr, dims = c(1, 2), ret = T, ggi = TRUE)
+    if (length(colnames(all_data@pca[[curr]]$x)) >= 4) {
+      p2 <- plot_pca(all_data@pca, curr, dims = c(3, 4), ret = T, ggi = TRUE)
+      print(p1 + p2)
+    }else {
+      print(p1)
+    }
+  }
+}
+
+```
+
+Tables Ranking of genes based on the analysed topological measures
+```{r vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+all_data <- data
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca')
+    title <- paste0('\n\n#### Table PCA CGI ', curr)
+    knit_expanded <- paste0("```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
+         pca <- all_data@pca[['", curr, "']]$x[,1:2]
+         pca[,1] <- round(pca[,1],6)
+         pca[,2] <- round(pca[,2],6)
+         ranking <- cbind(all_data@rankings[['", curr, "']][,2:dim(all_data@rankings[['", curr, "']])[2]],pca[all_data@rankings[['", curr, "']]$nodes,])
+         datatable(ranking,
+                 caption='", curr, "',
+                 extensions = 'Buttons',
+                 options = list(dom = 'Bfrtip',
+                                buttons = c('copy',
+                                            'csv',
+                                            'excel',
+                                            'pdf', 'print'),
+                               autoWidth = FALSE
+                             ))\n\n```")
+    out <- c(out, knit_expanded)
+    out1[[curr]] <- knit_expanded
+  }
+}
+```
+Most significant deregulated pathway per topological measure
+```{r vignete5, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+all_data <- data
+paths <- read.csv(system.file("extdata", "selected_KEGG.csv", package = "CrossTalkeR"), header = T)
+for (i in names(all_data@annot)) {
+  if (str_detect(i, 'ggi', negate = FALSE) & !str_detect(i, '_x_', negate = FALSE)) {
+    out <- tryCatch({
+      filtered <- all_data@annot[[i]][grepl(paste(paths$V1, collapse = '|'), all_data@annot[[i]]$ID),]
+      filtered <- filtered[filtered$p.adjust <= 0.05,]
+      if (sum(str_detect(filtered$Description, 'house mouse')) > 0) {
+        filtered$Description <- substr(filtered$Description, 1, nchar(filtered$Description) - 29)
+      }
+      mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
+      mat[is.na(mat)] = 1
+      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = '-log10(p.adjust)')
+      draw(p1)
+    },
+      error = function(cond) {
+        message("Significant enrichment not found")
+      })
+  }
+}
+
+```
+Table with data at the end of the report
+
+##Compared Condition results
+Producing similar plots as for single condition, weights in network are based on the difference in the scores between the two conditions compared.
+CCI plots
+```{r vignete6, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+PCA plots based on cell types
+```{r vignete7, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+PCA plots on gene level
+```{r vignete8, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+Pagerank Log Ratio
+```{r vignete9, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+Tables Ranking of genes based on the analysed topological measures
+```{r vignete10, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+Ranking of genes based on the analysed topological measures
+```{r vignete11, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+Table with data
+```{r vignete12, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```
+##Follow-up analysis
+
+It is possible to take a closer look at genes, that were found as important in the communication-networks produced by CrossTalkeR. We can rerun the generatio of the reports with adding a list with genes of interest.
+Name both options? with |L and without?
+```{r}
+genes <- c('TGFB1|L')
+```
+
+As result, Sankey plots showing the interactions with the genes of interest are added to the comparative condition report. Here you can see the example Sankey plot for the TGFB1 ligand gene.
+```{r , results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Example 1',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12)
+
+```

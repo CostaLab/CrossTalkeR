@@ -45,7 +45,8 @@ generate_report <- function(lrpaths,
                             report = TRUE,
                             output_fmt = "html_document",
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
-                            org='hsa') {
+                            org='hsa',
+                            comparison = NULL) {
   data <- analise_LR(lrpaths,
                       genes,
                       tf_genes,
@@ -55,7 +56,9 @@ generate_report <- function(lrpaths,
                       colors,
                       out_file,
                       output_fmt,
-                      sel_columns,org)
+                      sel_columns,
+                      org,
+                      comparison)
   if(report){
       make_report(genes = genes,
                         tf_genes = tf_genes,
@@ -126,7 +129,8 @@ analise_LR <- function(lrpaths,
                             out_file = NULL,
                             output_fmt = "html_document",
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
-                            org='hsa') {
+                            org='hsa',
+                            comparison = NULL) {
   data <- read_lr_single_condition(lrpaths,
                                     sel_columns,
                                     out_path,
@@ -135,7 +139,7 @@ analise_LR <- function(lrpaths,
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table1(data, out_path)
+    data <- create_diff_table1(data, out_path, comparison)
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
@@ -153,7 +157,7 @@ analise_LR <- function(lrpaths,
                             slot='rankings',out_path=out_path,database=org.Mm.eg.db::org.Mm.eg.db, org=org)})
   }
   if (length(lrpaths) > 1) {
-     data <- fisher_test_cci(data,'LRScore',out_path=out_path)
+     data <- fisher_test_cci(data,'LRScore',out_path=out_path,comparison)
   }
   message("Network Analysis Done")
   return(data)

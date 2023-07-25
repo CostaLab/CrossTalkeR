@@ -45,6 +45,7 @@
         <entry key="file://$PROJECT_DIR$/vignettes/HumanFibrosis.rmd">
           <value>
             <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/vignettes/HumanFibrosis.html" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/vignettes" />
             </RMarkdownRenderProfile>
           </value>

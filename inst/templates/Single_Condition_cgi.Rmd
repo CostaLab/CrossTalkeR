@@ -25,6 +25,17 @@ require(ComplexHeatmap)
 require("DT")
 require(ggrepel)
 
+
+all_data <- readRDS(params$obj1)
+PCA_TF_flag <- FALSE
+for (name in names(all_data@tables)) {
+  if (!str_detect(name, '_x_', negate = FALSE)) {
+    if (("Transcription Factor" %in% all_data@tables[[name]]$type_gene_A) | ("Transcription Factor" %in% all_data@tables[[name]]$type_gene_B)) {
+      PCA_TF_flag <- TRUE
+    }
+  }
+}
+
 ```
 
 
@@ -42,12 +53,11 @@ out1 <- list()
 for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
   if (!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
-    p1 <- plot_pca(all_data@pca, curr, dims = c(1, 2), ret = T, ggi = TRUE)
+    #p1 <- plot_pca(all_data@pca, curr, dims = c(1, 2), ret = T, ggi = TRUE)
+    print(plot_pca_LR_comparative(all_data, curr, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
     if (length(colnames(all_data@pca[[curr]]$x)) >= 4) {
-      p2 <- plot_pca(all_data@pca, curr, dims = c(3, 4), ret = T, ggi = TRUE)
-      print(p1 + p2)
-    }else {
-      print(p1)
+      #p2 <- plot_pca(all_data@pca, curr, dims = c(3, 4), ret = T, ggi = TRUE)
+      print(plot_pca_LR_comparative(all_data, curr, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
     }
   }
 }

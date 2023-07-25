@@ -42,14 +42,14 @@ if (is.null(params$obj3)) {
 }
 
 all_data <- readRDS(params$obj1)
-genes_table = names(all_data@tables)[which(grepl("_x_", names(all_data@tables)))]
-
-if (("Transcription Factor" %in% all_data@tables[[genes_table]]$type_gene_A) | ("Transcription Factor" %in% all_data@tables[[genes_table]]$type_gene_A)) {
-  PCA_TF_flag <- TRUE
-}else {
-  PCA_TF_flag <- FALSE
+PCA_TF_flag <- FALSE
+for (name in names(all_data@tables)) {
+  if (str_detect(name, '_x_', negate = FALSE)) {
+    if (("Transcription Factor" %in% all_data@tables[[name]]$type_gene_A) | ("Transcription Factor" %in% all_data@tables[[name]]$type_gene_B)) {
+      PCA_TF_flag <- TRUE
+    }
+  }
 }
-
 ```
 
 
@@ -70,13 +70,13 @@ pca_table1 = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
 
-for(pca_table in pca_table1){
-    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
-    }else{
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
-    }
+for (pca_table in pca_table1) {
+  if (dim(all_data@pca[[pca_table]]$x)[2] >= 4) {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+  }else {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag))
+  }
 }
 
 
@@ -98,13 +98,13 @@ pca_table1 = names(all_data@pca)[which(
     & grepl("_ggi", names(all_data@pca)))]
 
 
-for(pca_table in pca_table1){
-    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
-    }else{
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
-    }
+for (pca_table in pca_table1) {
+  if (dim(all_data@pca[[pca_table]]$x)[2] >= 4) {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+  }else {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE, gene_types = "LR"))
+  }
 }
 ```
 
@@ -118,20 +118,17 @@ path <- params$obj1
 out <- c()
 out1 <- list()
 
-
-
 pca_table1 = names(all_data@pca)[which(
   grepl("_x_", names(all_data@pca))
     & grepl("_ggi", names(all_data@pca)))]
 
-
-for(pca_table in pca_table1){
-    if (dim(all_data@pca[[pca_table]]$x)[2] >=4) {
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
-    }else{
-      print(plot_pca_LR_comparative(all_data, pca_table,dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
-    }
+for (pca_table in pca_table1) {
+  if (dim(all_data@pca[[pca_table]]$x)[2] >= 4) {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+  }else {
+    print(plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = PCA_TF_flag, gene_types = "TF"))
+  }
 }
 
 ```

@@ -4,7 +4,7 @@
 \alias{create_diff_table1}
 \title{Read the lrobject and generate the comparative tables}
 \usage{
-create_diff_table1(data, out_path)
+create_diff_table1(data, out_path, comparison = NULL)
 }
 \arguments{
 \item{data}{LRObj with single condition}

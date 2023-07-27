@@ -4,7 +4,7 @@
 \alias{fisher_test_cci}
 \title{Evaluate Differences in the edge proportion}
 \usage{
-fisher_test_cci(data, measure, out_path)
+fisher_test_cci(data, measure, out_path, comparison = NULL)
 }
 \arguments{
 \item{data}{datafromlian}

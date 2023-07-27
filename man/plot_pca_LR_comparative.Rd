@@ -6,6 +6,7 @@
 \usage{
 plot_pca_LR_comparative(
   lrobj_tblPCA,
+  pca_table,
   dims = c(1, 2),
   ret = F,
   ggi = TRUE,
@@ -16,6 +17,8 @@ plot_pca_LR_comparative(
 \arguments{
 \item{lrobj_tblPCA}{LRobject table with all data}
 
+\item{pca_table}{table entry}
+
 \item{dims}{PCA dims}
 
 \item{ret}{return plot}
@@ -25,8 +28,6 @@ plot_pca_LR_comparative(
 \item{include_tf}{intracellular option}
 
 \item{gene_types}{filter option of genes}
-
-\item{curr}{table entry}
 }
 \value{
 R default plot

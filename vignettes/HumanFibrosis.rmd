@@ -48,15 +48,16 @@ vignette: |
       %\VignetteEngine{knitr::rmarkdown}
       %\VignetteEncoding{UTF-8}
 ---
-Human Myelofibrosis scRNA-seq data
+# Cell-Cell Communication Analysis of Human Myelofibrosis scRNA-seq Data Using CrossTalkeR
 
-Here we demonstrate the usage of CrossTalkeR on a Myelofibrosis scRNA-seq data set. The Ligand-Receptor interactions, that were predicted with the liana package, are provided within this package. We used the cellphoneDB method and the consensus database from the liana package. If you want to learn more about how to run liana to use it with CrossTalkeR, check out this turorial: LINK.
+Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database. If you want to learn more about how to run liana to use it with CrossTalkeR, check out this turorial: LINK.
 
 The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run CrossTalkeR and then go over some of the results, that are also provided inside the resulting CrossTalkeR report
 
-#Running CrossTalkeR
+## Running CrossTalkeR
 
-Fist, we need to import the CrossTalkeR package and define a named list of either the paths to the Ligand-Receptor interaction tables, or directly dataframe objects for each condition of interest. Please note that it is possible to run CrossTalkeR with more than two conditions. (TODO: hide imports needed only for vis later stringr igraph) Here we load the files from within the package.
+Fist, we need to import the CrossTalkeR package and define a named list of either the paths to the Ligand-Receptor interaction tables, or directly dataframe objects for each condition of interest. Please note that it is possible to run CrossTalkeR with more than two conditions. (TODO: hide imports needed only for vis later stringr igraph) Here we load the files from within the package. We can further define a path where we like to save our results (output) and run CrossTalkeR with the generate_report() function:
+
 ```{r, warning=FALSE,message=F, output=FALSE}
 library(CrossTalkeR)
 library(igraph)
@@ -68,12 +69,6 @@ paths <- c('CTR' = system.file("extdata",
            'EXP' = system.file("extdata",
                                "EXP_LR.csv",
                                package = "CrossTalkeR"))
-```
-
-
-Then we can define a path where we like to save our results and run CrossTalkeR:
-```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE, eval = FALSE}
-
 
 output <- system.file("extdata", package = "CrossTalkeR")
 generate_report(paths,
@@ -81,30 +76,32 @@ generate_report(paths,
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
                 report = TRUE)
+
 ```
+
 Besides passing the paths to the interaction tables and the output folder, we here also define:
     out_file -> A suffix for the result reports
     output_fmt -> The file type of the result reports
     report -> A boolean value if the reports should be created at all
 
-As result of the successful execution, we receive three seurat objects (LR_data.Rds, LR_data_step2.Rds and LR_data_final.Rds), as well as two html-reports(SingleCondition.html and ComparativeCondition.html). The LR_data_final.Rds contains all results produced by CrossTalkeR and the two html-reports contain the visualization of the results inside the R object. In the following we are going to take a look at the different plots within the reports, step by step.
+As result of the successful execution, we receive three seurat objects (LR_data.Rds, LR_data_step2.Rds and LR_data_final.Rds), as well as two html-reports(SingleCondition.html and ComparativeCondition.html). The LR_data_final.Rds contains all results produced by CrossTalkeR and the two html-reports contain the visualization of the results inside the R object. It is possible to load the results of the CrossTalkeR analysis from the "LR_data_final.Rds" R-object and produce the plots separately. In the following we are going to take a look at different plots within the two reports, step by step.
 
-##Single Condition results
+## Single Condition report
 
 The first report contains the results for each analysed condition considered separately. In our case in each section is a plot for the control condition (CTR) and the disease condition (EXP).
 
-###Cell-Cell-Interaction plots
+### Cell-Cell-Interaction plots
 
 The Cell-Cell-Interaction (CCI) plots focus on the interactions between the different cell types within the data. We focus on three measures inside this plot:
     1. Percentage of interactions indicated by the opacity of the arrows
-    2. Edge weight (sum of single L-R interaction scores between celltype pairs)indicated by the edge color
+    2. Edge weight (sum of single L-R interaction scores between celltype pairs) indicated by the edge color
     3. Pagerank (Node importance) indicated by the node size
 TODO: show CTR and EXP next to each other plus description
-```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8, fig.show="hold" }
 data <- readRDS(system.file("extdata", "LR_data_final.Rds", package = "CrossTalkeR"))
-plot_cci(graph = data@graphs$CTR,
+p1 <- plot_cci(graph = data@graphs$CTR,
         colors = data@colors,
-        plt_name = 'Example 1',
+        plt_name = 'Control',
         coords = data@coords[V(data@graphs$CTR)$name,],
         emax = NULL,
         leg = FALSE,
@@ -113,24 +110,41 @@ plot_cci(graph = data@graphs$CTR,
         ignore_alpha = FALSE,
         log = FALSE,
         efactor = 8,
-        vfactor = 12)
+        vfactor = 12,
+        pg = data@rankings[["CTR"]]$Pagerank)
+
+p2 <- plot_cci(graph = data@graphs$EXP,
+        colors = data@colors,
+        plt_name = 'Disease',
+        coords = data@coords[V(data@graphs$EXP)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12,
+        pg = data@rankings[["EXP"]]$Pagerank)
 
 ```
-###Principal Component Analysis plots on gene-gene interaction level
+
+
+### Principal Component Analysis plots on gene-gene interaction level
 To find relevant ligand and receptor genes inside the network, we performed a principal component analysis (PCA) on the network topological measures (Listener, Influencer, Mediator, Pagerank). The results of the PCA are included in form of a plot, as well as inside a table. In the plot top ligand and receptors are indicated with labels and arrows indicate the directions of importance for each topological measure in the 2D space. Here we show the plots of the first 2 dimensions for the CTR and EXP condition in our data.
 
 TODO change plot function and add description
 ```{r vignete3, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+
 all_data <- data
 for (i in 1:length(names(all_data@pca))) {
   curr <- names(all_data@pca)[i]
   if (!str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, '_ggi', negate = FALSE)) {
-    p1 <- plot_pca(all_data@pca, curr, dims = c(1, 2), ret = T, ggi = TRUE)
+    #p1 <- plot_pca(all_data@pca, curr, dims = c(1, 2), ret = T, ggi = TRUE)
+    print(plot_pca_LR_comparative(all_data, curr, dims = c(1, 2), ret = T, ggi = TRUE, include_tf = FALSE))
     if (length(colnames(all_data@pca[[curr]]$x)) >= 4) {
-      p2 <- plot_pca(all_data@pca, curr, dims = c(3, 4), ret = T, ggi = TRUE)
-      print(p1 + p2)
-    }else {
-      print(p1)
+      #p2 <- plot_pca(all_data@pca, curr, dims = c(3, 4), ret = T, ggi = TRUE)
+      print(plot_pca_LR_comparative(all_data, curr, dims = c(3, 4), ret = T, ggi = TRUE, include_tf = FALSE))
     }
   }
 }
@@ -171,42 +185,31 @@ for (i in 1:length(names(all_data@pca))) {
 }
 ```
 
-###Most significant deregulated pathway per topological measure
+### Most significant deregulated pathway per topological measure
 functional analysis including KEGG pathway enrichment. not only on complete gene set, but grouping genes either as up or down in each topological measure group. Results presented as heatmap. X-axes showing the topological measure category and Y-axes showing the enriched pathway.
 ```{r vignete5, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
 all_data <- data
 paths <- read.csv(system.file("extdata", "selected_KEGG.csv", package = "CrossTalkeR"), header = T)
 for (i in names(all_data@annot)) {
   if (str_detect(i, 'ggi', negate = FALSE) & !str_detect(i, '_x_', negate = FALSE)) {
-    out <- tryCatch({
-      filtered <- all_data@annot[[i]][grepl(paste(paths$V1, collapse = '|'), all_data@annot[[i]]$ID),]
-      filtered <- filtered[filtered$p.adjust <= 0.05,]
-      if (sum(str_detect(filtered$Description, 'house mouse')) > 0) {
-        filtered$Description <- substr(filtered$Description, 1, nchar(filtered$Description) - 29)
-      }
-      mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
-      mat[is.na(mat)] = 1
-      p1 <- Heatmap(-log10(mat), col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]), column_title = i, name = '-log10(p.adjust)')
-      draw(p1)
-    },
-      error = function(cond) {
-        message("Significant enrichment not found")
-      })
+     plot_deregulated_pathways(data_object = all_data,
+                               name = i,
+                               title = i)
   }
 }
 
 ```
 
-##Compared Condition results
+## Compared Condition results
 
 
 Producing similar plots as for single condition, weights in network are based on the difference in the scores between the two conditions compared.
 CCI plots
 ```{r vignete6, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
-plot_cci(graph = data@graphs$CTR,
+plot_cci(graph = data@graphs$EXP_x_CTR,
         colors = data@colors,
-        plt_name = 'Example 1',
-        coords = data@coords[V(data@graphs$CTR)$name,],
+        plt_name = 'Disease vs Control',
+        coords = data@coords[V(data@graphs$EXP_x_CTR)$name,],
         emax = NULL,
         leg = FALSE,
         low = 0,

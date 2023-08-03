@@ -42,6 +42,13 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/vignettes/CrossTalker_install_basicusage.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/vignettes" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/vignettes/HumanFibrosis.rmd">
           <value>
             <RMarkdownRenderProfile>

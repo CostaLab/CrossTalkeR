@@ -4,3 +4,7 @@ Meta
 /doc/
 /Meta/
 /.idea/
+omnipathr-log
+/markdown/omnipathr-log
+.ipynb_checkpoints
+/markdown/.ipynb_checkpoints

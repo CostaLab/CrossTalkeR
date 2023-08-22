@@ -24,10 +24,10 @@
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'
 #'genes <- c('TGFB1')
@@ -243,10 +243,10 @@ plot_cci <- function(graph,
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -379,10 +379,10 @@ set_coords <- function(df, type) {
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -618,10 +618,10 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -691,10 +691,10 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')

@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_report.R
 \name{make_report}
 \alias{make_report}
-\title{Run all LR Downstream analysis}
+\title{Generate a report for given LRObj}
 \usage{
 make_report(
   genes = NULL,
@@ -38,16 +38,14 @@ make_report(
 Rmarkdown report all objects from each step
 }
 \description{
-This function loads the single conditions LR outputs and return the LR network based analysis.
-It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
-measure
+Generate a report for given LRObj
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",
-                              "ctr_nils_bm_human_newformat.csv",
+                              "CTR_LR.csv",
                               package = "CrossTalkeR"),
           'EXP' = system.file("extdata",
-                              "exp_nils_bm_human_newformat.csv",
+                              "EXP_LR.csv",
                               package = "CrossTalkeR"))
 output =  system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')

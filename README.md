@@ -44,7 +44,7 @@ devtools::install_github("https://github.com/CostaLab/CrossTalkeR", build_vignet
 require(CrossTalkeR)
 ```
 
-*Note: Please avoid to use the following characters in celltype name: '_' and '\\' *
+*Note: Please avoid to use the following characters in celltype name: '$'*
 
 ## Possible system dependencies
 
@@ -63,17 +63,28 @@ libgeos-dev
 We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq.
 
 ```{r}
-vignette('CrossTalkeR')
+vignette('CrossTalkeR-HumanMyfib')
 ```
 
 
-## Integration of CellPhoneDB with CrossTalkeR
+## Integration of liana with CrossTalkeR
 
-We provide here a tutorial on how to integrate preditions from CellPhoneDB into Crosstalker.
+We provide here a tutorial on how to integrate predictions from liana into Crosstalker.
 
-[CellPhoneDB Tutorial.md](https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md)
+[Run liana](https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd)
 
-## Current Features v1.3.0
+## New Features v1.4.0
+
+- Splitted generate_report function in two parts:
+  - analise_LR() to only run the analysis without generating the CrossTalkeR report
+  - make_report() to only generate a new CrossTalkeR report for existing CrossTalkeR results
+- Added node types to the network:
+  - we now consider the annotation of a gene as ligand (L) or receptor (R) to consider the biological function 
+- Less constrains on the cell cluster name annotation (only '$' must be avoided in the cluster naming)
+- Integration with liana-py for ligand-receptor interaction predictions
+  
+
+## Old Features v1.3.0
 
 - Single and Comparative Reports
    - Cell Cell Interaction visualization

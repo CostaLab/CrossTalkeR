@@ -310,8 +310,8 @@ plot_sankey <- function(lrobj_tbl,
     tmp <- dplyr::top_n(data, ifelse(dim(data)[1] > threshold, threshold,
                                      dim(data)[1]), abs(.data$LRScore))
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
-                                   axis2 = stats::reorder(.data$gene_A, .data$LRScore),
-                                   axis3 = stats::reorder(.data$gene_B, .data$LRScore),
+                                   axis2 = stats::reorder(.data$gene_A, -.data$LRScore),
+                                   axis3 = stats::reorder(.data$gene_B, -.data$LRScore),
                                    axis4 = .data$target)) +
             ggalluvial::geom_alluvium(aes(fill = .data$LRScore, color = 'b'),
                                       width = 1 / 12,

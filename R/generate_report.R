@@ -2,7 +2,7 @@
 #'Run all LR Downstream analysis
 #'
 #'This function loads the single conditions LR outputs and return the LR network based analysis.
-#'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
+#'It assumes that the table present the following columns ('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR')
 #'measure
 #'@param lrpaths Paths of single condition LR data
 #'@param genes list of genes to be considered in the sankey plots
@@ -79,16 +79,11 @@ generate_report <- function(lrpaths,
 
 
 
-
-
-
-
-#'
 #'Run all LR Downstream analysis
 #'
-#'This function loads the single conditions LR outputs and return the LR network based analysis.
-#'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
-#'measure
+#' Core engine to generate report. Here we perform all the computation related to CrossTalkeR
+#'
+#'
 #'@param lrpaths Paths of single condition LR data
 #'@param genes list of genes to be considered in the sankey plots
 #'@param out_path output directory path
@@ -144,7 +139,7 @@ analise_LR <- function(lrpaths,
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
   message("Calculating CCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path, sel_columns=sel_columns,slot = "graphs")})
+  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs")})
   message("Calculating GCI Ranking")
   data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs_ggi")})
   message("Annotating the top Cell Genes")
@@ -152,9 +147,9 @@ analise_LR <- function(lrpaths,
     data <- suppressWarnings({kegg_annotation(data=data,
                             slot='rankings',out_path=out_path,database=org.Hs.eg.db::org.Hs.eg.db,org=org)})
   }
-  else{
+  else if(is.list(org)){
     data <- suppressWarnings({kegg_annotation(data=data,
-                            slot='rankings',out_path=out_path,database=org.Mm.eg.db::org.Mm.eg.db, org=org)})
+                            slot='rankings',out_path=out_path,database=org[2], org=org[1])})
   }
   if (length(lrpaths) > 1) {
      data <- fisher_test_cci(data,'LRScore',out_path=out_path,comparison)
@@ -165,11 +160,11 @@ analise_LR <- function(lrpaths,
 
 
 #'
-#'Run all LR Downstream analysis
+#'Generate a report for given LRObj
 #'
-#'This function loads the single conditions LR outputs and return the LR network based analysis.
-#'It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
-#'measure
+#'
+#'
+#'
 #'@param genes list of genes to be considered in the sankey plots
 #'@param out_path output directory path
 #'@param threshold percentage of edges to be pruned

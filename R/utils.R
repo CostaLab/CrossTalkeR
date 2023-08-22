@@ -10,6 +10,7 @@
 #'@return list
 #'@importFrom tidyr %>%
 #'@importFrom stats prcomp
+#'@NoRd
 ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
   for (graph in names(slot(data, slot))) {
     if (grepl("_x_", graph)) {  # Signed Analysis
@@ -125,6 +126,7 @@ ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
 #'@return list
 #'@import igraph
 #'@importFrom tidyr %>%
+#'@NoRd
 ranking_net <- function(graph, mode = TRUE) {
   if (!mode) {
     sub_graph <- igraph::subgraph.edges(graph, igraph::E(graph)[igraph::E(graph)$weight > 0])
@@ -180,6 +182,7 @@ ranking_net <- function(graph, mode = TRUE) {
 #'@import org.Hs.eg.db
 #'@import org.Mm.eg.db
 #'@importFrom tidyr %>%
+#'@NoRd
 kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.Hs.eg.db, org = 'hsa', n = 100) {
   rkg <- slot(data, slot)
   for (x in names(rkg)) {
@@ -218,6 +221,7 @@ kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.H
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
+#'@NoRd
 comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
   p_f1 <- p_f2 <- 0.5 # prob to be at disease
   allnodes <- curr.rkg$nodes
@@ -258,6 +262,7 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
+#'@NoRd
 comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
   allnodes <- curr.rkg$nodes
   curr = stringr::str_split(graphname, '_x_')
@@ -288,6 +293,7 @@ comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
 #'@import stringr
 #'@import clusterProfiler
 #'@return list
+#'@NoRd
 enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
   lrdb <- system.file("extdata",
                       "lrDB.csv",
@@ -325,29 +331,6 @@ enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
 }
 
 
-#'Format liana2CT
-#'@param data datafromliana
-#'@param source source cell population
-#'@param target target cell population
-#'@param gene_Ai source gene population
-#'@param gene_Bi target gene population
-#'@param measure measure to be considered
-#'@importFrom tidyr %>%
-#'@import tibble dplyr
-#'@return tibble
-liana2CT <- function(data, source = 'source', target = 'target', gene_Ai, gene_Bi, measure) {
-  data <- data %>%
-    dplyr::mutate(source = as.character(data[[source]])) %>%
-    dplyr::mutate(target = as.character(data[[target]])) %>%
-    dplyr::mutate(gene_A = data[[gene_Ai]]) %>%
-    dplyr::mutate(gene_B = data[[gene_Bi]]) %>%
-    dplyr::mutate(type_gene_A = gene_Ai) %>%
-    dplyr::mutate(type_gene_B = gene_Bi) %>%
-    dplyr::mutate(measure = data[[measure]])
-  return(data)
-}
-
-
 #' Evaluate Differences in the edge proportion
 #'@param data datafromlian
 #'@param measure intensity
@@ -355,6 +338,7 @@ liana2CT <- function(data, source = 'source', target = 'target', gene_Ai, gene_B
 #'@importFrom tidyr %>%
 #'@import tibble dplyr rstatix
 #'@return tibble
+#'@NoRd
 fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   if (!is.null(comparison)) {
     for (pair in comparison) {
@@ -424,6 +408,7 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
 #'@import tidyr
 #'@import tibble dplyr
 #'@return df
+#'@NoRd
 add_node_type <- function(df) {
   df = df %>%
     mutate(gene_A = ifelse(type_gene_A == "Ligand", paste0(gene_A, "|L"), gene_A))

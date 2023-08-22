@@ -326,13 +326,16 @@ plot_sankey(data@tables$EXP_x_CTR,
 Here, the top 15 interactions have a negative weight, meaning these are all more relevant for the CTR condition. An interesting interaction is the Fibroblast COL1A1 with CD44, since COL1A1 also came up in th PCA plot as a high ranked Influencer in the CTR condition.
 
 
+
+# Report Samples
+
+[Single](Single_vignettes_example.html)
+
+[Comparative](Comparative_vignettes_example.html)
+
+
+
 <br/><br/>
 <br/><br/>
-
-
-
-
-
-
 
 

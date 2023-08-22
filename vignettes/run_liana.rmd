@@ -1,5 +1,5 @@
  ---
-title: "Run liana for ligand-receptor interaction prediction"
+title: Run liana for ligand-receptor interaction prediction
 output: html_notebook
 
 vignette: |
@@ -51,7 +51,7 @@ for i in set(data.obs['field_with_condition']):
 ## Filtering and formatting of the results
 
 Finally, the result tables are filtered by the CellphoneDB p-value (here in the example p-val < 0.05) and converted into the CrossTalkeR input format. By default, the interaction table used for CrossTalkeR should contain the columns "source", "target", "type_gene_A", "gene_A", "type_gene_B", "gene_B" and "MeanLR".
-```{python}
+```{python, eval = FALSE}
 data = {}
 for i in os.listdir():
     if i.endswith('lr_liana_consensus_unfiltered.csv'):

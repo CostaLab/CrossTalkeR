@@ -45,16 +45,14 @@ analise_LR(
 Rmarkdown report all objects from each step
 }
 \description{
-This function loads the single conditions LR outputs and return the LR network based analysis.
-It assumes that the table present the following columns Ligand, Ligand.Cluster, Receptor,Receptor.Cluster and MeanLR/another
-measure
+Core engine to generate report. Here we perform all the computation related to CrossTalkeR
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",
-                              "ctr_nils_bm_human_newformat.csv",
+                              "CTR_LR.csv",
                               package = "CrossTalkeR"),
           'EXP' = system.file("extdata",
-                              "exp_nils_bm_human_newformat.csv",
+                              "EXP_LR.csv",
                               package = "CrossTalkeR"))
 output =  system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')

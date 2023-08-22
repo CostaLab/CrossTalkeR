@@ -70,10 +70,10 @@ In our vignette we provide examples on how to analyse cell interactions from a h
 
 ```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE}
 paths <- c('CTR' = system.file("extdata",
-                               "ctr_nils_bm_human_newformat.csv",
+                               "CTR_LR.csv",
                                package = "CrossTalkeR"),
            'EXP' = system.file("extdata",
-                               "exp_nils_bm_human_newformat.csv",
+                               "EXP_LR.csv",
                                package = "CrossTalkeR"))
 genes <- c('TGFB1|L')
 output <- system.file("extdata", package = "CrossTalkeR")

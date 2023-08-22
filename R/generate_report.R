@@ -21,10 +21,10 @@
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -101,10 +101,10 @@ generate_report <- function(lrpaths,
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
@@ -180,10 +180,10 @@ analise_LR <- function(lrpaths,
 #'@export
 #'@examples
 #'paths <- c('CTR' = system.file("extdata",
-#'                               "ctr_nils_bm_human_newformat.csv",
+#'                               "CTR_LR.csv",
 #'                               package = "CrossTalkeR"),
 #'           'EXP' = system.file("extdata",
-#'                               "exp_nils_bm_human_newformat.csv",
+#'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
 #'output =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')

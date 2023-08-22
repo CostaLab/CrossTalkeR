@@ -36,10 +36,10 @@ This function creates a sankey plot for a selected gene including transcription 
 }
 \examples{
 paths <- c('CTR' = system.file("extdata",
-                              "ctr_nils_bm_human.csv",
+                              "CTR_LR.csv",
                               package = "CrossTalkeR"),
           'EXP' = system.file("extdata",
-                              "exp_nils_bm_human_newformat.csv",
+                              "EXP_LR.csv",
                               package = "CrossTalkeR"))
 output =  system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')

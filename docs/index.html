@@ -4,7 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This Package allows the network based analysis over ligand receptor network infered data.">
 <title>Single Cell Ligand Receptor Downstream analysis • CrossTalkeR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -12,71 +13,77 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Single Cell Ligand Receptor Downstream analysis">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Single Cell Ligand Receptor Downstream analysis">
 <meta property="og:description" content="This Package allows the network based analysis over ligand receptor network infered data.">
-<meta property="og:image" content="/logo.png">
+<meta property="og:image" content="https://github.com/CostaLab/CrossTalkeR/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">CrossTalkeR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.2</span>
-      </span>
-    </div>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="index.html">CrossTalkeR</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="articles/CrossTalkeR.html">Get started</a>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="active nav-item">
+  <a class="nav-link" href="index.html">
+    <span class="fas fa fas fa-home fa-lg"></span>
+     
+  </a>
 </li>
-<li>
-  <a href="reference/index.html">Reference</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-vignettes">Vignettes</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+    <a class="dropdown-item" href="articles/CrossTalker_install_basicusage.html">Installation and Usage</a>
+    <a class="dropdown-item" href="articles/HumanFibrosis.html">Human Myelofibrosis example</a>
+    <a class="dropdown-item" href="articles/run_liana.html">liana Tutorial</a>
+  </div>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/CostaLab/CrossTalkeR/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="nav-link" href="https://github.com/CostaLab/CrossTalkeR">
+    <span class="fab fa fab fa fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="crosstalker-">CrossTalkeR <a class="anchor" aria-label="anchor" href="#crosstalker-"></a>
+</h1>
 </div>
-<!--/.navbar -->
-
-      
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-
-<div class="section level1">
-<div class="page-header"><h1 id="crosstalker-">CrossTalkeR <img src="reference/figures/logo1.png" align="right" width="200"><a class="anchor" aria-label="anchor" href="#crosstalker-"></a>
-</h1></div>
-
+<p><a href="https://doi.org/10.5281/zenodo.4740646" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4740646.svg" alt="DOI"></a> <a href="https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity" class="external-link"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/CostaLab/CrossTalkeR.js/blob/master/LICENSE"><img src="https://img.shields.io/github/license/CostaLab/CrossTalkeR.svg" alt="GitHub license"></a> <a href="https://GitHub.com/CostaLab/CrossTalkeR.js/releases/" class="external-link"><img src="https://img.shields.io/github/release/CostaLab/CrossTalkeR.svg" alt="GitHub release"></a></p>
 <p>James S. Nagai<sup>1</sup>, Nils B. Leimkühler<sup>2</sup>, Michael T. Schaub <sup>3</sup>, Rebekka K. Schneider<sup>4,5,6</sup>, Ivan G. Costa<sup>1*</sup></p>
 <p><sup>1</sup>Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany</p>
 <p><sup>2</sup>Department of Hematology and Stem Cell Transplantation, University Hospital Essen, Germany</p>
@@ -91,36 +98,51 @@
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h2>
 <p>You can install CrossTalkeR with the simple commands below:</p>
-<pre class="{r}"><code><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"https://github.com/CostaLab/CrossTalkeR"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></code></pre>
-<p>*Note: Please avoid to use the following characters in celltype name: ’_’ and ‘\’ *</p>
+<pre class="{r}"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"https://github.com/CostaLab/CrossTalkeR"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR">CrossTalkeR</a></span><span class="op">)</span></span></code></pre>
+<p><em>Note: Please avoid to use the following characters in celltype name: ‘$’</em></p>
 </div>
 <div class="section level2">
 <h2 id="possible-system-dependencies">Possible system dependencies<a class="anchor" aria-label="anchor" href="#possible-system-dependencies"></a>
 </h2>
-<pre><code><span class="va">libudunits2</span><span class="op">-</span><span class="va">dev</span>
-<span class="va">libgdal</span><span class="op">-</span><span class="va">dev</span>
-<span class="va">gdal</span><span class="op">-</span><span class="va">bin</span>
-<span class="va">libproj</span><span class="op">-</span><span class="va">dev</span>
-<span class="va">proj</span><span class="op">-</span><span class="va">data</span>
-<span class="va">proj</span><span class="op">-</span><span class="va">bin</span>
-<span class="va">libgeos</span><span class="op">-</span><span class="va">dev</span></code></pre>
+<pre><code><span><span class="va">libudunits2</span><span class="op">-</span><span class="va">dev</span></span>
+<span><span class="va">libgdal</span><span class="op">-</span><span class="va">dev</span></span>
+<span><span class="va">gdal</span><span class="op">-</span><span class="va">bin</span></span>
+<span><span class="va">libproj</span><span class="op">-</span><span class="va">dev</span></span>
+<span><span class="va">proj</span><span class="op">-</span><span class="va">data</span></span>
+<span><span class="va">proj</span><span class="op">-</span><span class="va">bin</span></span>
+<span><span class="va">libgeos</span><span class="op">-</span><span class="va">dev</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="crosstalker-plots-examples-and-vignette">CrossTalkeR Plots examples and vignette<a class="anchor" aria-label="anchor" href="#crosstalker-plots-examples-and-vignette"></a>
 </h2>
 <p>We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq.</p>
-<pre class="{r}"><code><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'CrossTalkeR'</span><span class="op">)</span></code></pre>
+<pre class="{r}"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'CrossTalkeR-HumanMyfib'</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 id="integration-of-cellphonedb-with-crosstalker">Integration of CellPhoneDB with CrossTalkeR<a class="anchor" aria-label="anchor" href="#integration-of-cellphonedb-with-crosstalker"></a>
+<h2 id="integration-of-liana-with-crosstalker">Integration of liana with CrossTalkeR<a class="anchor" aria-label="anchor" href="#integration-of-liana-with-crosstalker"></a>
 </h2>
-<p>We provide here a tutorial on how to integrate preditions from CellPhoneDB into Crosstalker.</p>
-<p><a href="https://github.com/CostaLab/CrossTalkeR/blob/master/CellPhoneDB%20Tutorial.md" class="external-link">CellPhoneDB Tutorial.md</a></p>
+<p>We provide here a tutorial on how to integrate predictions from liana into Crosstalker.</p>
+<p><a href="https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd">Run liana</a></p>
 </div>
 <div class="section level2">
-<h2 id="current-features-v130">Current Features v1.3.0<a class="anchor" aria-label="anchor" href="#current-features-v130"></a>
+<h2 id="new-features-v140">New Features v1.4.0<a class="anchor" aria-label="anchor" href="#new-features-v140"></a>
+</h2>
+<ul>
+<li>Splitted generate_report function in two parts:<ul>
+<li>analise_LR() to only run the analysis without generating the CrossTalkeR report</li>
+<li>make_report() to only generate a new CrossTalkeR report for existing CrossTalkeR results</li>
+</ul>
+</li>
+<li>Added node types to the network:<ul><li>we now consider the annotation of a gene as ligand (L) or receptor (R) to consider the biological function</li></ul>
+</li>
+<li>Less constrains on the cell cluster name annotation (only ‘$’ must be avoided in the cluster naming)</li>
+<li>Integration with liana-py for ligand-receptor interaction predictions</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="old-features-v130">Old Features v1.3.0<a class="anchor" aria-label="anchor" href="#old-features-v130"></a>
 </h2>
 <ul><li>Single and Comparative Reports<ul>
 <li>Cell Cell Interaction visualization</li>
@@ -150,14 +172,11 @@
 <p>[3] Comparison of Resources and Methods to infer Cell-Cell Communication from Single-cell RNA Data <a href="https://www.biorxiv.org/content/10.1101/2021.05.21.445160v1.full" class="external-link">link</a></p>
 </div>
 
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
+  </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/CostaLab/CrossTalkeR/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/CostaLab/CrossTalkeR/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/CostaLab/CrossTalkeR/">Browse source code</a></li>
+<li><a href="https://github.com/CostaLab/CrossTalkeR/issues">Report a bug</a></li>
 </ul>
 </div>
 
@@ -181,44 +200,35 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
+<li>Vanessa Kloeker <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7392-9094" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>James Shiniti Nagai <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7655-7206" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Nils Leimkühler <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2530-4329" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Vanessa Krammer <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7392-9094" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Michael T.  Schaub <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2426-6404" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Rebekka Schneider <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-0749-1565" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li> Ivan Costa Gesteira <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-2890-8697" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://doi.org/10.5281/zenodo.4740646" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4740646.svg" alt="DOI"></a></li>
-<li><a href="https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity" class="external-link"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a></li>
-<li><a href="https://github.com/CostaLab/CrossTalkeR.js/blob/master/LICENSE" class="external-link"><img src="https://img.shields.io/github/license/CostaLab/CrossTalkeR.svg" alt="GitHub license"></a></li>
-<li><a href="https://GitHub.com/CostaLab/CrossTalkeR.js/releases/" class="external-link"><img src="https://img.shields.io/github/release/CostaLab/CrossTalkeR.svg" alt="GitHub release"></a></li>
-</ul>
-</div>
 
-  </div>
+
+  </aside>
 </div>
 
 
-      <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by James Shiniti Nagai, Nils Leimkühler, Vanessa Krammer, Michael T. Schaub, Rebekka Schneider, Ivan Costa Gesteira.</p>
+<p>Developed by Vanessa Kloeker, James Shiniti Nagai, Nils Leimkühler, Michael T. Schaub, Rebekka Schneider, Ivan Costa Gesteira.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-
 
   
 

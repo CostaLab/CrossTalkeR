@@ -6,35 +6,11 @@ author:
                Faculty of Medicine,
                RWTH Aachen University,
                Aachen, 52074 Germany
-- name: Nils B. Leimkühler
-  affiliation: Department of Hematology and Stem Cell Transplantation,
-               University Hospital Essen,
-               Germany
 - name: Vanessa Klöker
   affiliation: Institute for Computational Genomics,
                Faculty of Medicine,
                RWTH Aachen University,
                Aachen, 52074 Germany
-- name: Michael T. Schaub
-  affiliation:
-     - Department of Computer Science,
-       RWTH Aachen University,
-       Aachen, Germany
-- name: Rebekka K. Schneider
-  affiliation:
-    - Department of Hematology,
-      Erasmus Medical Center,
-      Rotterdam, 3015GD,
-      the Netherlands
-    - Department of Cell Biology,
-      Institute for Biomedical Engineering,
-      Faculty of Medicine,
-      RWTH Aachen University,
-      Aachen, 52074 Germany
-    - Oncode Institute,
-      Erasmus Medical Center,
-      Rotterdam, 3015GD,
-      the Netherlands
 - name: Ivan G. Costa
   affiliation:
      - Institute for Computational Genomics,
@@ -51,7 +27,7 @@ vignette: |
 
 # Cell-Cell Communication Analysis of Human Myelofibrosis scRNA-seq Data Using CrossTalkeR
 
-Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database. If you want to learn more about how to run liana to use it with CrossTalkeR, check out this turorial: [Run liana]().
+Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database.
 
 The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run CrossTalkeR and then go over some of the results, that are also provided inside the resulting CrossTalkeR report
 
@@ -328,7 +304,9 @@ Here, the top 15 interactions have a negative weight, meaning these are all more
 
 [Comparative Condition Report](https://github.com/CostaLab/CrossTalkeR/blob/master/inst/extdata/Comparative_vignettes_example.html)
 
+# Further Tutorials
 
+If you want to learn more about how to infer ligand and receptor interactions with liana and how to use it with CrossTalkeR, check out this tutorial: [Run liana](https://costalab.github.io/CrossTalkeR/articles/run_liana.html).
 
 <br/><br/>
 <br/><br/>

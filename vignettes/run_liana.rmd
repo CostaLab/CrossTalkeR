@@ -1,7 +1,7 @@
- ---
-title: Run liana for ligand-receptor interaction prediction
-output: html_notebook
-
+---
+title: Run liana for Ligand-Receptor Interaction Prediction
+output:
+      html_notebook
 vignette: |
       %\VignetteIndexEntry{liana_tutorial}
       %\VignetteEngine{knitr::rmarkdown}
@@ -10,7 +10,7 @@ vignette: |
 
 # Run liana for ligand-receptor interaction prediction in Python
 
-For the prediction of ligand-receptor interactions, we use thepython version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
+For the prediction of ligand-receptor interactions, we use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
 
 ## Import necessary libraries
 

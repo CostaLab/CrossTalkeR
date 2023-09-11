@@ -1,40 +1,16 @@
 ---
-title: CrossTalkeR cookbook
+title: CrossTalkeR Cookbook
 author:
 - name: James S. Nagai
   affiliation: Institute for Computational Genomics,
                Faculty of Medicine,
                RWTH Aachen University,
                Aachen, 52074 Germany
-- name: Nils B. Leimkühler
-  affiliation: Department of Hematology and Stem Cell Transplantation,
-               University Hospital Essen,
-               Germany
-- name: Vanessa Krammer
+- name: Vanessa Klöker
   affiliation: Institute for Computational Genomics,
                Faculty of Medicine,
                RWTH Aachen University,
                Aachen, 52074 Germany
-- name: Michael T. Schaub
-  affiliation:
-     - Department of Computer Science,
-       RWTH Aachen University,
-       Aachen, Germany
-- name: Rebekka K. Schneider
-  affiliation:
-    - Department of Hematology,
-      Erasmus Medical Center,
-      Rotterdam, 3015GD,
-      the Netherlands
-    - Department of Cell Biology,
-      Institute for Biomedical Engineering,
-      Faculty of Medicine,
-      RWTH Aachen University,
-      Aachen, 52074 Germany
-    - Oncode Institute,
-      Erasmus Medical Center,
-      Rotterdam, 3015GD,
-      the Netherlands
 - name: Ivan G. Costa
   affiliation:
      - Institute for Computational Genomics,

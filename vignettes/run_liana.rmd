@@ -1,7 +1,7 @@
 ---
-title: Run liana for Ligand-Receptor Interaction Prediction
+title: Run liana for Ligand Receptor Interaction Prediction
 output:
-      html_notebook
+     html_document
 vignette: |
       %\VignetteIndexEntry{liana_tutorial}
       %\VignetteEngine{knitr::rmarkdown}

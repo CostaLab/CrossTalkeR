@@ -28,7 +28,7 @@ We assume here that the necessary libraries are already installed.
 The last step before perfoming the analysis is to load the AnnData object with the scRNA-seq data
 ```{python, eval = FALSE}
 
-data = sc.read_h5ad("/home/vanessa/Desktop/Perturbation_tests/results_jak2_tpo/jak2_tpo.h5ad")
+data = sc.read_h5ad("/path/to/AnnData/file.h5ad")
 data.raw = data
 ```
 

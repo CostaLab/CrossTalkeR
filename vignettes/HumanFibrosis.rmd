@@ -29,7 +29,61 @@ vignette: |
 
 Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database.
 
-The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run CrossTalkeR and then go over some of the results, that are also provided inside the resulting CrossTalkeR report
+The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run liana to retrieve ligand and receptor activities, then how to execute CrossTalkeR and finally go over some of the results, that are also provided inside the resulting CrossTalkeR report.
+
+## Run liana for ligand-receptor interaction prediction in Python
+
+For the prediction of ligand-receptor interactions, we use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
+
+
+First of all, the libraries necessary for using liana must be loaded:
+```{python, eval = FALSE}
+import scanpy as sc
+import liana as li
+import pandas as pd
+import os
+```
+We assume here that the necessary libraries are already installed.
+
+Then, before perfoming the analysis, we need to load the AnnData object with the scRNA-seq data
+```{python, eval = FALSE}
+
+data = sc.read_h5ad("/path/to/AnnData/file.h5ad")
+data.raw = data
+```
+
+As mentioned at the beginning, there are different methods and databases implemented in the liana package. We recommend using the CellphoneDB analysis in combination with the consensus database with intercellular interactions. Note that metadata fields for the available sample/conditions (field_with_condition) and for the cell annotations (field_with_cell_annotation) are still specified by the user.
+
+```{python, eval = FALSE}
+for i in set(data.obs['field_with_condition']):
+    print(i)
+    lr=li.method.cellphonedb(data[data.obs['field_with_condition']==i],
+                          groupby='field_with_cell_annotation',
+                          expr_prop=0.1,
+                          verbose=True,
+                          resource_name='consensus',
+                          inplace=False)
+    lr.to_csv(f"{i}_lr_liana_consensus_unfiltered.csv")
+```
+
+Finally, the result tables are filtered by the CellphoneDB p-value (here in the example p-val < 0.05) and converted into the CrossTalkeR input format. By default, the interaction table used for CrossTalkeR should contain the columns "source", "target", "type_gene_A", "gene_A", "type_gene_B", "gene_B" and "MeanLR".
+```{python, eval = FALSE}
+data = {}
+for i in os.listdir():
+    if i.endswith('lr_liana_consensus_unfiltered.csv'):
+        evfull = pd.read_csv(i)
+        evfull = evfull.loc[:,['ligand','receptor','source','target','lr_means','cellphone_pvals']]
+        evfull['type_gene_A'] = 'Ligand'
+        evfull['type_gene_B'] = 'Receptor'
+        evfull['gene_A'] = evfull['ligand']
+        evfull['gene_B'] = evfull['receptor']
+        evfull['MeanLR'] = evfull['lr_means']
+        evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:].to_csv(f'{k}_lr_ready.csv')
+        evfull = evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']]
+        k=i[0:i.find('_lr_')]
+        data[k]=os.path.abspath(f'{k}_lr_ready.csv')
+```
+
 
 ## Running CrossTalkeR
 

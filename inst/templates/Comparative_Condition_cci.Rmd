@@ -67,8 +67,10 @@ for(i in 1:length(names(all_data@tables))){
 
 
 
-### Pvalue Filtered Interaction Plot (CCI)
+
 ```
+
+### Pvalue Filtered Interaction Plot (CCI)
 
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 

@@ -103,12 +103,51 @@
 <h2 id="cell-cell-communication-analysis-of-human-myelofibrosis-scrna-seq-data-using-crosstalker">Cell-Cell Communication Analysis of Human Myelofibrosis scRNA-seq Data Using CrossTalkeR<a class="anchor" aria-label="anchor" href="#cell-cell-communication-analysis-of-human-myelofibrosis-scrna-seq-data-using-crosstalker"></a>
 </h2>
 <p>Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database.</p>
-<p>The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run CrossTalkeR and then go over some of the results, that are also provided inside the resulting CrossTalkeR report</p>
+<p>The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run liana to retrieve ligand and receptor activities, then how to execute CrossTalkeR and finally go over some of the results, that are also provided inside the resulting CrossTalkeR report.</p>
+<div class="section level3">
+<h3 id="run-liana-for-ligand-receptor-interaction-prediction-in-python">Run liana for ligand-receptor interaction prediction in Python<a class="anchor" aria-label="anchor" href="#run-liana-for-ligand-receptor-interaction-prediction-in-python"></a>
+</h3>
+<p>For the prediction of ligand-receptor interactions, we use the python version of the package <a href="https://liana-py.readthedocs.io/en/latest/" class="external-link">liana</a>. This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.</p>
+<p>First of all, the libraries necessary for using liana must be loaded:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="im">import</span> liana <span class="im">as</span> li</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="im">import</span> os</span></code></pre></div>
+<p>We assume here that the necessary libraries are already installed.</p>
+<p>Then, before perfoming the analysis, we need to load the AnnData object with the scRNA-seq data</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>data <span class="op">=</span> sc.read_h5ad(<span class="st">"/path/to/AnnData/file.h5ad"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>data.raw <span class="op">=</span> data</span></code></pre></div>
+<p>As mentioned at the beginning, there are different methods and databases implemented in the liana package. We recommend using the CellphoneDB analysis in combination with the consensus database with intercellular interactions. Note that metadata fields for the available sample/conditions (field_with_condition) and for the cell annotations (field_with_cell_annotation) are still specified by the user.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">set</span>(data.obs[<span class="st">'field_with_condition'</span>]):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    <span class="bu">print</span>(i)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    lr<span class="op">=</span>li.method.cellphonedb(data[data.obs[<span class="st">'field_with_condition'</span>]<span class="op">==</span>i],</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>                          groupby<span class="op">=</span><span class="st">'field_with_cell_annotation'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>                          expr_prop<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>                          verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>                          resource_name<span class="op">=</span><span class="st">'consensus'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>                          inplace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>    lr.to_csv(<span class="ss">f"</span><span class="sc">{i}</span><span class="ss">_lr_liana_consensus_unfiltered.csv"</span>)</span></code></pre></div>
+<p>Finally, the result tables are filtered by the CellphoneDB p-value (here in the example p-val &lt; 0.05) and converted into the CrossTalkeR input format. By default, the interaction table used for CrossTalkeR should contain the columns “source”, “target”, “type_gene_A”, “gene_A”, “type_gene_B”, “gene_B” and “MeanLR”.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>data <span class="op">=</span> {}</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="cf">for</span> i <span class="kw">in</span> os.listdir():</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    <span class="cf">if</span> i.endswith(<span class="st">'lr_liana_consensus_unfiltered.csv'</span>):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>        evfull <span class="op">=</span> pd.read_csv(i)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>        evfull <span class="op">=</span> evfull.loc[:,[<span class="st">'ligand'</span>,<span class="st">'receptor'</span>,<span class="st">'source'</span>,<span class="st">'target'</span>,<span class="st">'lr_means'</span>,<span class="st">'cellphone_pvals'</span>]]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>        evfull[<span class="st">'type_gene_A'</span>] <span class="op">=</span> <span class="st">'Ligand'</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>        evfull[<span class="st">'type_gene_B'</span>] <span class="op">=</span> <span class="st">'Receptor'</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>        evfull[<span class="st">'gene_A'</span>] <span class="op">=</span> evfull[<span class="st">'ligand'</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>        evfull[<span class="st">'gene_B'</span>] <span class="op">=</span> evfull[<span class="st">'receptor'</span>]</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>        evfull[<span class="st">'MeanLR'</span>] <span class="op">=</span> evfull[<span class="st">'lr_means'</span>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>        evfull.loc[<span class="bu">list</span>(evfull.cellphone_pvals.to_numpy()<span class="op">&lt;=</span><span class="fl">0.05</span>),:].to_csv(<span class="ss">f'</span><span class="sc">{k}</span><span class="ss">_lr_ready.csv'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>        evfull <span class="op">=</span> evfull.loc[:, [<span class="st">'source'</span>, <span class="st">'target'</span>, <span class="st">'type_gene_A'</span>, <span class="st">'type_gene_B'</span>, <span class="st">'gene_A'</span>, <span class="st">'gene_B'</span>, <span class="st">'MeanLR'</span>]]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>        k<span class="op">=</span>i[<span class="dv">0</span>:i.find(<span class="st">'_lr_'</span>)]</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>        data[k]<span class="op">=</span>os.path.abspath(<span class="ss">f'</span><span class="sc">{k}</span><span class="ss">_lr_ready.csv'</span>)</span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="running-crosstalker">Running CrossTalkeR<a class="anchor" aria-label="anchor" href="#running-crosstalker"></a>
 </h3>
 <p>First, we need to import the CrossTalkeR package and define a named list of either the paths to the Ligand-Receptor interaction tables, or directly dataframe objects for each condition of interest. Please note that it is possible to run CrossTalkeR with more than two conditions. Here we load the files from within the package. We can further define a path where we like to save our results (output) and run CrossTalkeR with the generate_report() function:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR">CrossTalkeR</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
@@ -143,7 +182,7 @@
 <li>Pagerank (Node importance) indicated by the node size</li>
 </ol>
 <p>After loading the result data from the “LR_data_final.Rds”, we can plot the cell-cell interactions with the plot_cci() function. Here we show a plot for each analysed condition:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"LR_data_final.Rds"</span>, package <span class="op">=</span> <span class="st">"CrossTalkeR"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cci.html">plot_cci</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">CTR</span>,</span>
 <span>        colors <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">colors</span>,</span>
@@ -181,7 +220,7 @@
 <h4 id="analysis-on-the-gene-cell-interaction-level">Analysis on the gene-cell interaction level<a class="anchor" aria-label="anchor" href="#analysis-on-the-gene-cell-interaction-level"></a>
 </h4>
 <p>We provide several different possibilities to analyse the ligand-receptor interactions on the gene level. In CrossTalkeR, topological network measures are calculated for each node(gene) in the build networks. These measures include Influencer (depending on outgoing edges), Listener(depending on incoming edges), Mediator (depending on outgoing and incoming edges), and Pagerank (overall importance) rankings. The ligand and receptors can be ranked by these measures and we can identify possibly relevant genes by considering the top genes of the rankings. In the report we provide an interactive table with all the rankings for each gene in the network. Here is an example for the top 10 genes in the Pagerank ranking for both preset conditions in form of Barplots:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">$</span><span class="va">CTR_ggi</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">Pagerank</span><span class="op">)</span></span>
 <span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">rankings_table</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
@@ -215,7 +254,7 @@
 <h4 id="cell-cell-interaction-analysis-results-1">Cell-Cell-Interaction analysis results<a class="anchor" aria-label="anchor" href="#cell-cell-interaction-analysis-results-1"></a>
 </h4>
 <p>As before for the single condition results, the first part of the results deal with cell-cell interactions. Here we show again the CCI graph plot, but now for the compared conditions:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cci.html">plot_cci</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">EXP_x_CTR</span>,</span>
 <span>        colors <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">colors</span>,</span>
 <span>        plt_name <span class="op">=</span> <span class="st">'Disease vs Control'</span>,</span>
@@ -231,7 +270,7 @@
 <p><img src="HumanFibrosis_files/figure-html/vignete4-1.png" width="960"></p>
 <p>The main difference from the previous CCI graph plots is that the edge weights can now be not only positive but also negative, as well as the Pagerank values of the nodes. Positive values mean that these interactions between cell types have a higher activity/importance in the EXP condition, while negative values indicate a lower activity/importannce in the EXP condition (higher in CTR). As we can see in the CCI plot above, negative edge weights dominate here, especially in MSC-MSC, MSC-Fibroblast, and Fibroblast-MSC interactions. Thus, we can conclude that these interactions are stronger in the CTR condition. A counterexample of this is the Megakaryocyte-MSC interaction, where we can see from the opaqueness that these interactions only account for a smaller proportion.</p>
 <p>Since we have created a CCI network we can also analyze it based on topological properties to identify possible biologically relevant processes. For this purpose, the same topological measures can be used that were already used in the single condition report for gene-cell interactions analysis (Influencer, Listener, Mediator, Pagerank). As before, we can look at the rankings individually in the form of bar plots. Here is an example for the Pagerank of cell types in the network:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">curr</span>, <span class="st">'_x_'</span>, negate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">curr</span>, <span class="st">'ggi'</span>, negate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
@@ -245,7 +284,7 @@
 <p><img src="HumanFibrosis_files/figure-html/vignete5-1.png" width="960"></p>
 <p>In our comparison, the Neural cells have the highest pagerank, which suggest a high importance in our network for the EXP condition. In the negative direction, MSC and Fibroblast cells have a similar low Pagerank. This suggest a higher importance in CTR condition.</p>
 <p>A further analysis step is to perform a PCA on the already calculated topological measures. The results of the PCA can be found in the form of a 2D plot in the report. Here we show the first two dimensions of the PCA:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="../reference/plot_pca_LR_comparative.html">plot_pca_LR_comparative</a></span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                        <span class="st">"EXP_x_CTR"</span>,</span>
 <span>                        dims<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span>
@@ -253,7 +292,7 @@
 <span>                        ggi<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="HumanFibrosis_files/figure-html/vignete6-1.png" width="960"></p>
 <p>In the plot, we indicate the direction of the topological measure by labeled arrows. This serves to facilitate the interpretation of the results of the PCA. We can see from the plot that the Myeloid cells take the role of a mediator and also that the Neural cells have a high pagerank as well as Listener ranking in the EXP condition. On the contrary, MSCs and Fibroblasts have a low Listener rank and Pagerank in the EXP condition, which fits the results from the bar chart. In this case, we cannot extract any information about the Influencer, as this ranking could not be indicated in the two dimensions shown (no arrow present in the PCA plot). Here we would suggest plotting the Influencer rankings as a bar plot:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">curr</span>, <span class="st">'_x_'</span>, negate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">curr</span>, <span class="st">'ggi'</span>, negate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
@@ -271,7 +310,7 @@
 <h4 id="cell-gene-interaction-analysis-results">Cell-Gene-Interaction analysis results<a class="anchor" aria-label="anchor" href="#cell-gene-interaction-analysis-results"></a>
 </h4>
 <p>The second part of the report deals again with the interactions on the gene level. Here, the procedure is similar to the one described in the last section for the cell-cell interactions and the analysis performed for the single conditions. First of all, we can look at the results of the topological rankings in the form of bar plots, again using the example of the pagerank:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_data</span> <span class="op">&lt;-</span> <span class="va">data</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">curr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_data</span><span class="op">@</span><span class="va">rankings</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
@@ -286,7 +325,7 @@
 <span><span class="op">}</span></span></code></pre></div>
 <p><img src="HumanFibrosis_files/figure-html/vignete9-1.png" width="960"></p>
 <p>The plot gives us information about which ligand and receptor genes play a more important role in which condition. In our case, the top genes in both, positive and negative, directions are all receptor genes. The ITGB1 receptor in Megakaryocytes has a high importance for the EXP condition, followed by genes like ERBB2 and LAG3 in MSCs. Since the receptor CD44 in Fibroblast has a high negative value here, it means that it is more important in the CTR condition. Thus, we can identify first interesting genes for possible further analysis. We can follow up on this again with analysing the results of the PCA performed on the topological measures at the gene level:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="../reference/plot_pca_LR_comparative.html">plot_pca_LR_comparative</a></span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                              <span class="st">"EXP_x_CTR_ggi"</span>,</span>
 <span>                              dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
@@ -303,7 +342,7 @@
 <h2 id="follow-up-analysis">Follow-up analysis<a class="anchor" aria-label="anchor" href="#follow-up-analysis"></a>
 </h2>
 <p>Since we got a first impression of the data with the previous results, we can further deepen the analysis. For example, we had TGFB1 in Megakaryocytes and Fibroblasts, CD44 in Fibroblasts and ITGB1 in Megakaryocytes as interesting genes. With CrossTalkeR, we can look even more closely at the interactions involving these genes using Sanley plots. There are two ways to do this. First, we can regenerate the report again, this time passing a list of genes of interest:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genes_of_interest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'TGFB1|L'</span>,</span>
 <span>                       <span class="st">'CD44|R'</span>,</span>
 <span>                       <span class="st">'ITGB1|R'</span><span class="op">)</span></span>
@@ -315,24 +354,24 @@
 <span>                    report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                    org <span class="op">=</span> <span class="st">"hsa"</span><span class="op">)</span></span></code></pre></div>
 <p>The second option is to plot only the Sankey plots for the genes of interests, without redoing the report:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">EXP_x_CTR</span>,</span>
 <span>            target <span class="op">=</span> <span class="st">"TGFB1|L"</span>,</span>
 <span>            ligand_cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            receptor_cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            plt_name <span class="op">=</span> <span class="st">"TGFB1 ligand gene interactions EXP vs CTR"</span>,</span>
 <span>            threshold <span class="op">=</span> <span class="fl">50</span>, tfflag <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HumanFibrosis_files/figure-html/unnamed-chunk-4-1.png" width="1056"></p>
+<p><img src="HumanFibrosis_files/figure-html/unnamed-chunk-8-1.png" width="1056"></p>
 <p>In the Sankey plot, not all interactions involving the TGFB1 ligand gene are shown, but only those with a high score. The number of actual interactions can be controlled with the threshold parameter. In the example above 50 interactions are selected. Since we have only entered one target gene without any further information, we can now also see interactions originating from different cell types, here Fibroblasts, Megakaryocytes and MSCs. Furthermore, we now have a list of receptors with associated cell types with which the TGFB1 ligand can possibly interact. The list also includes the receptor ITGB1 in Megakaryocytes, which was also a gene of interest. The interaction between TGFB1 and ITGB1 has a positive score, which means it is enriched in the EXP condition.</p>
 <p>The third gene of interest was the receptor gene CD44 with a high importance in Fibroblast. If we want to focus only on CD44 in Fibroblast, we can define a receptor_cluster value when running the Sankey plot function. Also, the number of interactions included is reduced by setting the threshold parameter to 15.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">EXP_x_CTR</span>,</span>
 <span>            target <span class="op">=</span> <span class="st">"CD44|R"</span>,</span>
 <span>            ligand_cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            receptor_cluster <span class="op">=</span> <span class="st">"Fibroblast"</span>,</span>
 <span>            plt_name <span class="op">=</span> <span class="st">"Fibroblast CD44 receptor gene interaction EXP vs CTR"</span>,</span>
 <span>            threshold <span class="op">=</span> <span class="fl">15</span>, tfflag <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HumanFibrosis_files/figure-html/unnamed-chunk-5-1.png" width="1056"></p>
+<p><img src="HumanFibrosis_files/figure-html/unnamed-chunk-9-1.png" width="1056"></p>
 <p>Here, the top 15 interactions have a negative weight, meaning these are all more relevant for the CTR condition. An interesting interaction is the Fibroblast COL1A1 with CD44, since COL1A1 also came up in th PCA plot as a high ranked Influencer in the CTR condition.</p>
 </div>
 <div class="section level2">

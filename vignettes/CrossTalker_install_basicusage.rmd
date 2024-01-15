@@ -44,7 +44,7 @@ author:
 output:
      html_document
 vignette: |
-      %\VignetteIndexEntry{CrossTalkeR-HumanMyfib}
+      %\VignetteIndexEntry{CrossTalker_install_basicusage}
       %\VignetteEngine{knitr::rmarkdown}
       %\VignetteEncoding{UTF-8}
 ---

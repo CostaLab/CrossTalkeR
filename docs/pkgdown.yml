@@ -5,8 +5,9 @@ articles:
   CrossTalkeR: CrossTalkeR.html
   CrossTalker_install_basicusage: CrossTalker_install_basicusage.html
   HumanFibrosis: HumanFibrosis.html
+  LR2TF_analysis: LR2TF_analysis.html
   run_liana: run_liana.html
-last_built: 2023-09-11T08:26Z
+last_built: 2024-01-18T11:25Z
 urls:
   reference: https://github.com/CostaLab/CrossTalkeR/reference
   article: https://github.com/CostaLab/CrossTalkeR/articles

@@ -1,0 +1,187 @@
+---
+title: CrossTalkeR Cookbook
+author:
+- name: Vanessa Klöker
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: James S. Nagai
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Ivan G. Costa
+  affiliation:
+     - Institute for Computational Genomics,
+       Faculty of Medicine,
+       RWTH Aachen University,
+       Aachen, 52074 Germany
+output:
+     html_document
+vignette: |
+      %\VignetteIndexEntry{CrossTalkeR-cookbook}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+
+---
+# Teanscription Factor Activity Analysis on Human Myelofibrosis scRNA-seq Data Using the LR2TF Package and CrossTalkeR
+
+This is a guide for the usage of the LR2TF package to infer TF activities from scRNA-seq data. The transcription factor activities are estimated using the decoupleR tool. Using the DoRothEA regulon version from decoupleR and post-translational interactions from the Omnipath database[2,3,4], connections are made between transcription factors and ligands and receptors.
+
+The results can be combined with ligand-receptor interactions and then analyzed using CrossTalkeR (https://github.com/CostaLab/CrossTalkeR/) [5].
+
+## Installation
+The package can be installed directly from github:
+&nbsp;
+
+```{r, include = TRUE, eval = FALSE}
+library(devtools)
+install_github("CostaLab/LR2TF")
+
+library(remotes)
+install_github("CostaLab/LR2TF", build_vignettes = TRUE)
+```
+&nbsp;
+
+## Transcription factor activity predictions using decoupleR in python
+
+For the transcription factor activity predictions we recommend using the decoupleR package in its python version. This provides a better performance, especially for larger data sets. To perform the predictions with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data is saved as a Seurat object (.Rds file), it can be converted to AnnData format using the sceasy package and the function we provide:
+
+```{r, include = TRUE, eval = FALSE}
+library(LR2TF)
+library(Seurat)
+
+#load own dataset:
+seurat_object <- readRDS("/path/to/seurat_object.Rds")
+
+#test dataset from package:
+data(bone_marrow_stromal_cell_example, package = "LR2TF")
+seurat_object <- bone_marrow_stromal_cell_example
+
+LR2TF::convert_seurat_to_anndata(seurat_object, "/path/to/save/AnnData/object/")
+```
+
+The file "anndata_object.h5ad" will be saved into the user defined path and then used to perform the predictions. Beside the scRNA-seq data file, we also need to define a regulon database in form of a csv file with the coloumns "source", "target" and "weight". Within this package we provide the dorothea databases for human and mouse, downloaded from the decoupleR package. These files also contain the column "confidence" (levels A to D) with information on how well described a transcription factor and target gene interaction is in different resources. We recommend using the confidence levels A and B.
+
+```{r, include = TRUE, eval = FALSE}
+
+regulon <- read.csv(system.file("regulons", "human_dorothea_reg.csv", package = "LR2TF"), row.names = 1)
+filtered_regulon <- regulon[regulon$confidence %in% c("A","B"),]
+write.csv("/path/to/save/filterd_regulon.csv")
+
+```
+
+Now it is possible to run the transcription factor activity prediction with decoupleR:
+```{python, include = TRUE, eval = FALSE}
+
+import scanpy as sc
+import decoupler as dc
+import pandas as pd
+
+ann_data = sc.read_h5ad("/path/to/AnnData/object/anndata_object.h5ad")
+reg = pd.read_csv("/path/to/filterd_regulon.csv")
+
+dc.run_viper(mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
+
+estimates = ann_data.obsm['viper_estimate']
+estimates.to_csv("/path/to/save/decoupler_results.csv")
+
+```
+
+## Using the LR2TF package
+Now, that we have a transcription factor activity matrix, we can continue the analysis with the LR2TF package. In this case we will use our test data for this example. First of all, it is necessary to define the following parameters in form of a list:
+
+```{r eval = FALSE}
+parameters <- list("out_path" = "/path/to/save/results",
+                   reg = "/path/to/filterd_regulon.csv",
+                   "organism" = "human",
+                   "celltype" = "new_annotation", #name of the meta data field defining cell identities
+                   "condition" = "protocol", #name of the meta data field defining conditions
+                   "comparison_list" = list(c("PMF,MF2", "control")), #list of condition comparison to consider
+                   "logfc" = 0.5,
+                   "pval" = 0.05, #thresholds for logfc and pval used in differential transcription factor analysis
+                   "num_cell_filter" = 0) #define the minimum number of cells per cluster to perform the analysis on
+```
+
+After defining the necessary parameter the transcription factor activity can be performed by calling:
+
+```{r, include = TRUE, eval = FALSE}
+results <- LR2TF::tf_activity_analysis(seuratobject = seurat_object,
+                                       tf_activities = "/path/to/decoupler_results.csv",
+                                       arguments_list = parameters)
+```
+
+The "results" object contains the results of the performed analyses, consisting of multiple tables inside the object:
+
+1. **tf_activities_condition:**
+        Tables with condition significant transcription factors for each compared condition
+2. **tf_activities_cluster:**
+         Tables with cluster specific transcription factors for all conditions in the data
+3. **average_gene_expression:**
+         Matrices for each condition with average gene expressions
+4. **regulon:**
+         Regulon used for the analysis as specified by the user
+5. **CTR_input_condition:**
+         for each condition a table with receptor-transcription factor and transcription factor-ligand interactions based on condition specific transcription factors (input for CrossTalker)
+6. **CTR_input_cluster:**
+         for each condition a table with receptor-transcription factor and transcription factor-ligand interactions based on cluster specific transcription factors (input for CrossTalker)
+7. **intracellular_network_condition:**
+         for each condition a table with receptor-transcription factor and transcription factor-target gene interactions based on condition specific transcription factors
+8. **intracellular_network_cluster:**
+         for each condition a table with receptor-transcription factor and transcription factor-target gene interactions based on cluster specific transcription factors
+
+(Note that special characters might be exchanged by underscores, if they cause problems with the naming of the tables; eg PMF,MF2 -> PMF_MF2)
+
+The last step is to combine previous results from ligand receptor interaction analyses (e.g. CellPhoneDB) with the transcription factor results. (In the case of the test data the ligand-receptor interactions are provided within the CrossTalkeR package.)
+```{r, include = TRUE, eval = FALSE}
+#First possibility: Read the csv files with LR interaction results and then combine them with the TF interaction results
+table_ctr <- read.csv("/path/to/control_lr_results.csv", row.names = 1)
+table_exp <- read.csv("/path/to/PMF,MF2_lr_results.csv", row.names = 1)
+
+ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], table_ctr, parameters$out_path, "control")
+exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], table_exp, parameters$out_path, "PMF_MF2")
+
+#Second possibility: Directly pass the path to the LR interaction csv files to combine them with the TF interaction results
+ctr_file <- "/path/to/control_lr_results.csv"
+exp_file <- "/path/to/PMF,MF2_lr_results.csv"
+
+ctr_inptu <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["control"]], ctr_file, parameters$out_path, "control")
+exp_input <- LR2TF::combine_LR_and_TF(results@CTR_input_condition[["PMF_MF2"]], exp_file, parameters$out_path, "PMF_MF2")
+
+```
+## Run CrossTalkeR
+
+Now that there is one input table for each condition of interest, these can be used to run CrossTalkeR:
+
+```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
+library(CrossTalkeR)
+library(igraph)
+library(stringr)
+
+paths <- c('control' = ctr_inptu,
+           'PMF_MF2' = exp_input)
+
+output <- ("/path/to/save/folder")
+data <- generate_report(paths,
+                out_path=paste0(output,'/'),
+                out_file = 'HumanMyfib_TF_example.html',
+                output_fmt = "html_document",
+                report = TRUE,
+                comparison = list(c('PMF_MF2', 'control')))
+
+```
+
+
+## References
+
+[1] Garcia-Alonso L, Holland CH, Ibrahim MM, Turei D, Saez-Rodriguez J. “Benchmark and integration of resources for the estimation of human transcription factor activities.” Genome Research. 2019. DOI: 10.1101/gr.240663.118.
+
+[2] A Valdeolivas, D Turei, A Gabor (2019) “OmnipathR: client for the OmniPath web service.” Bioconductor Package
+
+[3] D Turei, T Korcsmaros and J Saez-Rodriguez (2016) OmniPath: guidelines and gateway for literature-curated signaling pathway resources. Nature Methods 13 (12); PMID: 27898060
+
+[4] D Turei, A Valdeolivas, L Gul, N Palacio-Escat, M Klein, O Ivanova, M Olbei, A Gabor, F Theis, D Modos, T Korcsmaros and J Saez-Rodriguez (2021) Integrated intra- and intercellular signaling knowledge for multicellular omics analysis. Molecular Systems Biology 17: e9923; DOI: 10.15252/msb.20209923
+
+[5] James S Nagai, Nils B Leimkühler, Michael T Schaub, Rebekka K Schneider, Ivan G Costa, CrossTalkeR: analysis and visualization of ligand–receptorne tworks, Bioinformatics, Volume 37, Issue 22, 15 November 2021, Pages 4263–4265, https://doi.org/10.1093/bioinformatics/btab370
+

@@ -106,7 +106,7 @@
 <p>Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis scRNA-seq data set from the paper. The predicted ligand-receptor interactions used in this tutorial are provided within this package. These differ sightly from the results presented in the paper, since they were recomputed using the cellphoneDB Method with the liana package and the consensus interaction database.</p>
 <p>The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run liana to retrieve ligand and receptor activities, then how to execute CrossTalkeR and finally go over some of the results, that are also provided inside the resulting CrossTalkeR report.</p>
 <div class="section level3">
-<h3 id="run-liana-for-ligand-receptor-interaction-prediction-in-python">Run liana for ligand-receptor interaction prediction in Python<a class="anchor" aria-label="anchor" href="#run-liana-for-ligand-receptor-interaction-prediction-in-python"></a>
+<h3 id="run-liana-for-ligand-receptor-interaction-prediction-in-python">Run liana for Ligand-Receptor Interaction Prediction in Python<a class="anchor" aria-label="anchor" href="#run-liana-for-ligand-receptor-interaction-prediction-in-python"></a>
 </h3>
 <p>For the prediction of ligand-receptor interactions, we use the python version of the package <a href="https://liana-py.readthedocs.io/en/latest/" class="external-link">liana</a>. This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.</p>
 <p>First of all, the libraries necessary for using liana must be loaded:</p>
@@ -170,11 +170,11 @@
 <p>As result of the successful execution, we receive three seurat objects (LR_data.Rds, LR_data_step2.Rds and LR_data_final.Rds), as well as two html-reports(SingleCondition.html and ComparativeCondition.html). The LR_data_final.Rds contains all results produced by CrossTalkeR and the two html-reports contain the visualization of the results inside the R object. It is possible to load the results of the CrossTalkeR analysis from the “LR_data_final.Rds” R-object and produce the plots separately. In the following we are going to take a look at different results within the two reports, step by step.</p>
 </div>
 <div class="section level3">
-<h3 id="single-condition-report">Single Condition report<a class="anchor" aria-label="anchor" href="#single-condition-report"></a>
+<h3 id="single-condition-report">Single Condition Report<a class="anchor" aria-label="anchor" href="#single-condition-report"></a>
 </h3>
 <p>The first report contains the results for each analysed condition considered separately. In our case in each section is a plot for the control condition (CTR) and the disease condition (EXP). There are two main sections in the report. The first one only deals with cell-cell-interactions and the second with cell-gene-interactions, which here means an analysis at the ligand and receptor gene level.</p>
 <div class="section level4">
-<h4 id="cell-cell-interaction-analysis-results">Cell-Cell-Interaction analysis results<a class="anchor" aria-label="anchor" href="#cell-cell-interaction-analysis-results"></a>
+<h4 id="cell-cell-interaction-analysis-results">Cell-Cell-Interaction Analysis Results<a class="anchor" aria-label="anchor" href="#cell-cell-interaction-analysis-results"></a>
 </h4>
 <p>The cell-cell-interaction (CCI) graph plots focus on the interactions between the different cell types within the data. We focus on three measures inside this plot:</p>
 <ol style="list-style-type: decimal">
@@ -218,7 +218,7 @@
 <p>In the control plot we can see that a high proportion of interactions are MSCs talking with themselves as well as MSC and Fibroblasts talking with each other. These interaction have also a higher weight, as can be seen by the edge color. The most important node by pagerank is the MSC node. When analysing the plot of the disease condition, we see again a high proportions of interactions are self-talking MSCs and the most important node by pagerank is again the MSC node. Here the MSC are talking more to Megakaryocytes. To really compare the two conditions we recommend using the Comparative report results.</p>
 </div>
 <div class="section level4">
-<h4 id="analysis-on-the-gene-cell-interaction-level">Analysis on the gene-cell interaction level<a class="anchor" aria-label="anchor" href="#analysis-on-the-gene-cell-interaction-level"></a>
+<h4 id="analysis-on-the-gene-cell-interaction-level">Analysis on the Gene-Cell Interaction Level<a class="anchor" aria-label="anchor" href="#analysis-on-the-gene-cell-interaction-level"></a>
 </h4>
 <p>We provide several different possibilities to analyse the ligand-receptor interactions on the gene level. In CrossTalkeR, topological network measures are calculated for each node(gene) in the build networks. These measures include Influencer (depending on outgoing edges), Listener(depending on incoming edges), Mediator (depending on outgoing and incoming edges), and Pagerank (overall importance) rankings. The ligand and receptors can be ranked by these measures and we can identify possibly relevant genes by considering the top genes of the rankings. In the report we provide an interactive table with all the rankings for each gene in the network. Here is an example for the top 10 genes in the Pagerank ranking for both preset conditions in form of Barplots:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -248,7 +248,7 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="compared-condition-results">Compared Condition results<a class="anchor" aria-label="anchor" href="#compared-condition-results"></a>
+<h3 id="compared-condition-results">Compared Condition Results<a class="anchor" aria-label="anchor" href="#compared-condition-results"></a>
 </h3>
 <p>CrossTalkeR not only analyzes the conditions individually but also calculates the differences in the cell-cell interactions between the conditions. The results of these analyses are presented in the comparative report. In our example we compare the disease (EXP) against the control (CTR) condition.</p>
 <div class="section level4">
@@ -308,7 +308,7 @@
 <p>Now we can identify the Megakaryocytes as a influencing celltype in the EXP condition and the MSC in the CTR condition.</p>
 </div>
 <div class="section level4">
-<h4 id="cell-gene-interaction-analysis-results">Cell-Gene-Interaction analysis results<a class="anchor" aria-label="anchor" href="#cell-gene-interaction-analysis-results"></a>
+<h4 id="cell-gene-interaction-analysis-results">Cell-Gene-Interaction Analysis Results<a class="anchor" aria-label="anchor" href="#cell-gene-interaction-analysis-results"></a>
 </h4>
 <p>The second part of the report deals again with the interactions on the gene level. Here, the procedure is similar to the one described in the last section for the cell-cell interactions and the analysis performed for the single conditions. First of all, we can look at the results of the topological rankings in the form of bar plots, again using the example of the pagerank:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -340,7 +340,7 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="follow-up-analysis">Follow-up analysis<a class="anchor" aria-label="anchor" href="#follow-up-analysis"></a>
+<h2 id="follow-up-analysis">Follow-up Analysis<a class="anchor" aria-label="anchor" href="#follow-up-analysis"></a>
 </h2>
 <p>Since we got a first impression of the data with the previous results, we can further deepen the analysis. For example, we had TGFB1 in Megakaryocytes and Fibroblasts, CD44 in Fibroblasts and ITGB1 in Megakaryocytes as interesting genes. With CrossTalkeR, we can look even more closely at the interactions involving these genes using Sanley plots. There are two ways to do this. First, we can regenerate the report again, this time passing a list of genes of interest:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">

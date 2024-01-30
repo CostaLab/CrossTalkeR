@@ -66,7 +66,8 @@ plot_cci <- function(graph,
                      efactor = 8,
                      vfactor = 12,
                      vnames = T,
-                     pg = NULL) {
+                     pg = NULL,
+                     vnamescol = NULL) {
 
   # Check Maximal Weight
   if (is.null(emax)) {
@@ -116,7 +117,11 @@ plot_cci <- function(graph,
     igraph::V(graph)$size <- 60
   }
   else {
-    igraph::V(graph)$size <- scales::rescale(pg, c(1, 60))
+    igraph::V(graph)$size <- oce::rescale(pg, xlow = quantile(x = pg, prob = 0.25),
+                                          xhigh = quantile(x = pg, prob = 0.75),
+                                          rlow = 1,
+                                          rhigh = 60,
+                                          clip = TRUE)
   }
 
   if (log) {
@@ -185,15 +190,29 @@ plot_cci <- function(graph,
     90 + atan(-coord_ratio) * (180 / pi),
     270 + atan(-coord_ratio) * (180 / pi))
   if (vnames) {
-    for (i in seq_len(length(x))) {
-      graphics::text(x = x[i],
-                     y = y[i],
-                     labels = igraph::V(graph)$name[i],
-                     adj = NULL,
-                     pos = NULL,
-                     cex = 0.8,
-                     col = "black",
-                     xpd = TRUE)
+    if (!is.null(vnamescol)) {
+      for (i in seq_len(length(x))) {
+        graphics::text(x = x[i],
+                       y = y[i],
+                       labels = igraph::V(graph)$name[i],
+                       adj = NULL,
+                       pos = NULL,
+                       cex = 0.8,
+                       col = vnamescol[igraph::V(graph)$name[i]],
+                       xpd = TRUE)
+      }
+    } else {
+      for (i in seq_len(length(x))) {
+        graphics::text(x = x[i],
+                       y = y[i],
+                       labels = igraph::V(graph)$name[i],
+                       adj = NULL,
+                       pos = NULL,
+                       cex = 0.8,
+                       col = "black",
+                       xpd = TRUE)
+      }
+
     }
   }
   if (leg) {
@@ -259,12 +278,13 @@ plot_cci <- function(graph,
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
 plot_sankey <- function(lrobj_tbl,
-                        target = NULL,
-                        ligand_cluster = NULL,
-                        receptor_cluster = NULL,
-                        plt_name = NULL,
-                        threshold = 50, tfflag = TRUE) {
-
+                             target = NULL,
+                             ligand_cluster = NULL,
+                             receptor_cluster = NULL,
+                             plt_name = NULL,
+                             threshold = 50, tfflag = TRUE) {
+  lrobj_tbl <- lrobj_tbl %>%
+    filter(type_gene_A == "Ligand" & type_gene_B == "Receptor")
   if (!is.null(target)) {
     if (length(stringr::str_split(target, "\\|")[[1]]) > 1) {
       target_type = stringr::str_split(target, "\\|")[[1]][[2]]
@@ -295,12 +315,14 @@ plot_sankey <- function(lrobj_tbl,
     data <- lrobj_tbl
   }
   if (!is.null(ligand_cluster)) {
-    tmp_sel <- grepl(ligand_cluster, data$ligpair)
-    data <- data[tmp_sel,]
+    if (!is.null(receptor_cluster)) {
+      data <- data[(data$source %in% ligand_cluster) & (data$target %in% receptor_cluster),]
+    } else {
+      data <- data[(data$source %in% ligand_cluster),]
+    }
   }
-  if (!is.null(receptor_cluster)) {
-    tmp_sel <- grepl(receptor_cluster, data$recpair)
-    data <- data[tmp_sel,]
+  if (!is.null(receptor_cluster) & is.null(ligand_cluster)) {
+    data <- data[(data$target %in% receptor_cluster),]
   }
   colp <- c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])
   tmp_cols <- c("source", "Ligand", "Receptor", "target")
@@ -308,7 +330,7 @@ plot_sankey <- function(lrobj_tbl,
   if (dim(data)[1] >= 1) {
     data$freq <- 1
     tmp <- dplyr::slice_max(data, order_by = abs(.data$LRScore),
-                        n=ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE)
+                            n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE)
     print(ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
                                    axis2 = stats::reorder(.data$gene_A, -.data$LRScore),
                                    axis3 = stats::reorder(.data$gene_B, -.data$LRScore),
@@ -816,7 +838,7 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, pca_table, dims = c(1, 2), ret
 #'@return R default plot
 #'@export
 plot_deregulated_pathways <- function(data_object, name, title = NULL) {
-  if(is.null(title)){
+  if (is.null(title)) {
     title = name
   }
   paths <- read.csv(system.file("extdata", "selected_KEGG.csv", package = "CrossTalkeR"), header = F)

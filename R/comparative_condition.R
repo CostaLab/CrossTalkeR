@@ -42,17 +42,17 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
       final_data <- final_data[final_data$LRScore != 0,]
       final_data <- final_data %>%
         dplyr::mutate(type_gene_A = dplyr::coalesce(.data$type_gene_A.x,
-                                             .data$type_gene_A.y)) %>%
-        dplyr::mutate(type_gene_B =  dplyr::coalesce(.data$type_gene_B.x,
-                                             .data$type_gene_B.y)) %>%
-        dplyr::mutate(gene_A =  dplyr::coalesce(.data$gene_A.x,
-                                        .data$gene_A.y)) %>%
-        dplyr::mutate(gene_B =  dplyr::coalesce(.data$gene_B.x,
-                                        .data$gene_B.y)) %>%
-        dplyr::mutate(source =  dplyr::coalesce(.data$source.x,
-                                        .data$source.y)) %>%
-        dplyr::mutate(target =  dplyr::coalesce(.data$target.x,
-                                        .data$target.y)) %>%
+                                                    .data$type_gene_A.y)) %>%
+        dplyr::mutate(type_gene_B = dplyr::coalesce(.data$type_gene_B.x,
+                                                    .data$type_gene_B.y)) %>%
+        dplyr::mutate(gene_A = dplyr::coalesce(.data$gene_A.x,
+                                               .data$gene_A.y)) %>%
+        dplyr::mutate(gene_B = dplyr::coalesce(.data$gene_B.x,
+                                               .data$gene_B.y)) %>%
+        dplyr::mutate(source = dplyr::coalesce(.data$source.x,
+                                               .data$source.y)) %>%
+        dplyr::mutate(target = dplyr::coalesce(.data$target.x,
+                                               .data$target.y)) %>%
         dplyr::select(-.data$type_gene_A.x,
                       -.data$type_gene_A.y,
                       -.data$type_gene_B.x,
@@ -67,6 +67,13 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
                       -.data$target.y) %>%
         dplyr::mutate(cellpair = paste0(.data$source, "@",
                                         .data$target))
+      final_data$interaction_type <- paste(final_data$type_gene_A, final_data$type_gene_B, sep = "")
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "LigandReceptor", "LR", interaction_type))
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "ReceptorTranscription Factor", "RTF", interaction_type))
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "Transcription FactorLigand", "TFL", interaction_type))
       data@tables[[cmp_name]] <- final_data
       final <- final_data %>%
         dplyr::mutate(ccitype = paste(.data$type_gene_A, .data$type_gene_B)) %>%
@@ -82,7 +89,7 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
       freq <- freq / (max(as.array(raw_inter)[final$cellpair]) - min(as.array(raw_inter)[final$cellpair])) + 0.1
       final$freq <- as.array(freq)[final$cellpair]
       final$pair <- final$cellpair
-      final <- dplyr::arrange(final, final$LRScore)#abs(final$LRScore))
+      final <- dplyr::arrange(final, final$LRScore) #abs(final$LRScore))
       graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "LRScore")])
       igraph::E(graph1)$inter <- final$freq #setting thickness and weight
       igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$cellpair] #setting thickness and weight
@@ -95,6 +102,7 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
       igraph::E(graph1)$weight <- igraph::E(graph1)$LRScore
       igraph::E(graph1)$mean <- igraph::E(graph1)$LRScore
       data@graphs_ggi[[cmp_name]] <- graph1
+
     }
 
   } else {
@@ -132,17 +140,17 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
       final_data <- final_data[final_data$LRScore != 0,]
       final_data <- final_data %>%
         dplyr::mutate(type_gene_A = dplyr::coalesce(.data$type_gene_A.x,
-                                             .data$type_gene_A.y)) %>%
+                                                    .data$type_gene_A.y)) %>%
         dplyr::mutate(type_gene_B = dplyr::coalesce(.data$type_gene_B.x,
-                                             .data$type_gene_B.y)) %>%
+                                                    .data$type_gene_B.y)) %>%
         dplyr::mutate(gene_A = dplyr::coalesce(.data$gene_A.x,
-                                        .data$gene_A.y)) %>%
+                                               .data$gene_A.y)) %>%
         dplyr::mutate(gene_B = dplyr::coalesce(.data$gene_B.x,
-                                        .data$gene_B.y)) %>%
+                                               .data$gene_B.y)) %>%
         dplyr::mutate(source = dplyr::coalesce(.data$source.x,
-                                        .data$source.y)) %>%
+                                               .data$source.y)) %>%
         dplyr::mutate(target = dplyr::coalesce(.data$target.x,
-                                        .data$target.y)) %>%
+                                               .data$target.y)) %>%
         dplyr::select(-.data$type_gene_A.x,
                       -.data$type_gene_A.y,
                       -.data$type_gene_B.x,
@@ -156,7 +164,7 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
                       -.data$target.x,
                       -.data$target.y) %>%
         dplyr::mutate(cellpair = paste0(.data$source, "@",
-                                        .data$target))%>%
+                                        .data$target)) %>%
         dplyr::arrange(LRScore)
       data@tables[[cmp_name]] <- final_data
       final <- final_data %>%
@@ -173,7 +181,7 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
       freq <- freq / (max(as.array(raw_inter)[final$cellpair]) - min(as.array(raw_inter)[final$cellpair])) + 0.1
       final$freq <- as.array(freq)[final$cellpair]
       final$pair <- final$cellpair
-      final <- dplyr::arrange(final, final$LRScore)#abs(final$LRScore))
+      final <- dplyr::arrange(final, final$LRScore) #abs(final$LRScore))
       graph1 <- igraph::graph_from_data_frame(final[, c("u", "v", "LRScore")])
       igraph::E(graph1)$inter <- final$freq #setting thickness and weight
       igraph::E(graph1)$inter.raw <- as.array(raw_inter)[final$cellpair] #setting thickness and weight

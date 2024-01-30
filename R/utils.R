@@ -225,9 +225,15 @@ kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.H
 comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
   p_f1 <- p_f2 <- 0.5 # prob to be at disease
   allnodes <- curr.rkg$nodes
-  curr = stringr::str_split(graphname, '_x_')
-  p_ctr = curr[[1]][2]
-  q_exp = curr[[1]][1]
+  if (str_detect(graphname, '_filtered', negate = FALSE)){
+    curr = stringr::str_split(graphname, '_')
+    p_ctr = curr[[1]][3]
+    q_exp = curr[[1]][1]
+  } else {
+    curr = stringr::str_split(graphname, '_x_')
+    p_ctr = curr[[1]][2]
+    q_exp = curr[[1]][1]
+  }
   if (grepl("_ggi", slotname)) {
     p <- rankings[[paste0(p_ctr, '_ggi')]]$Pagerank
     q <- rankings[[paste0(q_exp, '_ggi')]]$Pagerank
@@ -265,9 +271,15 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
 #'@NoRd
 comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
   allnodes <- curr.rkg$nodes
-  curr = stringr::str_split(graphname, '_x_')
-  p_ctr = curr[[1]][2]
-  q_exp = curr[[1]][1]
+  if (str_detect(graphname, '_filtered', negate = FALSE)){
+    curr = stringr::str_split(graphname, '_')
+    p_ctr = curr[[1]][3]
+    q_exp = curr[[1]][1]
+  } else {
+    curr = stringr::str_split(graphname, '_x_')
+    p_ctr = curr[[1]][2]
+    q_exp = curr[[1]][1]
+  }
   if (grepl("_ggi", slotname)) {
     p <- rankings[[paste0(p_ctr, '_ggi')]]$Mediator
     q <- rankings[[paste0(q_exp, '_ggi')]]$Mediator
@@ -424,3 +436,28 @@ add_node_type <- function(df) {
     mutate(gene_B = ifelse(type_gene_B == "Transcription Factor", paste0(gene_B, "|TF"), gene_B))
   return(df)
 }
+
+#' Filter comparison graphs by statistics
+#'@param data datafromlian
+#'@param out_path save path
+#'@importFrom tidyr %>%
+#'@import tibble dplyr rstatix
+#'@return tibble
+#'@NoRd
+filtered_graphs <- function(data, out_path) {
+  for (name in names(data@graphs)) {
+    if (str_detect(name, '_x_', negate = FALSE)) {
+      h <- head_of(data@graphs[[name]], E(data@graphs[[name]]))$name
+      f <- tail_of(data@graphs[[name]], E(data@graphs[[name]]))$name
+      curr_net <- subgraph.edges(data@graphs[[name]],
+                                 E(data@graphs[[name]])[
+                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= 0.05],
+                                         paste(h, f, sep = '@'),
+                                         nomatch = F)])
+      data@graphs[[paste0(name, "_filtered")]] <- curr_net
+    }
+  }
+  saveRDS(data, file.path(out_path, "LR_data_final.Rds"))
+  return(data)
+}
+

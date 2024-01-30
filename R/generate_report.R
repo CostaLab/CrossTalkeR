@@ -46,7 +46,8 @@ generate_report <- function(lrpaths,
                             output_fmt = "html_document",
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
                             org='hsa',
-                            comparison = NULL) {
+                            comparison = NULL,
+                            filtered_net = F) {
   data <- analise_LR(lrpaths,
                       genes,
                       tf_genes,
@@ -58,7 +59,8 @@ generate_report <- function(lrpaths,
                       output_fmt,
                       sel_columns,
                       org,
-                      comparison)
+                      comparison,
+                      filtered_net)
   if(report){
       make_report(genes = genes,
                         tf_genes = tf_genes,
@@ -125,7 +127,8 @@ analise_LR <- function(lrpaths,
                             output_fmt = "html_document",
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
                             org='hsa',
-                            comparison = NULL) {
+                            comparison = NULL,
+                            filtered_net = F) {
   data <- read_lr_single_condition(lrpaths,
                                     sel_columns,
                                     out_path,
@@ -138,6 +141,15 @@ analise_LR <- function(lrpaths,
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
+
+  if (length(lrpaths) > 1) {
+     data <- fisher_test_cci(data,'LRScore',out_path=out_path,comparison)
+  }
+
+  if (filtered_net) {
+    data <- filtered_graphs(data, out_path)
+  }
+
   message("Calculating CCI Ranking")
   data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs")})
   message("Calculating GCI Ranking")
@@ -151,9 +163,7 @@ analise_LR <- function(lrpaths,
     data <- suppressWarnings({kegg_annotation(data=data,
                             slot='rankings',out_path=out_path,database=org[2], org=org[1])})
   }
-  if (length(lrpaths) > 1) {
-     data <- fisher_test_cci(data,'LRScore',out_path=out_path,comparison)
-  }
+
   message("Network Analysis Done")
   return(data)
 }

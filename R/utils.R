@@ -226,8 +226,9 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
   p_f1 <- p_f2 <- 0.5 # prob to be at disease
   allnodes <- curr.rkg$nodes
   if (str_detect(graphname, '_filtered', negate = FALSE)){
-    curr = stringr::str_split(graphname, '_')
-    p_ctr = curr[[1]][3]
+    curr = str_remove(graphname, '_filtered')
+    curr = stringr::str_split(curr, '_x_')
+    p_ctr = curr[[1]][2]
     q_exp = curr[[1]][1]
   } else {
     curr = stringr::str_split(graphname, '_x_')
@@ -272,8 +273,9 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
 comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
   allnodes <- curr.rkg$nodes
   if (str_detect(graphname, '_filtered', negate = FALSE)){
-    curr = stringr::str_split(graphname, '_')
-    p_ctr = curr[[1]][3]
+    curr = str_remove(graphname, '_filtered')
+    curr = stringr::str_split(curr, '_x_')
+    p_ctr = curr[[1]][2]
     q_exp = curr[[1]][1]
   } else {
     curr = stringr::str_split(graphname, '_x_')

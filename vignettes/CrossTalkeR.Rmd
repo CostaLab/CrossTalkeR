@@ -28,7 +28,7 @@ vignette: |
 
 
 # Version Info
-```{r vignete0}
+```{r vignete0, eval = FALSE}
 suppressPackageStartupMessages({require(CrossTalkeR)})
 suppressPackageStartupMessages({require(igraph)})
 suppressPackageStartupMessages({require(ggraph)})
@@ -44,7 +44,7 @@ suppressPackageStartupMessages({require(ggplot2)})
 In our vignette we provide examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq dataset.
 
 
-```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE}
+```{r vignete1, results="hide", warning=FALSE,message=F, output=FALSE, eval = FALSE}
 paths <- c('CTR' = system.file("extdata",
                                "CTR_LR.csv",
                                package = "CrossTalkeR"),
@@ -65,7 +65,7 @@ data <- generate_report(paths,
 # Individual Visualization
 
 ## CCI
-```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8}
+```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8, eval = FALSE}
 plot_cci(graph = data@graphs$CTR,
         colors = data@colors,
         plt_name = 'Example 1',
@@ -82,7 +82,7 @@ plot_cci(graph = data@graphs$CTR,
 ```
 
 ## Sankey plot
-```{r vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=10}
+```{r vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=10, eval = FALSE}
 plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
             target = c("TGFB1|L"),
             ligand_cluster = NULL,
@@ -100,6 +100,6 @@ plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
 
 # Session information {.unnumbered}
 
-```{r sessionInfo, echo=FALSE}
+```{r sessionInfo, echo=FALSE, eval = FALSE}
 sessionInfo()
 ```

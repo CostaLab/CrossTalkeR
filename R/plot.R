@@ -448,17 +448,19 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 
       ligand_interactions = lrobj_tbl %>%
         filter(type_gene_A == "Transcription Factor") %>%
-        filter(gene_B == !!target)
+        filter(gene_B == !!target) %>%
+        filter(source == cluster)
       receptor_interactions = lrobj_tbl %>%
         filter(type_gene_B == "Transcription Factor") %>%
-        filter(gene_B %in% ligand_interactions$gene_A)
+        filter(gene_B %in% ligand_interactions$gene_A) %>%
+        filter(source == cluster)
 
       data = rbind(receptor_interactions, ligand_interactions)
 
     }
 
     data = data %>%
-      filter(source == cluster) %>%
+      filter(source == cluster & target == cluster) %>%
       subset(
         select = c(
           "gene_A",

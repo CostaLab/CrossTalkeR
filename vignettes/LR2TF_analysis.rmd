@@ -20,7 +20,7 @@ author:
 output:
      html_document
 vignette: |
-      %\VignetteIndexEntry{CrossTalkeR-cookbook}
+      %\VignetteIndexEntry{CrossTalke-LR2TF}
       %\VignetteEngine{knitr::rmarkdown}
       %\VignetteEncoding{UTF-8}
 

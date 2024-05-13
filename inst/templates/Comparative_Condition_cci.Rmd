@@ -2,14 +2,14 @@
 title: "Report diferential analysis"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
-      toc: yes
-      toc_depth: 3
-      theme: simplex
+html_document:
+toc: yes
+toc_depth: 3
+theme: simplex
 
 params:
-  obj1: "path to obj"
-  thr: 'percentage edges to plot'
+obj1: "path to obj"
+thr: 'percentage edges to plot'
 
 ---
 
@@ -42,27 +42,27 @@ extrafont::loadfonts()
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
-path <-params$obj1
+path <- params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@tables))){
+for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-      h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
-      f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
-      curr_net<-all_data@graphs[[curr]]
-      #curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '@'),nomatch = F)])
-        #E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
-        par(cex.axis=7, cex.lab=7)
-        plot_cci(graph=curr_net,
-                 coords=all_data@coords[V(curr_net)$name,],
-                 colors=all_data@colors[V(curr_net)$name],
-                 plt_name=paste0(curr,' CCI'),
-                 leg=TRUE,
-                 low=0,
-                 high=0,
-                 log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
-     }
+  if (str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
+    h <- head_of(all_data@graphs[[curr]], E(all_data@graphs[[curr]]))$name
+    f <- tail_of(all_data@graphs[[curr]], E(all_data@graphs[[curr]]))$name
+    curr_net <- all_data@graphs[[curr]]
+    #curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '@'),nomatch = F)])
+    #E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
+    par(cex.axis = 7, cex.lab = 7)
+    plot_cci(graph = curr_net,
+             coords = all_data@coords[V(curr_net)$name,],
+             colors = all_data@colors[V(curr_net)$name],
+             plt_name = paste0(curr, ' CCI'),
+             leg = TRUE,
+             low = 0,
+             high = 0,
+             log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+  }
 }
 
 
@@ -75,10 +75,29 @@ for(i in 1:length(names(all_data@tables))){
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
-path <-params$obj1
+path <- params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@tables))){
+if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered', negate = FALSE)) {
+  for (i in 1:length(names(all_data@graphs))) {
+    curr <- names(all_data@graphs)[i]
+    if (str_detect(curr, '_filtered', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
+      curr_net <- all_data@graphs[[curr]]
+      low <- thr
+      E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
+      par(cex.axis = 7, cex.lab = 7)
+      plot_cci(graph = curr_net,
+               coords = all_data@coords[V(curr_net)$name,],
+               colors = all_data@colors[V(curr_net)$name],
+               plt_name = paste0(curr, ' CCI'),
+               leg = TRUE,
+               low = 0,
+               high = low / 100,
+               log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+    }
+  }
+} else {
+  for(i in 1:length(names(all_data@tables))){
   curr <- names(all_data@tables)[i]
   if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
       h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
@@ -98,6 +117,8 @@ for(i in 1:length(names(all_data@tables))){
                  log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
      }
 }
+}
+
 ```
 
 
@@ -110,7 +131,7 @@ for(i in 1:length(names(all_data@tables))){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,eval=TRUE}
-path <-params$obj1
+path <- params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
 
@@ -119,8 +140,8 @@ pca_table1 = names(all_data@pca)[which(
     & !grepl("_ggi", names(all_data@pca)))]
 
 
-for(pca_table in pca_table1){
-  p1<-plot_pca_LR_comparative(all_data,pca_table,dims=c(1,2),ret=T,ggi=FALSE)
+for (pca_table in pca_table1) {
+  p1 <- plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = FALSE)
   print(p1)
 }
 #lapply(,print)
@@ -131,14 +152,15 @@ for(pca_table in pca_table1){
 
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
-for(i in 2:length(names(all_data@rankings))){
+for (i in 2:length(names(all_data@rankings))) {
   curr <- names(all_data@rankings)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-    signal <- ifelse(all_data@rankings[[curr]]$Pagerank < 0, 'negative','positive')
-    print(ggplot(all_data@rankings[[curr]], aes(x=Pagerank,y=reorder(nodes,Pagerank),fill=signal))+
-        geom_bar(stat="identity")+
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-        theme_minimal())
+  if (str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
+    signal <- ifelse(all_data@rankings[[curr]]$Pagerank < 0, 'negative', 'positive')
+    print(ggplot(all_data@rankings[[curr]], aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
+            geom_bar(stat = "identity") +
+            ggtitle(curr) +
+            scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
+            theme_minimal())
   }
 }
 ```
@@ -147,23 +169,23 @@ for(i in 2:length(names(all_data@rankings))){
 ### CCI Table
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE}
-path <-params$obj1
+path <- params$obj1
 out <- c()
 out1 <- list()
 all_data <- readRDS(path)
-for(i in 1:length(names(all_data@pca))){
-     curr <- names(all_data@pca)[i]
-     if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, '_ggi', negate = FALSE)){
-     rmd_title <- paste0(curr,'_tbl')
-     rmd_title1 <- paste0(curr,'_pca1')
-     title <- paste0('\n\n#### Table PCA CCI ',curr)
-     knit_expanded <- paste0("\n\n```{r , results='",rmd_title,"', echo=FALSE, warning=FALSE}\n\n
-         pca <- all_data@pca[['",curr,"']]$x[,1:2]
+for (i in 1:length(names(all_data@pca))) {
+  curr <- names(all_data@pca)[i]
+  if (str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, '_ggi', negate = FALSE)) {
+    rmd_title <- paste0(curr, '_tbl')
+    rmd_title1 <- paste0(curr, '_pca1')
+    title <- paste0('\n\n#### Table PCA CCI ', curr)
+    knit_expanded <- paste0("\n\n```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
+         pca <- all_data@pca[['", curr, "']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
          pca[,2] <- round(pca[,2],6)
-         ranking <- cbind(all_data@rankings[['",curr,"']][,2:dim(all_data@rankings[['",curr,"']])[2]],pca[all_data@rankings[['",curr,"']]$nodes,])
+         ranking <- cbind(all_data@rankings[['", curr, "']][,2:dim(all_data@rankings[['", curr, "']])[2]],pca[all_data@rankings[['", curr, "']]$nodes,])
          datatable(ranking,
-                 caption='",curr,"',
+                 caption='", curr, "',
                  extensions = 'Buttons',
                  options = list(dom = 'Bfrtip',
                                 buttons = c('copy',
@@ -173,9 +195,9 @@ for(i in 1:length(names(all_data@pca))){
                                autoWidth = FALSE
                                )
                 )\n\n```")
-     out <- c(out,title,knit_expanded)
-     out1[[curr]] <-knit_expanded
-   }
+    out <- c(out, title, knit_expanded)
+    out1[[curr]] <- knit_expanded
+  }
 }
 
 ```

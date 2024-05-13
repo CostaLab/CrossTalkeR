@@ -28,7 +28,7 @@ vignette: |
 
 
 # Version Info
-```{r vignete0}
+```{r vignete0, eval = FALSE}
 suppressPackageStartupMessages({require(CrossTalkeR)})
 suppressPackageStartupMessages({require(igraph)})
 suppressPackageStartupMessages({require(ggraph)})
@@ -100,6 +100,6 @@ plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
 
 # Session information {.unnumbered}
 
-```{r sessionInfo, echo=FALSE}
+```{r sessionInfo, echo=FALSE, eval = FALSE}
 sessionInfo()
 ```

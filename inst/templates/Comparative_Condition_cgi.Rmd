@@ -292,10 +292,9 @@ all_data <- readRDS(path)
 for (i in 1:length(names(all_data@tables))) {
   curr <- names(all_data@tables)[i]
   if (str_detect(curr, '_x_', negate = FALSE)) {
-
     rmd_title <- paste0(curr, '_tbl')
     knit_expanded <- paste0("```{r results='", rmd_title, "', echo=FALSE, warning=FALSE}
-                             \n\n                          datatable(all_data@tables[['", curr, "']][,c('source','target','gene_A','gene_B' ,'LRScore')],caption='", curr, "', extensions = 'Buttons', options = list(
+                             \n\n                          datatable(all_data@tables[['", curr, "']][,c('source','target','gene_A','gene_B' ,'LRScore', 'interaction_type')], filter = 'top', caption='", curr, "', extensions = 'Buttons', options = list(
     dom = 'Bfrtip',
     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) \n\n```")
     out <- c(out, knit_expanded)

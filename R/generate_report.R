@@ -47,7 +47,8 @@ generate_report <- function(lrpaths,
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
                             org='hsa',
                             comparison = NULL,
-                            filtered_net = F) {
+                            filtered_net = F,
+                            score_col = "LRScore") {
   data <- analise_LR(lrpaths,
                       genes,
                       tf_genes,
@@ -60,7 +61,8 @@ generate_report <- function(lrpaths,
                       sel_columns,
                       org,
                       comparison,
-                      filtered_net)
+                      filtered_net,
+                      score_col)
   if(report){
       make_report(genes = genes,
                         tf_genes = tf_genes,
@@ -69,7 +71,8 @@ generate_report <- function(lrpaths,
                         colors = colors,
                         out_file = out_file,
                         output_fmt = "html_document",
-                        sel_columns=sel_columns)
+                        sel_columns=sel_columns,
+                        score_col)
   } 
   message("Analysis Complete")
   return(data)
@@ -128,7 +131,8 @@ analise_LR <- function(lrpaths,
                             sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
                             org='hsa',
                             comparison = NULL,
-                            filtered_net = F) {
+                            filtered_net = F,
+                            score_col) {
   data <- read_lr_single_condition(lrpaths,
                                     sel_columns,
                                     out_path,
@@ -137,7 +141,7 @@ analise_LR <- function(lrpaths,
   # Obtaining the differential table
   message("Create a Differential Table")
   if (length(lrpaths) > 1) {
-    data <- create_diff_table1(data, out_path, comparison)
+    data <- create_diff_table1(data, out_path, comparison, score_col)
   }
   # Generating the single condition report
   lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
@@ -211,7 +215,8 @@ make_report <- function(genes = NULL,
                         out_file = NULL,
                         output_fmt = "html_document",
                         LRObj = NULL,
-                        sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR')) {
+                        sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
+                        score_col) {
   # Creating the single condition Object
   index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",

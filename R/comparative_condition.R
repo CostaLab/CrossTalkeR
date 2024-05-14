@@ -23,16 +23,14 @@ create_diff_table1 <- function(data, out_path, comparison = NULL, score_col) {
       tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
 
       if (score_col != "LRScore") {
-        tmp_data$LRScore.x[is.na(tmp_data$LRScore.x)] <- 0
-        tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
         score_col_x <- paste0(score_col, ".x")
         score_col_y <- paste0(score_col, ".y")
-        '$'(tmp_data, score_col_x)[is.na('$'(tmp_data, score_col_x))] <- 0
-        '$'(tmp_data, score_col_y)[is.na('$'(tmp_data, score_col_y))] <- 0
+        tmp_data[[score_col_x]][is.na(tmp_data[[score_col_x]])] <- 0
+        tmp_data[[score_col_y]][is.na(tmp_data[[score_col_y]])] <- 0
 
         final_data <- tmp_data %>%
           dplyr::mutate(LRScore = .data$LRScore.x - .data$LRScore.y) %>%
-          dplyr::mutate(LRScore_Sankey = '$'(.data, score_col_x) - '$'(.data, score_col_y)) %>%
+          dplyr::mutate(LRScore_Sankey = tmp_data[[score_col_x]] - tmp_data[[score_col_y]]) %>%
           dplyr::select(c(
             .data$source.x,
             .data$source.y,
@@ -96,7 +94,8 @@ create_diff_table1 <- function(data, out_path, comparison = NULL, score_col) {
           dplyr::mutate(cellpair = paste0(
             .data$source, "@",
             .data$target
-          ))
+          )) %>%
+          dplyr::arrange(LRScore)
       } else {
         final_data <- tmp_data %>%
           dplyr::mutate(LRScore = .data$LRScore.x - .data$LRScore.y) %>%
@@ -162,7 +161,8 @@ create_diff_table1 <- function(data, out_path, comparison = NULL, score_col) {
           dplyr::mutate(cellpair = paste0(
             .data$source, "@",
             .data$target
-          ))
+          )) %>%
+          dplyr::arrange(LRScore)
       }
 
       final_data$interaction_type <- paste(final_data$type_gene_A, final_data$type_gene_B, sep = "")
@@ -218,71 +218,147 @@ create_diff_table1 <- function(data, out_path, comparison = NULL, score_col) {
         )
       tmp_data$LRScore.x[is.na(tmp_data$LRScore.x)] <- 0
       tmp_data$LRScore.y[is.na(tmp_data$LRScore.y)] <- 0
-      final_data <- tmp_data %>%
-        dplyr::mutate(LRScore = .data$LRScore.x - .data$LRScore.y) %>%
-        dplyr::select(c(
-          .data$source.x,
-          .data$source.y,
-          .data$target.x,
-          .data$target.y,
-          .data$LRScore,
-          .data$ligpair,
-          .data$recpair,
-          .data$allpair,
-          .data$type_gene_A.x,
-          .data$type_gene_B.x,
-          .data$type_gene_A.y,
-          .data$type_gene_B.y,
-          .data$gene_A.x,
-          .data$gene_B.x,
-          .data$gene_A.y,
-          .data$gene_B.y
-        ))
-      final_data <- final_data[final_data$LRScore != 0, ]
-      final_data <- final_data %>%
-        dplyr::mutate(type_gene_A = dplyr::coalesce(
-          .data$type_gene_A.x,
-          .data$type_gene_A.y
-        )) %>%
-        dplyr::mutate(type_gene_B = dplyr::coalesce(
-          .data$type_gene_B.x,
-          .data$type_gene_B.y
-        )) %>%
-        dplyr::mutate(gene_A = dplyr::coalesce(
-          .data$gene_A.x,
-          .data$gene_A.y
-        )) %>%
-        dplyr::mutate(gene_B = dplyr::coalesce(
-          .data$gene_B.x,
-          .data$gene_B.y
-        )) %>%
-        dplyr::mutate(source = dplyr::coalesce(
-          .data$source.x,
-          .data$source.y
-        )) %>%
-        dplyr::mutate(target = dplyr::coalesce(
-          .data$target.x,
-          .data$target.y
-        )) %>%
-        dplyr::select(
-          -.data$type_gene_A.x,
-          -.data$type_gene_A.y,
-          -.data$type_gene_B.x,
-          -.data$type_gene_B.y,
-          -.data$gene_A.x,
-          -.data$gene_A.y,
-          -.data$gene_B.x,
-          -.data$gene_B.y,
-          -.data$source.x,
-          -.data$source.y,
-          -.data$target.x,
-          -.data$target.y
-        ) %>%
-        dplyr::mutate(cellpair = paste0(
-          .data$source, "@",
-          .data$target
-        )) %>%
-        dplyr::arrange(LRScore)
+      if (score_col != "LRScore") {
+        score_col_x <- paste0(score_col, ".x")
+        score_col_y <- paste0(score_col, ".y")
+        tmp_data[[score_col_x]][is.na(tmp_data[[score_col_x]])] <- 0
+        tmp_data[[score_col_y]][is.na(tmp_data[[score_col_y]])] <- 0
+        final_data <- tmp_data %>%
+          dplyr::mutate(LRScore = .data$LRScore.x - .data$LRScore.y) %>%
+          dplyr::mutate(LRScore_Sankey = tmp_data[[score_col_x]] - tmp_data[[score_col_y]]) %>%
+          dplyr::select(c(
+            .data$source.x,
+            .data$source.y,
+            .data$target.x,
+            .data$target.y,
+            .data$LRScore,
+            .data$LRScore_Sankey,
+            .data$ligpair,
+            .data$recpair,
+            .data$allpair,
+            .data$type_gene_A.x,
+            .data$type_gene_B.x,
+            .data$type_gene_A.y,
+            .data$type_gene_B.y,
+            .data$gene_A.x,
+            .data$gene_B.x,
+            .data$gene_A.y,
+            .data$gene_B.y
+          )) %>%
+          dplyr::arrange(LRScore)
+        final_data <- final_data[final_data$LRScore != 0, ]
+        final_data <- final_data %>%
+          dplyr::mutate(type_gene_A = dplyr::coalesce(
+            .data$type_gene_A.x,
+            .data$type_gene_A.y
+          )) %>%
+          dplyr::mutate(type_gene_B = dplyr::coalesce(
+            .data$type_gene_B.x,
+            .data$type_gene_B.y
+          )) %>%
+          dplyr::mutate(gene_A = dplyr::coalesce(
+            .data$gene_A.x,
+            .data$gene_A.y
+          )) %>%
+          dplyr::mutate(gene_B = dplyr::coalesce(
+            .data$gene_B.x,
+            .data$gene_B.y
+          )) %>%
+          dplyr::mutate(source = dplyr::coalesce(
+            .data$source.x,
+            .data$source.y
+          )) %>%
+          dplyr::mutate(target = dplyr::coalesce(
+            .data$target.x,
+            .data$target.y
+          )) %>%
+          dplyr::select(
+            -.data$type_gene_A.x,
+            -.data$type_gene_A.y,
+            -.data$type_gene_B.x,
+            -.data$type_gene_B.y,
+            -.data$gene_A.x,
+            -.data$gene_A.y,
+            -.data$gene_B.x,
+            -.data$gene_B.y,
+            -.data$source.x,
+            -.data$source.y,
+            -.data$target.x,
+            -.data$target.y
+          ) %>%
+          dplyr::mutate(cellpair = paste0(
+            .data$source, "@",
+            .data$target
+          )) %>%
+          dplyr::arrange(LRScore)
+      } else {
+        final_data <- tmp_data %>%
+          dplyr::mutate(LRScore = .data$LRScore.x - .data$LRScore.y) %>%
+          dplyr::select(c(
+            .data$source.x,
+            .data$source.y,
+            .data$target.x,
+            .data$target.y,
+            .data$LRScore,
+            .data$ligpair,
+            .data$recpair,
+            .data$allpair,
+            .data$type_gene_A.x,
+            .data$type_gene_B.x,
+            .data$type_gene_A.y,
+            .data$type_gene_B.y,
+            .data$gene_A.x,
+            .data$gene_B.x,
+            .data$gene_A.y,
+            .data$gene_B.y
+          )) %>%
+          dplyr::arrange(LRScore)
+        final_data <- final_data[final_data$LRScore != 0, ]
+        final_data <- final_data %>%
+          dplyr::mutate(type_gene_A = dplyr::coalesce(
+            .data$type_gene_A.x,
+            .data$type_gene_A.y
+          )) %>%
+          dplyr::mutate(type_gene_B = dplyr::coalesce(
+            .data$type_gene_B.x,
+            .data$type_gene_B.y
+          )) %>%
+          dplyr::mutate(gene_A = dplyr::coalesce(
+            .data$gene_A.x,
+            .data$gene_A.y
+          )) %>%
+          dplyr::mutate(gene_B = dplyr::coalesce(
+            .data$gene_B.x,
+            .data$gene_B.y
+          )) %>%
+          dplyr::mutate(source = dplyr::coalesce(
+            .data$source.x,
+            .data$source.y
+          )) %>%
+          dplyr::mutate(target = dplyr::coalesce(
+            .data$target.x,
+            .data$target.y
+          )) %>%
+          dplyr::select(
+            -.data$type_gene_A.x,
+            -.data$type_gene_A.y,
+            -.data$type_gene_B.x,
+            -.data$type_gene_B.y,
+            -.data$gene_A.x,
+            -.data$gene_A.y,
+            -.data$gene_B.x,
+            -.data$gene_B.y,
+            -.data$source.x,
+            -.data$source.y,
+            -.data$target.x,
+            -.data$target.y
+          ) %>%
+          dplyr::mutate(cellpair = paste0(
+            .data$source, "@",
+            .data$target
+          )) %>%
+          dplyr::arrange(LRScore)
+      }
       data@tables[[cmp_name]] <- final_data
       final <- final_data %>%
         dplyr::mutate(ccitype = paste(.data$type_gene_A, .data$type_gene_B)) %>%

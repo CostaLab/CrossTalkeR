@@ -71,8 +71,7 @@ generate_report <- function(lrpaths,
                         colors = colors,
                         out_file = out_file,
                         output_fmt = "html_document",
-                        sel_columns=sel_columns,
-                        score_col)
+                        sel_columns=sel_columns)
   } 
   message("Analysis Complete")
   return(data)
@@ -215,8 +214,7 @@ make_report <- function(genes = NULL,
                         out_file = NULL,
                         output_fmt = "html_document",
                         LRObj = NULL,
-                        sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
-                        score_col) {
+                        sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR')) {
   # Creating the single condition Object
   index_single <- system.file("templates",
                               "FinalReport_Single.Rmd",

@@ -361,7 +361,7 @@ plot_sankey <- function(lrobj_tbl,
   if (dim(data)[1] >= 1) {
     data$freq <- 1
     tmp <- dplyr::slice_max(data,
-      order_by = abs(.data[[score_col]]),
+      order_by = abs(.data$LRScore),
       n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]),
       with_ties = FALSE
     )

@@ -18,7 +18,8 @@ generate_report(
   sel_columns = c("source", "target", "gene_A", "gene_B", "type_gene_A", "type_gene_B",
     "MeanLR"),
   org = "hsa",
-  comparison = NULL
+  comparison = NULL,
+  filtered_net = F
 )
 }
 \arguments{

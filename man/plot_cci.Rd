@@ -18,7 +18,8 @@ plot_cci(
   efactor = 8,
   vfactor = 12,
   vnames = T,
-  pg = NULL
+  pg = NULL,
+  vnamescol = NULL
 )
 }
 \arguments{

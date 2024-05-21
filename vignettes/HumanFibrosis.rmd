@@ -78,8 +78,8 @@ for i in os.listdir():
         evfull['gene_A'] = evfull['ligand']
         evfull['gene_B'] = evfull['receptor']
         evfull['MeanLR'] = evfull['lr_means']
-        evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:].to_csv(f'{k}_lr_ready.csv')
-        evfull = evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']]
+        evfull = evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:]
+        evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']].to_csv(f'{k}_lr_ready.csv')
         k=i[0:i.find('_lr_')]
         data[k]=os.path.abspath(f'{k}_lr_ready.csv')
 ```

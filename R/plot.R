@@ -243,6 +243,279 @@ plot_cci <- function(graph,
 }
 
 
+#'Plot Cell Cell Interaction
+#'
+#'This function do a CCI plot
+#'
+#'@param graph Paths of single condition LR data
+#'@param colors Cell type (Cluster) Colors
+#'@param plt_name Plot Name (Title)
+#'@param coords object coordinates
+#'@param emax Max MeanLR across the all inputs, if its not defined,
+#'the method going to consider the max find within a sample
+#'@param leg Set color legend
+#'@param low Lower threshold: This parameter low and high defines the edges
+#'@param high Higher threshould
+#' which will be filtered. Edges within the interval \[low\,high\] are filtered.
+#'@param ignore_alpha not include transparency on the plot
+#'@param log logscale the interactions
+#'@param efactor edge scale factor
+#'@param vfactor edge scale factor
+#'@param pg pagerank values
+#'@param vnames remove vertex labels
+#'@param col_pallet Custom color pallet for the Edges
+#'@param standard_node_size Node size if no Pagerank values are given
+#'@param pg_node_size_low Smallest node size if Pagerank values are given
+#'@param pg_node_size_high Largest node size if Pagerank values are given
+#'@param arrow_size Scale value for the arrow size
+#'@param arrow_width Scale value for the arrow width
+#'@param node_label_position Scale Factor to move the node labels
+#'@param node_label_size Scale Factor to change the node label size
+#'@importFrom tidyr %>%
+#'@import colorBlindness
+#'@return R default plot
+#'@export
+#'@examples
+#'paths <- c('CTR' = system.file("extdata",
+#'                               "CTR_LR.csv",
+#'                               package = "CrossTalkeR"),
+#'           'EXP' = system.file("extdata",
+#'                               "EXP_LR.csv",
+#'                               package = "CrossTalkeR"))
+#'
+#'genes <- c('TGFB1')
+#'
+#'output =  system.file("extdata", package = "CrossTalkeR")
+#'data <- generate_report(paths,
+#'                        genes,
+#'                        out_path=paste0(output,'/'),
+#'                        threshold=0,
+#'                        out_file = 'vignettes_example.html',
+#'                        output_fmt = "html_document",
+#'                        report = FALSE)
+#'plot_cci(graph = data@graphs$CTR,
+#'        colors = data@colors,
+#'        plt_name = 'Example 1',
+#'        coords = data@coords[igraph::V(data@graphs$CTR)$name,],
+#'        emax = NULL,
+#'        leg = FALSE,
+#'        low = 0,
+#'        high = 0,
+#'        ignore_alpha = FALSE,
+#'        log = FALSE,
+#'        efactor = 8,
+#'        vfactor = 12,
+#'        vnames = TRUE)
+new_plot_cci <- function(graph,
+                         plt_name,
+                         emax = NULL,
+                         leg = FALSE,
+                         low = 25,
+                         high = 75,
+                         ignore_alpha = FALSE,
+                         log = FALSE,
+                         efactor = 8,
+                         vfactor = 12,
+                         vnames = TRUE,
+                         pg = NULL,
+                         vnamescol = NULL,
+                         colors,
+                         coords,
+                         col_pallet = NULL,
+                         standard_node_size = 20,
+                         pg_node_size_low = 10,
+                         pg_node_size_high = 60,
+                         arrow_size = 0.4,
+                         arrow_width = 0.8,
+                         node_label_position = 1.25,
+                         node_label_size = 0.6) {
+
+  # Check Maximal Weight
+  if (is.null(emax)) {
+    emax <- max(abs(igraph::E(graph)$weight))
+  }
+  # Using color pallet to up and down regulation
+  if(is.null(col_pallet)){
+      col_pallet <- colorBlindness::Blue2DarkOrange18Steps
+      # Expanding the pallet range
+      col_pallet[10] <- '#ffefd7'
+  }
+  col_pallet <- grDevices::colorRampPalette(col_pallet)(201)
+  # Checking looops
+  edge_start <- igraph::ends(graph,
+                             es = igraph::E(graph),
+                             names = FALSE)
+  # Scale nodes coordinates
+  if (nrow(coords) != 1) {
+    coords_scale <- scale(coords)
+  } else {
+    coords_scale <- coords
+  }
+  # It will make the loops in a correct angle
+  loop_angle <- ifelse(coords_scale[igraph::V(graph)$name, 1] > 0,
+                       -atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1]),
+                       pi - atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1]))
+  # Setting node colors
+  igraph::V(graph)$color <- colors[igraph::V(graph)$name]
+  ## Color scheme
+  we <- round(
+    oce::rescale(igraph::E(graph)$weight,
+                 xlow = (-emax),
+                 xhigh = emax,
+                 rlow = 1,
+                 rhigh = 200,
+                 clip = TRUE),
+    0)
+  igraph::E(graph)$color <- col_pallet[we]
+  alpha_cond <- (igraph::E(graph)$inter > low) & (igraph::E(graph)$inter < high)
+  alpha <- ifelse(alpha_cond, 0, igraph::E(graph)$inter)
+  subgraph <- igraph::delete.edges(graph,
+                                   igraph::E(graph)[alpha == 0 | is.na(alpha)]
+  )
+  if (!ignore_alpha) {
+    igraph::E(graph)$color <- scales::alpha(igraph::E(graph)$color, alpha)
+  }
+  ## Thickness and arrow size
+  if (is.null(pg)) {
+    igraph::V(graph)$size <- standard_node_size
+  } else {
+    igraph::V(graph)$size <- oce::rescale(pg,
+                                          xlow = quantile(x = pg, prob = 0.25),
+                                          xhigh = quantile(x = pg, prob = 0.75),
+                                          rlow = pg_node_size_low,
+                                          rhigh = pg_node_size_high,
+                                          clip = TRUE)
+  }
+
+  if (log) {
+    igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
+                                     log2(1 + igraph::E(graph)$inter),
+                                     0) * efactor
+  } else {
+    igraph::E(graph)$width <- ifelse(igraph::E(graph)$inter != 0,
+                                     igraph::E(graph)$inter,
+                                     0) * efactor
+  }
+  igraph::E(graph)$arrow.size <- arrow_size
+  igraph::E(graph)$arrow.width <- igraph::E(graph)$width + arrow_width
+  igraph::E(graph)$loop.angle <- NA
+  if (sum(edge_start[, 2] == edge_start[, 1]) != 0) {
+    igraph::E(graph)$loop.angle[which(edge_start[, 2] == edge_start[, 1])] <- loop_angle[edge_start[which(edge_start[, 2] == edge_start[, 1]), 1]]
+    igraph::E(graph)$loop.angle[which(edge_start[, 2] != edge_start[, 1])] <- 0
+  }
+  coords_scale[, 1] <- scales::rescale(coords_scale[, 1], from = c(-1, 1), to = c(-2, 2))
+  coords_scale[, 2] <- scales::rescale(coords_scale[, 2], from = c(-1, 1), to = c(-2, 2))
+  plot(graph,
+       layout = coords_scale,
+       xlim = c(-4, 4),
+       ylim = c(-4, 4),
+       rescale = F,
+       edge.curved = 0.5,
+       vertex.label = NA,
+       vertex.shape = "circle",
+       margin = 0.0,
+       loop.angle = igraph::E(graph)$loop.angle,
+       edge.label = NA,
+       main = plt_name
+  )
+  # Thicknesse legend
+  amin <- min(igraph::E(graph)$inter[igraph::E(graph)$inter != 0])
+  amax <- max(igraph::E(graph)$inter)
+  e_wid_sp <- c(amin,
+                amin + amax / 2,
+                amax)
+  graphics::legend("topleft",
+                   legend = round(e_wid_sp, 1),
+                   col = "black",
+                   title = "Percentage of the interactions",
+                   pch = NA,
+                   bty = "n",
+                   cex = 1,
+                   lwd = e_wid_sp,
+                   lty = c(1, 1, 1),
+                   horiz = FALSE)
+
+  v <- igraph::V(graph)$size
+  # Pagerank legend
+  if (!is.null(pg)) {
+    a <- graphics::legend('bottomleft',
+                          title = "Node Pagerank",
+                          legend = c("", "", ""),
+                          pt.cex = c(min(v) + 1, mean(v), max(v)) / 12, col = 'black',
+                          pch = 21, pt.bg = 'black', box.lwd = 0, y.intersp = 2)
+    graphics::text(a$rect$left + a$rect$w, a$text$y,
+                   c(round(min(pg), 2), round(mean(pg), 2), round(max(pg), 2)), pos = 2)
+  }
+  x <- coords_scale[, 1] * node_label_position
+  y <- coords_scale[, 2] * node_label_position
+  coord_ratio <- coords_scale[, 1] / coords_scale[, 2]
+  angle <- ifelse(
+    atan(-coord_ratio) * (180 / pi) < 0,
+    90 + atan(-coord_ratio) * (180 / pi),
+    270 + atan(-coord_ratio) * (180 / pi))
+  if (vnames) {
+    if (!is.null(vnamescol)) {
+      for (i in seq_len(length(x))) {
+        graphics::text(x = x[i],
+                       y = y[i],
+                       labels = igraph::V(graph)$name[i],
+                       adj = NULL,
+                       pos = NULL,
+                       cex = node_label_size,
+                       col = vnamescol[igraph::V(graph)$name[i]],
+                       xpd = TRUE)
+      }
+    } else {
+      for (i in seq_len(length(x))) {
+        graphics::text(x = x[i],
+                       y = y[i],
+                       labels = igraph::V(graph)$name[i],
+                       adj = NULL,
+                       pos = NULL,
+                       cex = node_label_size,
+                       col = "black",
+                       xpd = TRUE)
+      }
+
+    }
+  }
+  if (leg) {
+    # Edge Colormap
+    if (min(igraph::E(graph)$weight) < 0 & max(igraph::E(graph)$weight) > 0) {
+      leg <- netdiffuseR::drawColorKey(seq(1, 200),
+                                       tick.marks = c(1, 101, 200),
+                                       color.palette = col_pallet,
+                                       labels = c(-round(emax, 3), 0, round(emax, 3)),
+                                       nlevels = 200,
+                                       main = "Weights",
+                                       pos = 2,
+                                       key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                       border = "transparent")
+    } else if (max(igraph::E(graph)$weight) < 0) {
+      leg <- netdiffuseR::drawColorKey(seq(1, 100),
+                                       tick.marks = c(1, 101),
+                                       color.palette = col_pallet[1:101],
+                                       labels = c(-round(emax, 3), 0),
+                                       nlevels = 100,
+                                       main = "Weights",
+                                       pos = 2,
+                                       key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                       border = "transparent")
+    }else {
+      leg <- netdiffuseR::drawColorKey(seq(100, 200),
+                                       tick.marks = c(100, 200),
+                                       color.palette = col_pallet[100:201],
+                                       labels = c(0, round(emax, 3)),
+                                       nlevels = 100,
+                                       main = "Weights",
+                                       pos = 2,
+                                       key.pos = c(0.98, 1.0, 0.0, 0.2),
+                                       border = "transparent")
+    }
+  }
+}
+
+
 #'This function selected genes sankey plot
 #'
 #'@param lrobj_tbl LRobject table with all data

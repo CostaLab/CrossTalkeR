@@ -166,6 +166,13 @@ create_diff_table1 <- function(data, out_path, comparison = NULL) {
         dplyr::mutate(cellpair = paste0(.data$source, "@",
                                         .data$target)) %>%
         dplyr::arrange(LRScore)
+      final_data$interaction_type <- paste(final_data$type_gene_A, final_data$type_gene_B, sep = "")
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "LigandReceptor", "LR", interaction_type))
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "ReceptorTranscription Factor", "RTF", interaction_type))
+      final_data = final_data %>%
+        mutate(interaction_type = ifelse(interaction_type == "Transcription FactorLigand", "TFL", interaction_type))
       data@tables[[cmp_name]] <- final_data
       final <- final_data %>%
         dplyr::mutate(ccitype = paste(.data$type_gene_A, .data$type_gene_B)) %>%

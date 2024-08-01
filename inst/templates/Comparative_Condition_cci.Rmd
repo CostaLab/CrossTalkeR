@@ -97,26 +97,26 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
     }
   }
 } else {
-  for(i in 1:length(names(all_data@tables))){
-  curr <- names(all_data@tables)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-      h <- head_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
-      f <- tail_of(all_data@graphs[[curr]],E(all_data@graphs[[curr]]))$name
-      curr_net<-all_data@graphs[[curr]]
-      curr_net <- subgraph.edges(all_data@graphs[[curr]],E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p<=0.05],paste(h,f,sep = '@'),nomatch = F)])
-        low <- thr
-        E(curr_net)$inter <- E(curr_net)$inter.raw/max(E(curr_net)$inter.raw)
-        par(cex.axis=7, cex.lab=7)
-        plot_cci(graph=curr_net,
-                 coords=all_data@coords[V(curr_net)$name,],
-                 colors=all_data@colors[V(curr_net)$name],
-                 plt_name=paste0(curr,' CCI'),
-                 leg=TRUE,
-                 low=0,
-                 high=low/100,
-                 log = TRUE,pg=all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
-     }
-}
+  for (i in 1:length(names(all_data@tables))) {
+    curr <- names(all_data@tables)[i]
+    if (str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
+      h <- head_of(all_data@graphs[[curr]], E(all_data@graphs[[curr]]))$name
+      f <- tail_of(all_data@graphs[[curr]], E(all_data@graphs[[curr]]))$name
+      curr_net <- all_data@graphs[[curr]]
+      curr_net <- subgraph.edges(all_data@graphs[[curr]], E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p <= 0.05], paste(h, f, sep = '@'), nomatch = F)])
+      low <- thr
+      E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
+      par(cex.axis = 7, cex.lab = 7)
+      plot_cci(graph = curr_net,
+               coords = all_data@coords[V(curr_net)$name,],
+               colors = all_data@colors[V(curr_net)$name],
+               plt_name = paste0(curr, ' CCI'),
+               leg = TRUE,
+               low = 0,
+               high = low / 100,
+               log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+    }
+  }
 }
 
 ```
@@ -141,7 +141,7 @@ pca_table1 = names(all_data@pca)[which(
 
 
 for (pca_table in pca_table1) {
-  if (dim(all_data@pca[[pca_table]]$x)[2] >= 2){
+  if (dim(all_data@pca[[pca_table]]$x)[2] >= 2) {
     p1 <- plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = FALSE)
     print(p1)
   }
@@ -181,7 +181,8 @@ for (i in 1:length(names(all_data@pca))) {
     rmd_title <- paste0(curr, '_tbl')
     rmd_title1 <- paste0(curr, '_pca1')
     title <- paste0('\n\n#### Table PCA CCI ', curr)
-    knit_expanded <- paste0("\n\n```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
+    if (dim(all_data@pca[[curr]]$x)[2] >= 2) {
+      knit_expanded <- paste0("\n\n```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
          pca <- all_data@pca[['", curr, "']]$x[,1:2]
          pca[,1] <- round(pca[,1],6)
          pca[,2] <- round(pca[,2],6)
@@ -197,8 +198,26 @@ for (i in 1:length(names(all_data@pca))) {
                                autoWidth = FALSE
                                )
                 )\n\n```")
-    out <- c(out, title, knit_expanded)
-    out1[[curr]] <- knit_expanded
+      out <- c(out, title, knit_expanded)
+      out1[[curr]] <- knit_expanded
+    } else {
+      knit_expanded <- paste0("\n\n```{r , results='", rmd_title, "', echo=FALSE, warning=FALSE}\n\n
+         ranking <- all_data@rankings[['", curr, "']][,2:dim(all_data@rankings[['", curr, "']])[2]]
+         datatable(ranking,
+                 caption='", curr, "',
+                 extensions = 'Buttons',
+                 options = list(dom = 'Bfrtip',
+                                buttons = c('copy',
+                                            'csv',
+                                            'excel',
+                                            'pdf', 'print'),
+                               autoWidth = FALSE
+                               )
+                )\n\n```")
+      out <- c(out, title, knit_expanded)
+      out1[[curr]] <- knit_expanded
+    }
+
   }
 }
 

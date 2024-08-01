@@ -141,8 +141,10 @@ pca_table1 = names(all_data@pca)[which(
 
 
 for (pca_table in pca_table1) {
-  p1 <- plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = FALSE)
-  print(p1)
+  if (dim(all_data@pca[[pca_table]]$x)[2] >= 2){
+    p1 <- plot_pca_LR_comparative(all_data, pca_table, dims = c(1, 2), ret = T, ggi = FALSE)
+    print(p1)
+  }
 }
 #lapply(,print)
 ```

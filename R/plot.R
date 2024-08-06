@@ -1354,7 +1354,7 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
       geom_bar(stat = "identity") +
       ylab("Gene") +
       xlab(ranking) +
-      scale_fill_manual(values = color) +
+      scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
       theme_minimal())
   } else {
     if (filter_sign == "pos") {

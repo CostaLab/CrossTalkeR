@@ -35,20 +35,25 @@ R default plot
 This function creates a sankey plot for a selected gene including transcription factor interactions.
 }
 \examples{
-paths <- c('CTR' = system.file("extdata",
-                              "CTR_LR.csv",
-                              package = "CrossTalkeR"),
-          'EXP' = system.file("extdata",
-                              "EXP_LR.csv",
-                              package = "CrossTalkeR"))
-output =  system.file("extdata", package = "CrossTalkeR")
-genes <- c('TGFB1')
+paths <- c(
+  "CTR" = system.file("extdata",
+    "CTR_LR.csv",
+    package = "CrossTalkeR"
+  ),
+  "EXP" = system.file("extdata",
+    "EXP_LR.csv",
+    package = "CrossTalkeR"
+  )
+)
+output <- system.file("extdata", package = "CrossTalkeR")
+genes <- c("TGFB1")
 
 data <- generate_report(paths,
-                       genes,
-                       out_path=paste0(output,'/'),
-                       threshold=0,
-                       out_file = 'vignettes_example.html',
-                       output_fmt = "html_document",
-                       report = FALSE)
+  genes,
+  out_path = paste0(output, "/"),
+  threshold = 0,
+  out_file = "vignettes_example.html",
+  output_fmt = "html_document",
+  report = FALSE
+)
 }

@@ -1348,6 +1348,7 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
   if (is.null(filter_sign)) {
     curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
     curr_table <- unique(curr_table)
+    curr_table <- curr_table[(curr_table[[ranking]] > 0 | curr_table[[ranking]] < 0), ]
     rownames(curr_table) <- curr_table$nodes
     signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
     p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
@@ -1355,7 +1356,9 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
       ylab("Gene") +
       xlab(ranking) +
       scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-      theme_minimal())
+      theme_minimal()) +
+      theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16))
   } else {
     if (filter_sign == "pos") {
       curr_table <- tail(curr_table, n = 20)
@@ -1367,7 +1370,9 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
         ylab("Gene") +
         xlab(ranking) +
         scale_fill_manual(values = Blue2DarkOrange18Steps[14]) +
-        theme_minimal())
+        theme_minimal()) +
+        theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16))
     } else if (filter_sign == "neg") {
       curr_table <- head(curr_table, n = 20)
       curr_table <- unique(curr_table)
@@ -1378,7 +1383,9 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
         ylab("Gene") +
         xlab(ranking) +
         scale_fill_manual(values = Blue2DarkOrange18Steps[4]) +
-        theme_minimal())
+        theme_minimal()) +
+        theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16))
     } else {
       print("Unvalid filter_sign argument!")
       p <- NULL

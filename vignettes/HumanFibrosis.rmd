@@ -55,10 +55,10 @@ data.raw = data
 As mentioned at the beginning, there are different methods and databases implemented in the liana package. We recommend using the CellphoneDB analysis in combination with the consensus database with intercellular interactions. Note that metadata fields for the available sample/conditions (field_with_condition) and for the cell annotations (field_with_cell_annotation) are still specified by the user.
 
 ```{python, eval = FALSE}
-for i in set(data.obs['field_with_condition']):
+for i in set(data.obs['protocol']):
     print(i)
-    lr=li.method.cellphonedb(data[data.obs['field_with_condition']==i],
-                          groupby='field_with_cell_annotation',
+    lr=li.method.cellphonedb(data[data.obs['protocol']==i],
+                          groupby='new_annotation',
                           expr_prop=0.1,
                           verbose=True,
                           resource_name='consensus',
@@ -78,9 +78,9 @@ for i in os.listdir():
         evfull['gene_A'] = evfull['ligand']
         evfull['gene_B'] = evfull['receptor']
         evfull['MeanLR'] = evfull['lr_means']
+        k=i[0:i.find('_lr_')]
         evfull = evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:]
         evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']].to_csv(f'{k}_lr_ready.csv')
-        k=i[0:i.find('_lr_')]
         data[k]=os.path.abspath(f'{k}_lr_ready.csv')
 ```
 

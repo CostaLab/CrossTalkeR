@@ -296,6 +296,8 @@ plot_cci <- function(graph,
 #' @param arrow_width Scale value for the arrow width
 #' @param node_label_position Scale Factor to move the node labels
 #' @param node_label_size Scale Factor to change the node label size
+#' @param score_filter Filter Graph by LR Score
+#' @param cell_name_filter Filter interactions by defined cell types
 #' @importFrom tidyr %>%
 #' @import colorBlindness
 #' @return R default plot
@@ -360,7 +362,24 @@ new_plot_cci <- function(graph,
                          arrow_size = 0.4,
                          arrow_width = 0.8,
                          node_label_position = 1.25,
-                         node_label_size = 0.6) {
+                         node_label_size = 0.6,
+                         score_filter = 0,
+                         cell_name_filter = NULL) {
+  # Filter Interactions
+  if (score_filter > 0) {
+    pos_min <- score_filter
+    neg_min <- -score_filter
+    graph <- subgraph.edges(graph, E(graph)[E(graph)$weight > pos_min | E(graph)$weight < neg_min])
+    pg <- pg[V(graph)$name]
+    colors <- colors[V(graph)$name]
+    coords <- coords[V(graph)$name, ]
+  }
+  if (!is.null(cell_name_filter)){
+    graph <- subgraph.edges(graph, E(graph)[inc(V(graph)[name %in% cell_name_filter])])
+    pg <- pg[V(graph)$name]
+    colors <- colors[V(graph)$name]
+    coords <- coords[V(graph)$name, ]
+  }
   # Check Maximal Weight
   if (is.null(emax)) {
     emax <- max(abs(igraph::E(graph)$weight))
@@ -1310,7 +1329,7 @@ plot_bar_rankings_cci <- function(data_object, table_name, ranking = "pagerank",
 #' @importFrom stats reorder
 #' @return R default plot
 #' @export
-plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL, filter_sign = NULL) {
+plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, filter_sign = NULL, mode = "cci") {
   rankings_table <- data_object@rankings[[table_name]]
 
   if (!is.null(type)) {
@@ -1346,19 +1365,34 @@ plot_bar_rankings_cgi <- function(data_object, table_name, ranking, type = NULL,
     as.data.frame()
 
   if (is.null(filter_sign)) {
-    curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
-    curr_table <- unique(curr_table)
-    curr_table <- curr_table[(curr_table[[ranking]] > 0 | curr_table[[ranking]] < 0), ]
-    rownames(curr_table) <- curr_table$nodes
-    signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-    p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-      geom_bar(stat = "identity") +
-      ylab("Gene") +
-      xlab(ranking) +
-      scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-      theme_minimal()) +
-      theme(axis.text=element_text(size=14),
-        axis.title=element_text(size=16))
+    if ( mode == "cci") {
+      curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
+      curr_table <- unique(curr_table)
+      rownames(curr_table) <- curr_table$nodes
+      signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
+      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
+        geom_bar(stat = "identity") +
+        ylab("Gene") +
+        xlab(ranking) +
+        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
+        theme_minimal()) +
+        theme(axis.text=element_text(size=14),
+          axis.title=element_text(size=16))
+    } else {
+      curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
+      curr_table <- unique(curr_table)
+      curr_table <- curr_table[(curr_table[[ranking]] > 0 | curr_table[[ranking]] < 0), ]
+      rownames(curr_table) <- curr_table$nodes
+      signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
+      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
+        geom_bar(stat = "identity") +
+        ylab("Gene") +
+        xlab(ranking) +
+        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
+        theme_minimal()) +
+        theme(axis.text=element_text(size=14),
+          axis.title=element_text(size=16))
+    }
   } else {
     if (filter_sign == "pos") {
       curr_table <- tail(curr_table, n = 20)

@@ -27,7 +27,9 @@ new_plot_cci(
   arrow_size = 0.4,
   arrow_width = 0.8,
   node_label_position = 1.25,
-  node_label_size = 0.6
+  node_label_size = 0.6,
+  score_filter = 0,
+  cell_name_filter = NULL
 )
 }
 \arguments{
@@ -76,6 +78,10 @@ which will be filtered. Edges within the interval [low\,high] are filtered.}
 \item{node_label_position}{Scale Factor to move the node labels}
 
 \item{node_label_size}{Scale Factor to change the node label size}
+
+\item{score_filter}{Filter Graph by LR Score}
+
+\item{cell_name_filter}{Filter interactions by defined cell types}
 }
 \value{
 R default plot

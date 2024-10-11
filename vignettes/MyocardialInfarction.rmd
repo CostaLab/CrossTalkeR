@@ -1,0 +1,33 @@
+---
+title: CrossTalkeR Example - Human Myocardial Infarction
+author:
+- name: Vanessa Klöker
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: James S. Nagai
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Ivan G. Costa
+  affiliation:
+     - Institute for Computational Genomics,
+       Faculty of Medicine,
+       RWTH Aachen University,
+       Aachen, 52074 Germany
+output:
+     html_document
+vignette: |
+      %\VignetteIndexEntry{CrossTalkeR-MyocardInf}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+---
+
+# Cell-Cell Communication Analysis of Human Myelofibrosis scRNA-seq Data Using CrossTalkeR
+
+Here, we demonstrate the usage of CrossTalkeR on the case study of human myocardian infarction snRNA-seq data from the
+Nature paper "Spatial multi-omic map of human myocardial infarction" (Kuppe et al.). 
+Aim of the study was to build a high-resolution map of human cardiac remodelling after myocardial infarction to provide a better understanding of these remodelling processes.
+We are focusing here on the conditions "myogenic" (control condition) and "ischaemic" (disease condition) and go through the CrossTalkeR results step by step.

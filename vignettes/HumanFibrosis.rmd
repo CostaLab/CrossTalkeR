@@ -127,7 +127,7 @@ As result of the successful execution, we receive three seurat objects (LR_data.
 
 ## Single Condition Report
 
-The first report contains the results for each analysed condition considered separately. In our case in each section is a plot for the control condition (CTR) and the disease condition (EXP). There are two main sections in the report. The first one only deals with cell-cell-interactions and the second with cell-gene-interactions, which here means an analysis at the ligand and receptor gene level.
+The first report contains the results for each analysed condition considered separately. In our case in each section is a plot for the CTR condition (CTR) and the disease condition (EXP). There are two main sections in the report. The first one only deals with cell-cell-interactions and the second with cell-gene-interactions, which here means an analysis at the ligand and receptor gene level.
 
 ### Cell-Cell-Interaction Analysis Results
 
@@ -172,7 +172,7 @@ p2 <- plot_cci(graph = data@graphs$EXP,
 print(p1+p2)
 ```
 
-In the control plot we can see that a high proportion of interactions are MSCs talking with themselves as well as MSC and Fibroblasts talking with each other. These interaction have also a higher weight, as can be seen by the edge color. The most important node by pagerank is the MSC node. When analysing the plot of the disease condition, we see again a high proportions of interactions are self-talking MSCs and the most important node by pagerank is again the MSC node. Here the MSC are talking more to Megakaryocytes. To really compare the two conditions we recommend using the Comparative report results.
+In the CTR plot we can see that a high proportion of interactions are MSCs talking with themselves as well as MSC and Myeloid cells talking with each other. These interaction have also a higher weight, as can be seen by the edge color. The most important nodes by pagerank are also the MSC and Myeloid nodes. When analysing the plot of the EXP condition, we see again a high proportions of interactions are self-talking MSCs and one of the most important nodes by pagerank is again the MSC node. Here, the MSCs are predicted to talk more to Megakaryocytes than with the Myeloid cells. To really compare the two conditions we recommend using the comparative report results.
 
 ### Analysis on the Gene-Cell Interaction Level
 We provide several different possibilities to analyse the ligand-receptor interactions on the gene level. In CrossTalkeR, topological network measures are calculated for each node(gene) in the build networks. These measures include Influencer (depending on outgoing edges), Listener(depending on incoming edges), Mediator (depending on outgoing and incoming edges), and Pagerank (overall importance) rankings. The ligand and receptors can be ranked by these measures and we can identify possibly relevant genes by considering the top genes of the rankings. In the report we provide an interactive table with all the rankings for each gene in the network. Here is an example for the top 10 genes in the Pagerank ranking for both preset conditions in form of Barplots:
@@ -201,11 +201,10 @@ p2 <- ggplot(rankings_table, aes(x = Pagerank, y = reorder(nodes, Pagerank), fil
 print(p1+p2)
 ```
 
-We perform further analysis on the gene-gene interaction level like a principal component analysis (PCA), but we focus on the result of these more in the condition comparison results described in the next section.
-
+It is possible to perform further analysis on the gene-gene-level regarding the other topological measures, but we focus on the result of these more in the condition comparison results described in the next section.
 
 ## Compared Condition Results
-CrossTalkeR not only analyzes the conditions individually but also calculates the differences in the cell-cell interactions between the conditions. The results of these analyses are presented in the comparative report. In our example we compare the disease (EXP) against the control (CTR) condition.
+CrossTalkeR not only analyzes the conditions individually but also calculates the differences in the cell-cell interactions between the conditions. The results of these analyses are presented in the comparative report. In our example we compare the EXP against the CTR condition.
 
 ### Cell-Cell-Interaction analysis results
 As before for the single condition results, the first part of the results deal with cell-cell interactions. Here we show again the CCI graph plot, but now for the compared conditions:
@@ -224,96 +223,80 @@ plot_cci(graph = data@graphs$EXP_x_CTR,
         vfactor = 12, pg = data@rankings[["EXP_x_CTR"]]$Pagerank)
 
 ```
+The main difference from the previous CCI graph plots is that the edge weights can now be not only positive but also negative, as well as the Pagerank values of the nodes. Positive values mean that these interactions between cell types have a higher activity/importance in the EXP condition, while negative values indicate a lower activity/importannce in the EXP condition (higher in CTR). As we can see in the CCI plot above, there are equally positive and negative edge weights present. The edge weights between MSCs and Megakaryocytes are positive up in both directions in the Disease condition. Thus, we can conclude that the communication is stronger in the EXP example. In contrast, the edge weights between the MSC and Myeloid nodes have negative edge weights, meaning these communication are lower in the EXP condition. Further, the self communication edge of the MSC node has a strong negative weight and also the pagerank is very small (indicated by small node size). This indicates that MSCs are more important in the CCIs in the CTR condition.
 
-The main difference from the previous CCI graph plots is that the edge weights can now be not only positive but also negative, as well as the Pagerank values of the nodes. Positive values mean that these interactions between cell types have a higher activity/importance in the EXP condition, while negative values indicate a lower activity/importannce in the EXP condition (higher in CTR). As we can see in the CCI plot above, negative edge weights dominate here, especially in MSC-MSC, MSC-Fibroblast, and Fibroblast-MSC interactions. Thus, we can conclude that these interactions are stronger in the CTR condition. A counterexample of this is the Megakaryocyte-MSC interaction, where we can see from the opaqueness that these interactions only account for a smaller proportion.
 
-Since we have created a CCI network we can also analyze it based on topological properties to identify possible biologically relevant processes. For this purpose, the same topological measures can be used that were already used in the single condition report for gene-cell interactions analysis (Influencer, Listener, Mediator, Pagerank). As before, we can look at the rankings individually in the form of bar plots. Here is an example for the Pagerank of cell types in the network:
+```{r vignete45, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
+plot_cci(graph = data@graphs$EXP_x_CTR_filtered,
+        colors = data@colors,
+        plt_name = 'Disease vs Control Fisher Test Filtered',
+        coords = data@coords[V(data@graphs$EXP_x_CTR_filtered)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12, pg = data@rankings[["EXP_x_CTR_filtered"]]$Pagerank)
+
+```
+CrossTalkeR offers a refined CCI graph by employing Fisher's exact test to filter the network based on interaction proportions. In this small example, the interactions with Fibroblasts and Neural cells are removed from the network applying the tests results. The before described interactions between MSCs, Megakaryocytes and Myeloid cells are still retained, further indicating the importance in the communication. Since this example data is small, we going to continue using the unfiltered network in the following steps. The filtered CCI graph is mostly helpful for large communication networks.
+
+Since we have created a CCI network we can also analyze it based on topological properties to identify possible biologically relevant processes. For this purpose, the same topological measures can be used that are present in the single condition results for gene-cell interactions analysis (Influencer, Listener, Mediator, Pagerank). As before, we can look at the rankings individually in the form of bar plots. Here is an example for the Pagerank of cell types in the network:
 
 ```{r vignete5, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
-for(i in 2:length(names(data@rankings))){
-  curr <- names(data@rankings)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-    signal <- ifelse(data@rankings[[curr]]$Pagerank < 0, 'negative','positive')
-    print(ggplot(data@rankings[[curr]], aes(x=Pagerank,y=reorder(nodes,Pagerank),fill=signal))+
-        geom_bar(stat="identity")+
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-        theme_minimal())
-  }
-}
-```
 
-In our comparison, the Neural cells have the highest pagerank, which suggest a high importance in our network for the EXP condition. In the negative direction, MSC and Fibroblast cells have a similar low Pagerank. This suggest a higher importance in CTR condition.
-
-A further analysis step is to perform a PCA on the already calculated topological measures. The results of the PCA can be found in the form of a 2D plot in the report. Here we show the first two dimensions of the PCA:
-```{r vignete6, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
-print(plot_pca_LR_comparative(data,
-                        "EXP_x_CTR",
-                        dims=c(1,2),
-                        ret=T,
-                        ggi=FALSE))
+plot_bar_rankings(data, "EXP_x_CTR", "Pagerank", type = NULL, filter_sign = NULL)
 
 ```
 
-In the plot, we indicate the direction of the topological measure by labeled arrows. This serves to facilitate the interpretation of the results of the PCA. We can see from the plot that the Myeloid cells take the role of a mediator and also that the Neural cells have a high pagerank as well as Listener ranking in the EXP condition.  On the contrary, MSCs and Fibroblasts have a low Listener rank and Pagerank in the EXP condition, which fits the results from the bar chart. In this case, we cannot extract any information about the Influencer, as this ranking could not be indicated in the two dimensions shown (no arrow present in the PCA plot). Here we would suggest plotting the Influencer rankings as a bar plot:
+In our comparison, the Megakaryocytes have the highest pagerank, which suggest a high importance in our network for the EXP condition. In the negative direction, Myeloid cells has the lowest Pagerank. This suggest a higher importance in the CTR condition. By considering now also the other topological measures, we can assign/find other communication properties of the cell types:
 
-```{r vignete7, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
-for(i in 2:length(names(data@rankings))){
-  curr <- names(data@rankings)[i]
-  if(str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)){
-    signal <- ifelse(data@rankings[[curr]]$Influencer < 0, 'negative','positive')
-    print(ggplot(data@rankings[[curr]], aes(x=Influencer,y=reorder(nodes,Influencer),fill=signal))+
-        geom_bar(stat="identity")+
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],Blue2DarkOrange18Steps[14]))+
-        theme_minimal())
-  }
-}
+```{r vignete7_Influencer, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
+plot_bar_rankings(data, "EXP_x_CTR", "Influencer", type = NULL, filter_sign = NULL)
+
+plot_bar_rankings(data, "EXP_x_CTR", "Listener", type = NULL, filter_sign = NULL)
+
+plot_bar_rankings(data, "EXP_x_CTR", "Mediator", type = NULL, filter_sign = NULL)
+
 ```
 
-Now we can identify the Megakaryocytes as a influencing celltype in the EXP condition and the MSC in the CTR condition.
+Including the Influencer, Listener and Mediator barplots reveals that Megakaryocytes have the highest PageRank, Influencer, and Listener scores, indicating they engage in the most significant interactions in the EXP condition. However, their Mediator score is negative, suggesting a stronger mediating role in the CTR condition.
+
+In contrast, Myeloid cells show high negative scores across most metrics except for the Influencer score, emphasizing their importance in the CTR condition. These findings highlight the differing roles of these cell types in EXP versus normal states.
 
 ### Cell-Gene-Interaction Analysis Results
 
 The second part of the report deals again with the interactions on the gene level. Here, the procedure is similar to the one described in the last section for the cell-cell interactions and the analysis performed for the single conditions. First of all, we can look at the results of the topological rankings in the form of bar plots, again using the example of the pagerank:
 ```{r vignete9, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
-all_data <- data
-for (i in 2:length(names(all_data@rankings))) {
-  curr <- names(all_data@rankings)[i]
-  if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)) {
-    tmp <- top_n(all_data@rankings[[curr]], 20, abs(.data$Pagerank))
-    signal <- ifelse(tmp$Pagerank < 0, 'negative', 'positive')
-    print(ggplot(tmp, aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
-            geom_bar(stat = "identity") +
-            scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-            theme_minimal())
-  }
-}
+
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Pagerank", type = NULL, filter_sign = NULL, mode = "cgi")
+
 ```
 
-The plot gives us information about which ligand and receptor genes play a more important role in which condition. In our case, the top genes in both, positive and negative, directions are all receptor genes. The ITGB1 receptor in Megakaryocytes has a high importance for the EXP condition, followed by genes like ERBB2 and LAG3 in MSCs. Since the receptor CD44 in Fibroblast has a high negative value here, it means that it is more important in the CTR condition. Thus, we can identify first interesting genes for possible further analysis. We can follow up on this again with analysing the results of the PCA performed on the topological measures at the gene level:
+The plot highlights the ligand and receptor genes that play significant roles in different conditions. Notably, the top genes in both positive and negative directions are predominantly receptor genes. Specifically, the majority of positively scored genes are receptor genes from Megakaryocytes, while the top negatively scored genes are associated with Myeloid cells.
 
-```{r vignete8, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
-print(plot_pca_LR_comparative(data,
-                              "EXP_x_CTR_ggi",
-                              dims = c(1, 2),
-                              ret = T,
-                              ggi = TRUE,
-                              include_tf = FALSE))
+Among the key receptors, ITGB1 is upregulated in Megakaryocytes, while ITGA1 is downregulated in MSCs. Additionally, the score of CXCR4 is also elevated in Megakaryocytes. For further insights, we encourage examining the other rankings. Given that we are focusing on pairwise interactions, our analysis will concentrate on the Influencer and Listener rankings:
+
+```{r vignete9_other, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
+
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Influencer", type = "L", filter_sign = NULL, mode = "cgi")
+
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Listener", type = "R", filter_sign = NULL, mode = "cgi")
+
 ```
 
-Our PCA results now contain receptor and ligand genes, identified as important outliers. First, we find the receptor genes ITGB1 in Megakaryocytes and CD44 in Fibroblast, which have been identified as important before. Besides a high Pagerank, these two genes also have a high Listener rank. In addition, the ligand genes CALM1 in Megakaryocytes and Myeloid cells, COL1A1 in MSCs and TGFB1 in Megakaryocytes can be identified as important Influencers in the EXP condition. Interesting is also, that the ligand gene TGFB1 is also important for the CTR condition in Fibroblasts. So this is also an interesting candidate gene, especially since this is a known driver in fibrosis or cancer resulted disease.
-
-**Important note:**
-As some might have noticed, there is no arrow indicating genes with the function of a Mediator. In the case of ligand-receptor interactions we will not have any Mediator genes since we are only considering pairwise interactions. This is also caused by the fact, that we distinguish the biological function of every gene by assigning them to their in the database annotated role (either receptor or ligand).
-
+The top Influencer in EXP condition identified is TGFB1 in Megakaryocytes. Also COL1A1 and COL1A2 from MSCs rank high on the positive side. CXCL12 from MSCs as example has a negative Influencer ranking. In the Listener category, integrin receptors dominate, but there are also receptors as CXCR4 and LRP1 ranking high/low.
 
 # Follow-up Analysis
 
-Since we got a first impression of the data with the previous results, we can further deepen the analysis. For example, we had TGFB1 in Megakaryocytes and Fibroblasts, CD44 in Fibroblasts and ITGB1 in Megakaryocytes as interesting genes. With CrossTalkeR, we can look even more closely at the interactions involving these genes using Sanley plots. There are two ways to do this. First, we can regenerate the report again, this time passing a list of genes of interest:
+Since we got a first impression of the data with the previous results, we can further deepen the analysis. For example, we had TGFB1 in Megakaryocytes, ITGB1 in Megakaryocytes, Fibroblasts and MSCs and CXCR4 in Megakaryocytes and Myeloid cells as interesting genes. With CrossTalkeR, we can look even more closely at the interactions involving these genes using Sankey plots. There are two ways to do this. First, we can regenerate the report again, this time passing a list of genes of interest:
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
 
 genes_of_interest <- c('TGFB1|L',
-                       'CD44|R',
-                       'ITGB1|R')
+                       'ITGB1|R',
+                       'CXCR4|R')
 
 data <- make_report(out_path=output,
                     genes = genes_of_interest,
@@ -337,19 +320,18 @@ plot_sankey(data@tables$EXP_x_CTR,
 
 In the Sankey plot, not all interactions involving the TGFB1 ligand gene are shown, but only those with a high score. The number of actual interactions can be controlled with the threshold parameter. In the example above 50 interactions are selected. Since we have only entered one target gene without any further information, we can now also see interactions originating from different cell types, here Fibroblasts, Megakaryocytes and MSCs. Furthermore, we now have a list of receptors with associated cell types with which the TGFB1 ligand can possibly interact. The list also includes the receptor ITGB1 in Megakaryocytes, which was also a gene of interest. The interaction between TGFB1 and ITGB1 has a positive score, which means it is enriched in the EXP condition.
 
-The third gene of interest was the receptor gene CD44 with a high importance in Fibroblast. If we want to focus only on CD44 in Fibroblast, we can define a receptor_cluster value when running the Sankey plot function. Also, the number of interactions included is reduced by setting the threshold parameter to 15.
+The third gene of interest was the receptor gene CXCR4 with a high importance in Megakaryocytes in the EXP condition and in Myeloid cells in the CTR condition. If we want to focus only on CXCR4 in Megakaryocytes and Myeloid cells, we can define a receptor_cluster value when running the Sankey plot function. Also, the number of interactions included is reduced by setting the threshold parameter to 15.
 ```{r , results="hide", warning=FALSE,message=F, output=FALSE,fig.width=11,fig.height=8}
 plot_sankey(data@tables$EXP_x_CTR,
-            target = "CD44|R",
+            target = "CXCR4|R",
             ligand_cluster = NULL,
-            receptor_cluster = "Fibroblast",
-            plt_name = "Fibroblast CD44 receptor gene interaction EXP vs CTR",
+            receptor_cluster = c("Megakaryocyte", "Myeloid"),
+            plt_name = "Megakaryocyte and  Myeloid CXCR4 receptor gene interaction EXP vs CTR",
             threshold = 15, tfflag = FALSE)
 
 ```
 
-Here, the top 15 interactions have a negative weight, meaning these are all more relevant for the CTR condition. An interesting interaction is the Fibroblast COL1A1 with CD44, since COL1A1 also came up in th PCA plot as a high ranked Influencer in the CTR condition.
-
+The Sankey plot confirms that the LR Score indicates higher interaction with CXCR4 in Megakaryocytes under EXP condition and in Myeloid cells under CTR condition. Additionally, it highlights previously occuring ligand and receptors, including TGFB ligand from Megakaryocytes to CXCR4 in Megakaryocytes and CXCL12 from MSCs to CXCR4 in both Megakaryocytes and Myeloid cells.
 
 
 # Report Samples

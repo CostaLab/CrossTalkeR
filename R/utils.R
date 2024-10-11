@@ -81,13 +81,15 @@ ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
         cls <- unique(union(table[[sel_columns[1]]], table[[sel_columns[2]]]))
         for (i in cls) {
           all.eq <- unique(union(table$ligpair[table[[sel_columns[1]]] == i], table$recpair[table[[sel_columns[2]]] == i]))
-          edges <- t(utils::combn(all.eq, 2))
-          df <- tibble::tibble(u = edges[, 1], v = edges[, 2], MeanLR = rep(0.0, dim(edges)[1]), .name_repair = ~c('u', 'v', 'LRScore'))
-          if (is.null(all)) {
-            final <- df
-          }
-          else {
-            final <- dplyr::bind_rows(final, df)
+          if (length(grep("\\|R$",all.eq))>0){
+            edges <- t(utils::combn(all.eq, 2))
+            df <- tibble::tibble(u = edges[, 1], v = edges[, 2], MeanLR = rep(0.0, dim(edges)[1]), .name_repair = ~c('u', 'v', 'LRScore'))
+            if (is.null(all)) {
+              final <- df
+            }
+            else {
+              final <- dplyr::bind_rows(final, df)
+            }
           }
         }
         names(final) <- c('ligpair', 'recpair', 'LRScore')

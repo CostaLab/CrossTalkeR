@@ -55,6 +55,7 @@ Here we like to give a short introduction on the basic usage of CrossTalkeR.
 
 ## Basic Execution
 Here we show the most basic way to execute CrossTalkeR. All you need to provide are the paths to the ligand-receptor interaction analysis results and a path to save the results to:
+
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
@@ -67,12 +68,15 @@ data <- generate_report(paths,
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
                 report = TRUE,
-                org = "hsa")
+                org = "hsa", 
+                comparison = NULL,
+                filtered_net=TRUE)
 
 ```
 
+## Performing only the analysis
 
-It is also possible to just **perform the analysis** part of CrossTalker, **without generating the report**:
+To just **perform the analysis** part of CrossTalker, **without generating the report**:
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
@@ -82,11 +86,14 @@ paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
 output <- "/path/to/output/folder/"
 data <- analise_LR(paths,
                 out_path=output,
-                org = "hsa")
+                org = "hsa" 
+                comparison = NULL,
+                filtered_net=TRUE)
 
 ```
+## Getting Report from an existing project
 
-A second possibility is to **generate the reports from existing CrossTalkeR objects**. In this case the out_path should point to the folder with the 'LR_data_final.Rds' file.
+An addictional possibility is to **generate the reports from existing CrossTalkeR objects**. In this case the out_path should point to the folder with the 'LR_data_final.Rds' file.
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
@@ -95,7 +102,9 @@ data <- make_report(out_path=output,
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
                 report = TRUE,
-                org = "hsa")
+                org = "hsa" 
+                comparison = NULL,
+                filtered_net=TRUE)
 
 ```
 

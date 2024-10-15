@@ -69,7 +69,6 @@ data <- generate_report(paths,
                 output_fmt = "html_document",
                 report = TRUE,
                 org = "hsa", 
-                comparison = NULL,
                 filtered_net=TRUE)
 
 ```
@@ -87,7 +86,6 @@ output <- "/path/to/output/folder/"
 data <- analise_LR(paths,
                 out_path=output,
                 org = "hsa" 
-                comparison = NULL,
                 filtered_net=TRUE)
 
 ```
@@ -103,7 +101,6 @@ data <- make_report(out_path=output,
                 output_fmt = "html_document",
                 report = TRUE,
                 org = "hsa" 
-                comparison = NULL,
                 filtered_net=TRUE)
 
 ```

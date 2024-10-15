@@ -1,0 +1,53 @@
+pandoc: 2.9.2.1
+pkgdown: 2.0.9
+pkgdown_sha: ~
+navbar:
+  type: dark
+  bg: none
+  structure:
+    left:  [intro, articles, reference, news, install]
+    right: [search, github, lightswitch]
+  components:
+     articles:
+      text: Tutorials
+      menu:
+        - text: "CrossTalkeR 101"
+          href: articles/CrossTalker_basicusage.html
+        - text: "Example: Bone Marrow Fibrosis (Leimkuhler et. al., 2021)"
+          href: articles/HumanFibrosis.html
+        - text: "Transcription Factor Activity Analysis"
+          href: articles/LR2TF_analysis.html
+        - text: "Example: Heart Myocardial Infarcition (Kuppe et. al., 2022)"
+          href: articles/MyocardialInfarction.html
+        - text: "Ligand-Receptor Inference with Liana"
+          href: articles/run_liana.html       
+     install:
+      text: Install
+      href: articles/Install.html
+# urls:
+#   reference: https://github.com/CostaLab/CrossTalkeR/reference
+#   article: https://github.com/CostaLab/CrossTalkeR/articles
+# authors:
+#   CostaLab:
+#     href: https://www.costalab.org/
+# articles:
+#   CrossTalker_install_basicusage: CrossTalker_install_basicusage.html
+#   CrossTalkeR: CrossTalkeR.html
+#   HumanFibrosis: HumanFibrosis.html
+#   LR2TF_analysis: LR2TF_analysis.html
+#   run_liana: run_liana.html
+# last_built: 2024-05-21T08:57Z
+# template:
+#   bslib:
+#     primary: "#447099"
+#     base_font: {google: {family: "Source Sans Pro", wght: [400, 600], ital: [0, 1]}}
+#     code_font: {google: "Source Code Pro"}
+#     font_scale: 1.2
+#     fg: "#172431"
+#     bg: "#fcfcfc"
+#     border-radius: 0
+#     btn-border-radius: 3px
+#     grid-gutter-width: 3rem
+#     pkgdown-nav-height: 78px
+# code:
+#   width: 74

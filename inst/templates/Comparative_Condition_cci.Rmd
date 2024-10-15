@@ -122,21 +122,8 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
 ```
 
 
-### CCI Proportion Test
-
-*Here, for each comparison we perform a differencial interaction test using Fisher Exact Test*
 
 
-```{r fig.align='center',warning=FALSE,echo=FALSE,eval=TRUE}
-path <- params$obj1
-thr <- params$thr
-all_data <- readRDS(path)
-
-for (data in all_data@stats) {
-  EnhancedVolcano(data, lab=gsub("@","->",data$columns_name),x='lodds',y='p',pCutoff=0.05)
-
-}
-#lapply(,print)
 
 ### PCA CCI
 

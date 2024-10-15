@@ -1,11 +1,14 @@
 pandoc: 2.9.2.1
-pkgdown: 2.1.1
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
-  CrossTalker_basicusage: CrossTalker_basicusage.html
+  CrossTalker_install_basicusage: CrossTalker_install_basicusage.html
   CrossTalkeR: CrossTalkeR.html
   HumanFibrosis: HumanFibrosis.html
-  articles/Install: Install.html
   LR2TF_analysis: LR2TF_analysis.html
   run_liana: run_liana.html
-last_built: 2024-10-15T12:59Z
+last_built: 2024-05-21T08:57Z
+urls:
+  reference: https://github.com/CostaLab/CrossTalkeR/reference
+  article: https://github.com/CostaLab/CrossTalkeR/articles
+

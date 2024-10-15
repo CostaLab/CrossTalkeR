@@ -95,7 +95,6 @@ library(stringr)
 library(ggplot2)
 library(colorBlindness)
 library(dplyr)
-library(EnhancedVolcano)
 ```
 
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
@@ -223,9 +222,6 @@ plot_cci(graph = data@graphs$EXP_x_CTR,
         log = FALSE,
         efactor = 8,
         vfactor = 12, pg = data@rankings[["EXP_x_CTR"]]$Pagerank)
-
-EnhancedVolcano(data@stats$EXP_x_CTR, lab=data@stats$EXP_x_CTR$columns_name,x='lodds',y='p',pCutoff=0.05)
-
 
 ```
 

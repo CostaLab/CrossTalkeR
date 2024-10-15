@@ -73,7 +73,8 @@ Imports:
     methods,
     rstatix,
     assertthat,
-    qpdf
+    qpdf,
+    EnhancedVolcano
 Suggests:
     knitr,
     testthat (>= 3.0.0)

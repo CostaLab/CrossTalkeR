@@ -1,102 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/404.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/CrossTalkeR.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/CrossTalker_install_basicusage.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/HumanFibrosis.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/LR2TF_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/articles/run_liana.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/LRObj-class.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/add_node_type.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/analise_LR.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/comparative_med.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/comparative_pagerank.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/create_diff_table1.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/enrich.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/filtered_graphs.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/fisher_test_cci.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/generate_report.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/kegg_annotation.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/make_report.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_cci.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_deregulated_pathways.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_graph_sankey_tf.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_pca.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_pca_LR_comparative.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/plot_sankey.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/ranking.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/ranking_net.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/read_lr_single_condition.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/CostaLab/CrossTalkeR/reference/set_coords.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/CrossTalkeR.html</loc></url>
+<url><loc>/articles/CrossTalker_basicusage.html</loc></url>
+<url><loc>/articles/CrossTalker_install_basicusage.html</loc></url>
+<url><loc>/articles/HumanFibrosis.html</loc></url>
+<url><loc>/articles/Install.html</loc></url>
+<url><loc>/articles/LR2TF_analysis.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/run_liana.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/LRObj-class.html</loc></url>
+<url><loc>/reference/add_node_type.html</loc></url>
+<url><loc>/reference/analise_LR.html</loc></url>
+<url><loc>/reference/comparative_med.html</loc></url>
+<url><loc>/reference/comparative_pagerank.html</loc></url>
+<url><loc>/reference/create_diff_table1.html</loc></url>
+<url><loc>/reference/enrich.html</loc></url>
+<url><loc>/reference/filtered_graphs.html</loc></url>
+<url><loc>/reference/fisher_test_cci.html</loc></url>
+<url><loc>/reference/generate_report.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/kegg_annotation.html</loc></url>
+<url><loc>/reference/make_report.html</loc></url>
+<url><loc>/reference/plot_cci.html</loc></url>
+<url><loc>/reference/plot_deregulated_pathways.html</loc></url>
+<url><loc>/reference/plot_graph_sankey_tf.html</loc></url>
+<url><loc>/reference/plot_pca.html</loc></url>
+<url><loc>/reference/plot_pca_LR_comparative.html</loc></url>
+<url><loc>/reference/plot_sankey.html</loc></url>
+<url><loc>/reference/ranking.html</loc></url>
+<url><loc>/reference/ranking_net.html</loc></url>
+<url><loc>/reference/read_lr_single_condition.html</loc></url>
+<url><loc>/reference/set_coords.html</loc></url>
 </urlset>
+

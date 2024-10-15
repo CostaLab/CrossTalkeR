@@ -1,0 +1,101 @@
+---
+title: CrossTalkeR - Basic Usage
+author:
+- name: James S. Nagai
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Nils B. Leimkühler
+  affiliation: Department of Hematology and Stem Cell Transplantation,
+               University Hospital Essen,
+               Germany
+- name: Vanessa Klöker
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Michael T. Schaub
+  affiliation:
+     - Department of Computer Science,
+       RWTH Aachen University,
+       Aachen, Germany
+- name: Rebekka K. Schneider
+  affiliation:
+    - Department of Hematology,
+      Erasmus Medical Center,
+      Rotterdam, 3015GD,
+      the Netherlands
+    - Department of Cell Biology,
+      Institute for Biomedical Engineering,
+      Faculty of Medicine,
+      RWTH Aachen University,
+      Aachen, 52074 Germany
+    - Oncode Institute,
+      Erasmus Medical Center,
+      Rotterdam, 3015GD,
+      the Netherlands
+- name: Ivan G. Costa
+  affiliation:
+     - Institute for Computational Genomics,
+       Faculty of Medicine,
+       RWTH Aachen University,
+       Aachen, 52074 Germany
+output:
+     html_document
+vignette: |
+      %\VignetteIndexEntry{CrossTalkeR-install-basicusage}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+---
+# CrossTalkeR - Basic Execution
+
+Here we like to give a short introduction on the installation and the basic usage of CrossTalkeR.
+
+
+## Basic Execution
+Here we show the most basic way to execute CrossTalkeR. All you need to provide are the paths to the ligand-receptor interaction analysis results and a path to save the results to:
+```{r, eval = FALSE}
+library(CrossTalkeR)
+
+paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
+           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+
+output <- "/path/to/output/folder/"
+data <- generate_report(paths,
+                out_path=output,
+                out_file = 'vignettes_example.html',
+                output_fmt = "html_document",
+                report = TRUE,
+                org = "hsa")
+
+```
+
+
+It is also possible to just **perform the analysis** part of CrossTalker, **without generating the report**:
+```{r, eval = FALSE}
+library(CrossTalkeR)
+
+paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
+           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+
+output <- "/path/to/output/folder/"
+data <- analise_LR(paths,
+                out_path=output,
+                org = "hsa")
+
+```
+
+A second possibility is to **generate the reports from existing CrossTalkeR objects**. In this case the out_path should point to the folder with the 'LR_data_final.Rds' file.
+```{r, eval = FALSE}
+library(CrossTalkeR)
+
+output <- "/path/to/output/folder/"
+data <- make_report(out_path=output,
+                out_file = 'vignettes_example.html',
+                output_fmt = "html_document",
+                report = TRUE,
+                org = "hsa")
+
+```
+

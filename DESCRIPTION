@@ -29,7 +29,7 @@ Authors@R: c(
             email = "ivan.costa@rwth-aachen.de",
             comment = c(ORCID = "0000-0003-2890-8697")))
 Description: This Package allows the network based analysis over ligand receptor network infered data.
-URL: https://github.com/CostaLab/CrossTalkeR
+URL: https://github.com/CostaLab/CrossTalkeR, https://costalab.github.io/CrossTalkeR/
 BugReports: https://github.com/CostaLab/CrossTalkeR/issues
 License: MIT + file LICENSE
 biocViews: Network, SystemsBiology, SingleCell, Software, GraphAndNetwork

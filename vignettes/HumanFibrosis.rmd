@@ -114,7 +114,7 @@ data <- generate_report(paths,
                 out_path=paste0(output,'/'),
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
-                report = TRUE)
+                report = TRUE,filtered_net=TRUE)
 
 ```
 

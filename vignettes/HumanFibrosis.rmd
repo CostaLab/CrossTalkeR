@@ -103,19 +103,17 @@ library(CrossTalkeR)
 library(igraph)
 library(stringr)
 
-paths <- c('CTR' = system.file("extdata",
-                               "CTR_LR.csv",
-                               package = "CrossTalkeR"),
-           'EXP' = system.file("extdata",
-                               "EXP_LR.csv",
-                               package = "CrossTalkeR"))
+data(CTR)
+data(EXP)
+paths <- list('CTR'=CTR,
+              'EXP'=EXP)
 
 output <- system.file("extdata", package = "CrossTalkeR")
-data <- generate_report(paths,
+ctkroutput <- generate_report(paths,
                 out_path=paste0(output,'/'),
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
-                report = TRUE,
+                report = FALSE,
                 filtered_net=TRUE)
 
 ```
@@ -142,7 +140,8 @@ The cell-cell-interaction (CCI) graph plots focus on the interactions between th
 After loading the result data from the "LR_data_final.Rds", we can plot the cell-cell interactions with the plot_cci() function. Here we show a plot for each analysed condition:
 
 ```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8, fig.show="hold"}
-data <- readRDS(system.file("extdata", "LR_data_final.Rds", package = "CrossTalkeR"))
+data(ctkroutput)
+data <- ctkroutput 
 p1 <- plot_cci(graph = data@graphs$CTR,
         colors = data@colors,
         plt_name = 'Control',

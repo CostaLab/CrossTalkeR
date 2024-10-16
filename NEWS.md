@@ -1,4 +1,4 @@
-## New Features v1.4.0
+# CrossTalkeR v1.4.0
 
 - Splitted generate_report function in two parts:
   - analise_LR() to only run the analysis without generating the CrossTalkeR report
@@ -9,7 +9,7 @@
 - Integration with liana-py for ligand-receptor interaction predictions
   
 
-## Old Features v1.3.0
+# CrossTalkeR v1.3.0
 
 - Single and Comparative Reports
    - Cell Cell Interaction visualization

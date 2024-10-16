@@ -1,9 +1,12 @@
 pandoc: 2.9.2.1
 pkgdown: 2.1.1
 pkgdown_sha: ~
+template: 
+  bootstrap: 5
+  #theme: arrow-dark  
 navbar:
   type: dark
-  bg: none
+  bg: black
   structure:
     left:  [intro, articles, reference, news, install]
     right: [search, github, lightswitch]

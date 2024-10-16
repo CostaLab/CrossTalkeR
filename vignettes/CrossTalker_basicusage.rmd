@@ -73,6 +73,26 @@ data <- generate_report(paths,
 
 ```
 
+In case the **tables are already obtained inside your R session**, one can use the following approach(This also apply for the functions below).
+
+```{r, eval = FALSE}
+obj1 <- "a condition1 data frame object"
+obj2 <- "a condition2 data frame object"
+
+paths <- list('Condition1' = obj1,
+           'Condition2' = obj2)
+
+output <- "/path/to/output/folder/"
+data <- generate_report(paths,
+                out_path=output,
+                out_file = 'vignettes_example.html',
+                output_fmt = "html_document",
+                report = TRUE,
+                org = "hsa", 
+                filtered_net=TRUE)
+
+```
+
 ## Performing only the analysis
 
 To just **perform the analysis** part of CrossTalker, **without generating the report**:

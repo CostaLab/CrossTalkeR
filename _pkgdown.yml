@@ -16,12 +16,12 @@ navbar:
       menu:
         - text: "CrossTalkeR 101"
           href: articles/CrossTalker_basicusage.html
-        - text: "Example: Bone Marrow Fibrosis (Leimkuhler et. al., 2021)"
+        - text: "Example: Bone Marrow Fibrosis in Human (Leimkuhler et. al., 2021)"
           href: articles/HumanFibrosis.html
-        - text: "Transcription Factor Activity Analysis"
-          href: articles/LR2TF_analysis.html
-        - text: "Example: Heart Myocardial Infarcition (Kuppe et. al., 2022)"
+        - text: "Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)"
           href: articles/MyocardialInfarction.html
+        - text: "Transcription Factor Activity Analysis Human BM"
+          href: articles/LR2TF_analysis.html
         - text: "Ligand-Receptor Inference with Liana"
           href: articles/run_liana.html
      install:

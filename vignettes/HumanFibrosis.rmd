@@ -31,59 +31,53 @@ Here, we demonstrate the usage of CrossTalkeR on the case study Myelofibrosis sc
 
 The scRNA-seq data contains two conditions: control (CTR_LR.csv) and disease condition (EXP_LR.csv). We first show how to run liana to retrieve ligand and receptor activities, then how to execute CrossTalkeR and finally go over some of the results, that are also provided inside the resulting CrossTalkeR report.
 
-## Run liana for Ligand-Receptor Interaction Prediction in Python
+## Run liana for Ligand-Receptor Interaction Prediction in R
 
-For the prediction of ligand-receptor interactions, we use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
+For the prediction of ligand-receptor interactions, we are using the [liana](https://saezlab.github.io/liana/articles/liana_tutorial.html) framework for R. Here we show the usage of liana on our example data and we are using the CellphoneDB method and the Consensus DB provided with liana.
 
 
-First of all, the libraries necessary for using liana must be loaded:
+First of all, we are laoding all necessary libraries :
 ```{python, eval = FALSE}
-import scanpy as sc
-import liana as li
-import pandas as pd
-import os
+library(Seurat)
+library(dplyr)
+library(liana)
 ```
 We assume here that the necessary libraries are already installed.
 
-Then, before perfoming the analysis, we need to load the AnnData object with the scRNA-seq data
-```{python, eval = FALSE}
-
-data = sc.read_h5ad("/path/to/AnnData/file.h5ad")
-data.raw = data
+Then we can continue to load the Seurat object of our example. The object is provided in the package as accessible object:
+```{R, eval = FALSE}
+seurat_object <- readRDS("/path/to/Seurat/object.Rds")
 ```
 
-As mentioned at the beginning, there are different methods and databases implemented in the liana package. We recommend using the CellphoneDB analysis in combination with the consensus database with intercellular interactions. Note that metadata fields for the available sample/conditions (field_with_condition) and for the cell annotations (field_with_cell_annotation) are still specified by the user.
+Then we can split the object by sample condition (here meta data column “protocol”) and run liana for each of the sub-objects, to get condition specific ligand-receptor interactions. We also filter and reformat the liana results in the same step, so that the resulting tables can directly be used as input for the CrossTalkeR analysis:
 
-```{python, eval = FALSE}
-for i in set(data.obs['protocol']):
-    print(i)
-    lr=li.method.cellphonedb(data[data.obs['protocol']==i],
-                          groupby='new_annotation',
-                          expr_prop=0.1,
-                          verbose=True,
-                          resource_name='consensus',
-                          inplace=False)
-    lr.to_csv(f"{i}_lr_liana_consensus_unfiltered.csv")
+```{R, eval = FALSE}
+
+outpath <- "/path/to/save/results/"
+pval_threshold <- 0.05
+
+seurat_object_list <- SplitObject(seurat_object, split.by = "protocol")
+for (condition in names(seurat_object_list)) {
+  sub_object <- seurat_object_list[[condition]]
+
+  liana_results <- liana_wrap(sub_object,
+    method = "cellphonedb",
+    resource = c("Consensus"),
+    expr_prop = 0.1
+  )
+
+  liana_results <- liana_results %>%
+    filter(pvalue < pval_threshold) %>%
+    select(source, target, ligand, receptor.complex, lr.mean) %>%
+    rename(gene_A = ligand, gene_B = receptor.complex, MeanLR = lr.mean)
+  liana_results$type_gene_A = 'Ligand'
+  liana_results$type_gene_B = 'Receptor'
+
+  write.csv(liana_results, paste0(outpath, condition, "_LR.csv"))
+}
 ```
 
-Finally, the result tables are filtered by the CellphoneDB p-value (here in the example p-val < 0.05) and converted into the CrossTalkeR input format. By default, the interaction table used for CrossTalkeR should contain the columns "source", "target", "type_gene_A", "gene_A", "type_gene_B", "gene_B" and "MeanLR".
-```{python, eval = FALSE}
-data = {}
-for i in os.listdir():
-    if i.endswith('lr_liana_consensus_unfiltered.csv'):
-        evfull = pd.read_csv(i)
-        evfull = evfull.loc[:,['ligand','receptor','source','target','lr_means','cellphone_pvals']]
-        evfull['type_gene_A'] = 'Ligand'
-        evfull['type_gene_B'] = 'Receptor'
-        evfull['gene_A'] = evfull['ligand']
-        evfull['gene_B'] = evfull['receptor']
-        evfull['MeanLR'] = evfull['lr_means']
-        k=i[0:i.find('_lr_')]
-        evfull = evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:]
-        evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']].to_csv(f'{k}_lr_ready.csv')
-        data[k]=os.path.abspath(f'{k}_lr_ready.csv')
-```
-
+We have a more general example on how we recommend to run liana in R [here](link github page).
 
 ## Running CrossTalkeR
 

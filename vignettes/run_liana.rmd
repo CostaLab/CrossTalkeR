@@ -8,9 +8,46 @@ vignette: |
       %\VignetteEncoding{UTF-8}
 ---
 
+# Run liana for ligand-receptor interaction prediction in R
+
+As input for CrossTalkeR we need tables with predicted ligand-receptor interactions for different sample conditions. We recommend using the [liana](https://saezlab.github.io/liana/articles/liana_tutorial.html) framework, which provides multiple ligand-receptor interaction inference methods and databases. The analysis can be performed on Seurat or SingleCellExperiment objects. Here, we show how to run liana with an Seurat object as input, using CellphoneDB as method and the Consensus database: 
+
+```{R, eval = FALSE}
+library(Seurat)
+library(dplyr)
+library(liana)
+
+seurat_object <- readRDS("/path/to/Seurat/object.Rds")
+
+outpath <- "/path/to/save/results/"
+pval_threshold <- 0.05
+
+seurat_object_list <- SplitObject(seurat_object, split.by = "condition")
+for (condition in names(seurat_object_list)) {
+  sub_object <- seurat_object_list[[condition]]
+
+  liana_results <- liana_wrap(sub_object,
+    method = "cellphonedb",
+    resource = c("Consensus"),
+    expr_prop = 0.1
+  )
+
+  liana_results <- liana_results %>%
+    filter(pvalue < pval_threshold) %>%
+    select(source, target, ligand, receptor.complex, lr.mean) %>%
+    rename(gene_A = ligand, gene_B = receptor.complex, MeanLR = lr.mean)
+  liana_results$type_gene_A = 'Ligand'
+  liana_results$type_gene_B = 'Receptor'
+
+  write.csv(liana_results, paste0(outpath, condition, "_LR.csv"))
+}
+```
+
+First, we are importing all necessary libraries and loading the Seurat object. Since we want to predict ligand-receptor interactions for each sample condition in our object, we are splitting the object by using the corresponding meta data column. Then we run liana for each of the condition, and filter the results by the p-value provided. Before saving the result table, we reformat the results to match CrossTalkeRs input format by renaming and adding gene type information columns. The resulting tables can be directly used for a CrossTalkeR analysis.
+
 # Run liana for ligand-receptor interaction prediction in Python
 
-For the prediction of ligand-receptor interactions, we use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
+ We can also use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
 
 ## Import necessary libraries
 

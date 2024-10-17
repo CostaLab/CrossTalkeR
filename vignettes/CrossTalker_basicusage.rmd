@@ -44,7 +44,7 @@ author:
 output:
      html_document
 vignette: |
-      %\VignetteIndexEntry{CrossTalkeR-install-basicusage}
+      %\VignetteIndexEntry{CrossTalkeR-basicusage}
       %\VignetteEngine{knitr::rmarkdown}
       %\VignetteEncoding{UTF-8}
 ---

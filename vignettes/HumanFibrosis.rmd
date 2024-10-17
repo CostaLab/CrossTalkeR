@@ -110,7 +110,7 @@ paths <- list('CTR'=CTR,
 
 output <- system.file("extdata", package = "CrossTalkeR")
 ctkroutput <- generate_report(paths,
-                out_path=paste0(output,'/'),
+                out_path=file.path(output),
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
                 report = FALSE,

@@ -27,3 +27,6 @@ navbar:
      install:
       text: Install
       href: articles/Install.html
+  url:
+    reference: https://github.com/CostaLab/CrossTalkeR/reference
+    article: https://github.com/CostaLab/CrossTalkeR/articles

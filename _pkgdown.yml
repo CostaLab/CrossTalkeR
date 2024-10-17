@@ -1,8 +1,8 @@
 pandoc: 2.9.2.1
 pkgdown: 2.1.1
 pkgdown_sha: ~
-# template: 
-#   bootstrap: 5
+template: 
+  bootstrap: 5
   #theme: arrow-dark  
 navbar:
   type: dark

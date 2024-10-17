@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 template: 
   bootstrap: 5
-  #theme: arrow-dark  
+  theme: arrow-dark  
 navbar:
   type: dark
   bg: black

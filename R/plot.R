@@ -1329,7 +1329,7 @@ plot_bar_rankings_cci <- function(data_object, table_name, ranking = "pagerank",
 #' @importFrom stats reorder
 #' @return R default plot
 #' @export
-plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, filter_sign = NULL, mode = "cci") {
+plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, filter_sign = NULL, mode = "cci", top_num = 10) {
   rankings_table <- data_object@rankings[[table_name]]
 
   if (!is.null(type)) {
@@ -1341,8 +1341,12 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
         tmp_sel <- grepl(paste0("\\|", type), rankings_table$nodes)
         rankings_table <- rankings_table[tmp_sel, ]
       } else {
-        tmp_sel_1 <- grepl(paste0("\\|", substring(type, 1, 1)), rankings_table$nodes)
-        tmp_sel_2 <- grepl(paste0("\\|", substring(type, 2, 2)), rankings_table$nodes)
+        tmp_sel_1 <- grepl(paste0("\\|",
+                                  substring(type, 1, 1)),
+                           rankings_table$nodes)
+        tmp_sel_2 <- grepl(paste0("\\|",
+                                  substring(type, 2, 2)),
+                           rankings_table$nodes)
         tmp_sel <- tmp_sel_1 | tmp_sel_2
         rankings_table <- rankings_table[tmp_sel, ]
       }
@@ -1366,60 +1370,73 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
 
   if (is.null(filter_sign)) {
     if ( mode == "cci") {
-      curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
+      curr_table <- rbind(head(curr_table, n = top_num),
+                          tail(curr_table, n = top_num))
       curr_table <- unique(curr_table)
       rownames(curr_table) <- curr_table$nodes
       signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-        geom_bar(stat = "identity") +
-        ylab("Gene") +
-        xlab(ranking) +
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-        theme_minimal()) +
-        theme(axis.text=element_text(size=14),
-          axis.title=element_text(size=16))
+      p <- (ggplot(curr_table, aes(x = get(ranking),
+                                   y = reorder(nodes, get(ranking)),
+                                   fill = signal)) +
+              geom_bar(stat = "identity") +
+              ylab("Gene") +
+              xlab(ranking) +
+              scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],
+                                           Blue2DarkOrange18Steps[14])) +
+              theme_minimal()) +
+        theme(axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16))
     } else {
-      curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
+      curr_table <- rbind(head(curr_table, n = top_num),
+                          tail(curr_table, n = top_num))
       curr_table <- unique(curr_table)
-      curr_table <- curr_table[(curr_table[[ranking]] > 0 | curr_table[[ranking]] < 0), ]
+      curr_table <- curr_table[(curr_table[[ranking]] > 0 |
+                                  curr_table[[ranking]] < 0), ]
       rownames(curr_table) <- curr_table$nodes
       signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-        geom_bar(stat = "identity") +
-        ylab("Gene") +
-        xlab(ranking) +
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-        theme_minimal()) +
-        theme(axis.text=element_text(size=14),
-          axis.title=element_text(size=16))
+      p <- (ggplot(curr_table, aes(x = get(ranking),
+                                   y = reorder(nodes, get(ranking)),
+                                   fill = signal)) +
+              geom_bar(stat = "identity") +
+              ylab("Gene") +
+              xlab(ranking) +
+              scale_fill_manual(values = c(Blue2DarkOrange18Steps[4],
+                                           Blue2DarkOrange18Steps[14])) +
+              theme_minimal()) +
+        theme(axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16))
     }
   } else {
     if (filter_sign == "pos") {
-      curr_table <- tail(curr_table, n = 20)
+      curr_table <- tail(curr_table, n = top_num * 2)
       curr_table <- unique(curr_table)
       rownames(curr_table) <- curr_table$nodes
       signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-        geom_bar(stat = "identity") +
-        ylab("Gene") +
-        xlab(ranking) +
-        scale_fill_manual(values = Blue2DarkOrange18Steps[14]) +
-        theme_minimal()) +
-        theme(axis.text=element_text(size=14),
-        axis.title=element_text(size=16))
+      p <- (ggplot(curr_table, aes(x = get(ranking),
+                                   y = reorder(nodes, get(ranking)),
+                                   fill = signal)) +
+              geom_bar(stat = "identity") +
+              ylab("Gene") +
+              xlab(ranking) +
+              scale_fill_manual(values = Blue2DarkOrange18Steps[14]) +
+              theme_minimal()) +
+        theme(axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16))
     } else if (filter_sign == "neg") {
-      curr_table <- head(curr_table, n = 20)
+      curr_table <- head(curr_table, n = top_num * 2)
       curr_table <- unique(curr_table)
       rownames(curr_table) <- curr_table$nodes
       signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-        geom_bar(stat = "identity") +
-        ylab("Gene") +
-        xlab(ranking) +
-        scale_fill_manual(values = Blue2DarkOrange18Steps[4]) +
-        theme_minimal()) +
-        theme(axis.text=element_text(size=14),
-        axis.title=element_text(size=16))
+      p <- (ggplot(curr_table, aes(x = get(ranking),
+                                   y = reorder(nodes, get(ranking)),
+                                   fill = signal)) +
+              geom_bar(stat = "identity") +
+              ylab("Gene") +
+              xlab(ranking) +
+              scale_fill_manual(values = Blue2DarkOrange18Steps[4]) +
+              theme_minimal()) +
+        theme(axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16))
     } else {
       print("Unvalid filter_sign argument!")
       p <- NULL

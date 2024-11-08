@@ -1321,6 +1321,7 @@ plot_bar_rankings_cci <- function(data_object, table_name, ranking = "pagerank",
 #' @param ranking name of the network ranking to use
 #' @param type gene type (L,R,TF, LR/RL, RTF/TFR, LTF/TFL)
 #' @param filter_sign show all (NULL), only positive (pos), or only negativ (neg) results
+#' @param top_num number of top genes to show in positive or negative direction
 #' @import ggplot2
 #' @import ggrepel
 #' @import reshape2

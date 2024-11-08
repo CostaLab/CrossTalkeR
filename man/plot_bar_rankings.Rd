@@ -11,7 +11,8 @@ plot_bar_rankings(
   ranking,
   type = NULL,
   filter_sign = NULL,
-  mode = "cci"
+  mode = "cci",
+  top_num = 10
 )
 }
 \arguments{

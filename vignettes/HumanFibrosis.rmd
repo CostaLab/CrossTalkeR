@@ -332,6 +332,17 @@ plot_sankey(data@tables$EXP_x_CTR,
 
 The Sankey plot confirms that the LR Score indicates higher interaction with CXCR4 in Megakaryocytes under EXP condition and in Myeloid cells under CTR condition. Additionally, it highlights previously occuring ligand and receptors, including TGFB ligand from Megakaryocytes to CXCR4 in Megakaryocytes and CXCL12 from MSCs to CXCR4 in both Megakaryocytes and Myeloid cells.
 
+Another interesting target described in by [Leimkühler et. al. 2021](https://www.sciencedirect.com/science/article/pii/S1934590920305427?via%3Dihub) is the ligand S100A8. The study also shows that when S100A8 is targeted the MPN phenotype is ameliorated
+
+```{r , results="hide", warning=FALSE,message=F, output=FALSE,fig.width=11,fig.height=8}
+plot_sankey(data@tables$EXP_x_CTR,
+            target = "S100A8|L",
+            ligand_cluster = "Myeloid",
+            receptor_cluster = NULL,
+            plt_name = "Myeloid S100A8 receptor gene interaction EXP vs CTR",
+            threshold = 15, tfflag = FALSE)
+
+```
 
 # Report Samples
 

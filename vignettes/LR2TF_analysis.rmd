@@ -1,5 +1,5 @@
 ---
-title: Transcription Factor Activity Analysis
+title: Intracellular Communication Analysis
 author:
 - name: Vanessa Klöker
   affiliation: Institute for Computational Genomics,
@@ -20,12 +20,12 @@ author:
 output:
      html_document
 vignette: |
-      %\VignetteIndexEntry{CrossTalke-LR2TF}
+      %\VignetteIndexEntry{CrossTalkeR-LR2TF}
       %\VignetteEngine{knitr::rmarkdown}
       %\VignetteEncoding{UTF-8}
 
 ---
-# Teanscription Factor Activity Analysis on Human Myelofibrosis scRNA-seq Data Using the LR2TF Package and CrossTalkeR
+# Intracellular Communication Analysis on Human Myelofibrosis scRNA-seq Data Using the LR2TF Package and CrossTalkeR
 
 This is a guide for the usage of the LR2TF package to infer TF activities from scRNA-seq data. The transcription factor activities are estimated using the decoupleR tool. Using the DoRothEA regulon version from decoupleR and post-translational interactions from the Omnipath database[2,3,4], connections are made between transcription factors and ligands and receptors.
 
@@ -44,7 +44,7 @@ install_github("CostaLab/LR2TF", build_vignettes = TRUE)
 ```
 &nbsp;
 
-## Transcription factor activity predictions using decoupleR in python
+## Transcription Factor Activity Predictions Using decoupleR in Python
 
 For the transcription factor activity predictions we recommend using the decoupleR package in its python version. This provides a better performance, especially for larger data sets. To perform the predictions with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data is saved as a Seurat object (.Rds file), it can be converted to AnnData format using the sceasy package and the function we provide:
 
@@ -70,7 +70,7 @@ filtered_regulon <- regulon[regulon$confidence %in% c("A", "B"), ]
 write.csv("/path/to/save/filterd_regulon.csv")
 ```
 
-Now it is possible to run the transcription factor activity prediction with decoupleR:
+Now it is possible to run the transcription factor activity prediction with decoupleR. Here we are using the Univariate Linear Model (ulm) approach recommended by the authors:
 ```{python, include = TRUE, eval = FALSE}
 
 import scanpy as sc
@@ -80,9 +80,9 @@ import pandas as pd
 ann_data = sc.read_h5ad("/path/to/AnnData/object/anndata_object.h5ad")
 reg = pd.read_csv("/path/to/filterd_regulon.csv")
 
-dc.run_viper(mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
+dc.run_ulm(mat=ann_data, net=reg, source='source', target='target', weight='weight', verbose=True, use_raw=False)
 
-estimates = ann_data.obsm['viper_estimate']
+estimates = ann_data.obsm['ulm_estimate']
 estimates.to_csv("/path/to/save/decoupler_results.csv")
 
 ```
@@ -229,7 +229,7 @@ Now we can compare the results from CrossTalkeR with only LR (left) and the resu
 
 &nbsp;  
 
-It can be observed that the inclusion of TFs increases the variability of gene types coming up in the top genes. The ITGB1 receptor in megakaryocytes remains among the top genes and several TFs are also present in the results; for example, STAT5B in megakaryocytes and ATF4 in Fibroblasts are among the upregulated genes, while TCF4 and CREM in Fibroblasts are among the downregulated activities. We can analyze not only the PageRank but also examine the top genes from other rankings. For this purpose, the previously used method call can be adjusted:
+It can be observed that the inclusion of TFs increases the variability of gene types coming up in the top genes. The ITGB1 receptor in megakaryocytes remains among the top genes and several TFs are also present in the results; for example, STAT5B in megakaryocytes and ATF4 in Fibroblasts are among the upregulated genes, while TFAP2A in MSCs is among the down regulated genes. We can analyze not only the PageRank but also examine the top genes from other rankings. For this purpose, the previously used method call can be adjusted:
 
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
 library(CrossTalkeR)
@@ -262,7 +262,7 @@ plot_bar_rankings_cgi(data, "PMF_MF2_x_control_ggi", ranking = "Mediator", type 
 
 &nbsp;
 
-By integrating intracellular signaling into our analysis, we can now trace predicted signaling pathways within cells to determine whether incoming signals induce responses in specific cell types or, conversely, to identify the upstream regulators of an active ligand. As example, we can select the top influencer ligand, TGFB1, from the top listener barplot. We begin by generating a standard LR Sankey plot to visualize the intercellular interactions involving TGFB1:
+By integrating intracellular signaling into our analysis, we can now trace predicted signaling pathways within cells to determine whether incoming signals induce responses in specific cell types or, conversely, to identify the upstream regulators of an active ligand. As example, we can select the top influencer ligand, TGFB1 in megakaryocytes, from the top listener barplot. We begin by generating a standard LR Sankey plot to visualize the intercellular interactions involving TGFB1:
 
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
 library(CrossTalkeR)
@@ -315,9 +315,9 @@ plot_graph_sankey_tf(data@tables$PMF_MF2_x_control,
 
 &nbsp;
 
-In this plot, we focus on the PageRank of the included genes. Each node's weight represents the corresponding PageRank value of each gene, and the edges are weighted by the PageRank values of the receptors or ligands involved in the interactions. In the example, multiple TFs predicted to regulate the TGFB1 gene are shown to be active. Notably, one of these TFs, SP1, is identified as the top mediator TF. SP1 was previously described to have a profibrotic role in the cross-talk of macrophages and fibroblasts in the context of the TGF beta signaling pathway [6]. Further, another study showed the importance of SP1 in combination of SP3 in megakaryopoiesis and on platelet formation [7], hinting that these connections here seems to be of interest for further investigation. 
+In this plot, we focus on the PageRank of the included genes. Each node's weight represents the corresponding PageRank value of each gene, and the edges are weighted by the PageRank values of the receptors or ligands involved in the interactions. In the example, multiple TFs predicted to regulate the TGFB1 gene are shown to be active. Notably, one of these TFs, MYC, is identified as the top mediator TF. While MYC was previously described to have a profibrotic role [6], its role in megakaryocytes has not yet been further studied, suggesting potential opportunities for investigation. 
 
-To follow up on connecting TGFB1 further to upstream signals, we focus now on the top listener receptor, ITGB1, which is here predicted to be upstream of SP1 in megakaryocytes. Building on this, we examine the top incoming signals and the cell types from which they originate, targeting ITGB1 in megakaryocytes:
+To follow up on connecting TGFB1 further to upstream signals, we focus now on the top listener receptor, ITGB1, which is here predicted to be upstream of MYC in megakaryocytes. Building on this, we examine the top incoming signals and the cell types from which they originate, targeting ITGB1 in megakaryocytes:
 
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
 library(CrossTalkeR)
@@ -363,6 +363,4 @@ If we put together the sepparated signalig plots, we can receive this signaling 
 
 [5] James S Nagai, Nils B Leimkühler, Michael T Schaub, Rebekka K Schneider, Ivan G Costa, CrossTalkeR: analysis and visualization of ligand–receptorne tworks, Bioinformatics, Volume 37, Issue 22, 15 November 2021, Pages 4263–4265, https://doi.org/10.1093/bioinformatics/btab370
 
-[6] Feng P, Che Y, Gao C, Chu X, Li Z, Li L, Li J, Gao J, Dong Y. Profibrotic role of transcription factor SP1 in cross-talk between fibroblasts and M2 macrophages. iScience. 2023 Nov 17;26(12):108484. DOI: 10.1016/j.isci.2023.108484
-
-[7] Meinders M, Kulu DI, van de Werken HJ, Hoogenboezem M, Janssen H, Brouwer RW, van Ijcken WF, Rijkers EJ, Demmers JA, Krüger I, van den Berg TK, Suske G, Gutiérrez L, Philipsen S. Sp1/Sp3 transcription factors regulate hallmarks of megakaryocyte maturation and platelet formation and function. Blood. 2015 Mar 19;125(12):1957-67. DOI: 10.1182/blood-2014-08-593343
+[6] Zacarías-Fluck MF, Soucek L, Whitfield JR. MYC: there is more to it than cancer. Front Cell Dev Biol. 2024 Mar 6;12:1342872. DOI: 10.3389/fcell.2024.1342872. 

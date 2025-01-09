@@ -8,7 +8,7 @@ vignette: |
       %\VignetteEncoding{UTF-8}
 ---
 
-# Run liana for ligand-receptor interaction prediction in R
+# Run LIANA for Ligand-Receptor Interaction Prediction in R
 
 As input for CrossTalkeR we need tables with predicted ligand-receptor interactions for different sample conditions. We recommend using the [liana](https://saezlab.github.io/liana/articles/liana_tutorial.html) framework, which provides multiple ligand-receptor interaction inference methods and databases. The analysis can be performed on Seurat or SingleCellExperiment objects. Here, we show how to run liana with an Seurat object as input, using CellphoneDB as method and the Consensus database: 
 
@@ -45,11 +45,11 @@ for (condition in names(seurat_object_list)) {
 
 First, we are importing all necessary libraries and loading the Seurat object. Since we want to predict ligand-receptor interactions for each sample condition in our object, we are splitting the object by using the corresponding meta data column. Then we run liana for each of the condition, and filter the results by the p-value provided. Before saving the result table, we reformat the results to match CrossTalkeRs input format by renaming and adding gene type information columns. The resulting tables can be directly used for a CrossTalkeR analysis.
 
-# Run liana for ligand-receptor interaction prediction in Python
+# Run LIANA for Ligand-Receptor Interaction Prediction in Python
 
  We can also use the python version of the package [liana](https://liana-py.readthedocs.io/en/latest/). This package provides different methods and databases for the analysis of intercellular interactions based on scRNA-seq data in the AnnData format. In this Tutorial, we describe our recommendation for using the liana package in python.
 
-## Import necessary libraries
+## Import Necessary libraries
 
 First of all, the libraries necessary for using liana must be loaded:
 ```{python, eval = FALSE}
@@ -60,7 +60,7 @@ import os
 ```
 We assume here that the necessary libraries are already installed.
 
-## Load scRNA-seq data
+## Load scRNA-seq Data
 
 The last step before perfoming the analysis is to load the AnnData object with the scRNA-seq data
 ```{python, eval = FALSE}
@@ -69,7 +69,7 @@ data = sc.read_h5ad("/path/to/AnnData/file.h5ad")
 data.raw = data
 ```
 
-## Execution of ligand-receptor interaction analysis
+## Execution of Ligand-Receptor Interaction Analysis
 
 As mentioned at the beginning, there are different methods and databases implemented in the liana package. We recommend using the CellphoneDB analysis in combination with the consensus database with intercellular interactions. Note that metadata fields for the available sample/conditions (field_with_condition) and for the cell annotations (field_with_cell_annotation) are still specified by the user.
 
@@ -85,7 +85,7 @@ for i in set(data.obs['field_with_condition']):
     lr.to_csv(f"{i}_lr_liana_consensus_unfiltered.csv")
 ```
 
-## Filtering and formatting of the results
+## Filtering and Formatting of the Results
 
 Finally, the result tables are filtered by the CellphoneDB p-value (here in the example p-val < 0.05) and converted into the CrossTalkeR input format. By default, the interaction table used for CrossTalkeR should contain the columns "source", "target", "type_gene_A", "gene_A", "type_gene_B", "gene_B" and "MeanLR".
 ```{python, eval = FALSE}

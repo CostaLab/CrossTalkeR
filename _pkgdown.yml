@@ -20,7 +20,7 @@ navbar:
           href: articles/HumanFibrosis.html
         - text: "Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)"
           href: articles/MyocardialInfarction.html
-        - text: "Transcription Factor Activity Analysis Human BM"
+        - text: "Intracellular Communication Analysis Bone Marrow Fibrosis in Human"
           href: articles/LR2TF_analysis.html
         - text: "Ligand-Receptor Inference with Liana"
           href: articles/run_liana.html

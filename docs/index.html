@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <meta property="og:title" content="Single Cell Ligand Receptor Downstream analysis">
 <meta name="description" content="This Package allows the network based analysis over ligand receptor network infered data.">
@@ -44,9 +44,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><a class="dropdown-item" href="articles/CrossTalker_basicusage.html">CrossTalkeR 101</a></li>
-    <li><a class="dropdown-item" href="articles/HumanFibrosis.html">Example: Bone Marrow Fibrosis (Leimkuhler et. al., 2021)</a></li>
-    <li><a class="dropdown-item" href="articles/LR2TF_analysis.html">Transcription Factor Activity Analysis</a></li>
-    <li><a class="dropdown-item" href="articles/MyocardialInfarction.html">Example: Heart Myocardial Infarcition (Kuppe et. al., 2022)</a></li>
+    <li><a class="dropdown-item" href="articles/HumanFibrosis.html">Example: Bone Marrow Fibrosis in Human (Leimkuhler et. al., 2021)</a></li>
+    <li><a class="dropdown-item" href="articles/MyocardialInfarction.html">Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)</a></li>
+    <li><a class="dropdown-item" href="articles/LR2TF_analysis.html">Intracellular Communication Analysis Bone Marrow Fibrosis in Human</a></li>
     <li><a class="dropdown-item" href="articles/run_liana.html">Ligand-Receptor Inference with Liana</a></li>
   </ul>
 </li>
@@ -86,9 +86,7 @@
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h2>
 <p>You can install CrossTalkeR with the simple commands below:</p>
-<pre class="{r}"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"https://github.com/CostaLab/CrossTalkeR"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span></code></pre>
+<p><code>{r} install.packages("devtools") devtools::install_github("https://github.com/CostaLab/CrossTalkeR", build_vignettes = TRUE) require(CrossTalkeR)</code></p>
 <p><em>Note: Please avoid to use the following characters in celltype name: ‘$’</em></p>
 </div>
 <div class="section level2">
@@ -106,7 +104,7 @@
 <h2 id="crosstalker-plots-examples-and-vignette">CrossTalkeR Plots examples and vignette<a class="anchor" aria-label="anchor" href="#crosstalker-plots-examples-and-vignette"></a>
 </h2>
 <p>We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq.</p>
-<pre class="{r}"><code><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'CrossTalkeR-HumanMyfib'</span><span class="op">)</span></span></code></pre>
+<p><code>{r} vignette('CrossTalkeR-HumanMyfib')</code></p>
 </div>
 <div class="section level2">
 <h2 id="integration-of-liana-with-crosstalker">Integration of liana with CrossTalkeR<a class="anchor" aria-label="anchor" href="#integration-of-liana-with-crosstalker"></a>
@@ -118,12 +116,16 @@
 <h2 id="new-features-v140">New Features v1.4.0<a class="anchor" aria-label="anchor" href="#new-features-v140"></a>
 </h2>
 <ul>
-<li>Splitted generate_report function in two parts:<ul>
+<li>Splitted generate_report function in two parts:
+<ul>
 <li>analise_LR() to only run the analysis without generating the CrossTalkeR report</li>
 <li>make_report() to only generate a new CrossTalkeR report for existing CrossTalkeR results</li>
 </ul>
 </li>
-<li>Added node types to the network:<ul><li>we now consider the annotation of a gene as ligand (L) or receptor (R) to consider the biological function</li></ul>
+<li>Added node types to the network:
+<ul>
+<li>we now consider the annotation of a gene as ligand (L) or receptor (R) to consider the biological function</li>
+</ul>
 </li>
 <li>Less constrains on the cell cluster name annotation (only ‘$’ must be avoided in the cluster naming)</li>
 <li>Integration with liana-py for ligand-receptor interaction predictions</li>
@@ -132,11 +134,14 @@
 <div class="section level2">
 <h2 id="old-features-v130">Old Features v1.3.0<a class="anchor" aria-label="anchor" href="#old-features-v130"></a>
 </h2>
-<ul><li>Single and Comparative Reports<ul>
+<ul>
+<li>Single and Comparative Reports
+<ul>
 <li>Cell Cell Interaction visualization</li>
 <li>Sending and Receiving Cells Ranking</li>
 <li>Gene Target based Sankey Plots</li>
-<li>CCI and GCI PCA ranking<ul>
+<li>CCI and GCI PCA ranking
+<ul>
 <li>All measures and PC table</li>
 <li>PC1 and PC2 based barplot</li>
 </ul>
@@ -144,12 +149,16 @@
 <li>Leimkühler et. al. [2] data were added to the package</li>
 <li>Fisher Test were implemented to highlight the CCI edges significance (new) 🔥<strong>NEW</strong>🔥</li>
 <li>
-<strong>Change input format: Please see the Documentation</strong> 🔥<strong>NEW</strong>🔥<ul><li>A python3 notebook are available to cast the old input to the new input.</li></ul>
+<strong>Change input format: Please see the Documentation</strong> 🔥<strong>NEW</strong>🔥
+<ul>
+<li>A python3 notebook are available to cast the old input to the new input.</li>
+</ul>
 </li>
 <li>Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input. 🔥<strong>NEW</strong>🔥</li>
 <li>LR pair visualization plot can be done using a Seurat Object 🔥<strong>NEW</strong>🔥</li>
 </ul>
-</li></ul>
+</li>
+</ul>
 </div>
 </div>
 <div class="section level1">

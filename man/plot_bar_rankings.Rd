@@ -25,6 +25,8 @@ plot_bar_rankings(
 \item{type}{gene type (L,R,TF, LR/RL, RTF/TFR, LTF/TFL)}
 
 \item{filter_sign}{show all (NULL), only positive (pos), or only negativ (neg) results}
+
+\item{top_num}{number of top genes to show in positive or negative direction}
 }
 \value{
 R default plot

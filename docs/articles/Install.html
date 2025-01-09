@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="CrossTalkeR - Installation">
 </head>
@@ -41,9 +41,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><a class="dropdown-item" href="../articles/CrossTalker_basicusage.html">CrossTalkeR 101</a></li>
-    <li><a class="dropdown-item" href="../articles/HumanFibrosis.html">Example: Bone Marrow Fibrosis (Leimkuhler et. al., 2021)</a></li>
-    <li><a class="dropdown-item" href="../articles/LR2TF_analysis.html">Transcription Factor Activity Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/MyocardialInfarction.html">Example: Heart Myocardial Infarcition (Kuppe et. al., 2022)</a></li>
+    <li><a class="dropdown-item" href="../articles/HumanFibrosis.html">Example: Bone Marrow Fibrosis in Human (Leimkuhler et. al., 2021)</a></li>
+    <li><a class="dropdown-item" href="../articles/MyocardialInfarction.html">Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)</a></li>
+    <li><a class="dropdown-item" href="../articles/LR2TF_analysis.html">Intracellular Communication Analysis Bone Marrow Fibrosis in Human</a></li>
     <li><a class="dropdown-item" href="../articles/run_liana.html">Ligand-Receptor Inference with Liana</a></li>
   </ul>
 </li>
@@ -65,22 +65,42 @@
 
 
 
-<script src="Install_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>CrossTalkeR - Installation</h1>
-                        <h4 data-toc-skip class="author">James S. Nagai</h4>
+                        <h4 data-toc-skip class="author">James S.
+Nagai</h4>
             <address class="author_afil">
-      Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><h4 data-toc-skip class="author">Nils B. Leimkühler</h4>
+      Institute for Computational Genomics, Faculty of Medicine, RWTH
+Aachen University, Aachen, 52074
+Germany<br><h4 data-toc-skip class="author">Nils
+B. Leimkühler</h4>
             <address class="author_afil">
-      Department of Hematology and Stem Cell Transplantation, University Hospital Essen, Germany<br><h4 data-toc-skip class="author">Vanessa Klöker</h4>
+      Department of Hematology and Stem Cell Transplantation, University
+Hospital Essen,
+Germany<br><h4 data-toc-skip class="author">Vanessa
+Klöker</h4>
             <address class="author_afil">
-      Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><h4 data-toc-skip class="author">Michael T. Schaub</h4>
+      Institute for Computational Genomics, Faculty of Medicine, RWTH
+Aachen University, Aachen, 52074
+Germany<br><h4 data-toc-skip class="author">Michael
+T. Schaub</h4>
             <address class="author_afil">
-      Department of Computer Science, RWTH Aachen University, Aachen, Germany<br><h4 data-toc-skip class="author">Rebekka K. Schneider</h4>
+      Department of Computer Science, RWTH Aachen University, Aachen,
+Germany<br><h4 data-toc-skip class="author">Rebekka
+K. Schneider</h4>
             <address class="author_afil">
-      Department of Hematology, Erasmus Medical Center, Rotterdam, 3015GD, the NetherlandsDepartment of Cell Biology, Institute for Biomedical Engineering, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 GermanyOncode Institute, Erasmus Medical Center, Rotterdam, 3015GD, the Netherlands<br><h4 data-toc-skip class="author">Ivan G. Costa</h4>
+      Department of Hematology, Erasmus Medical Center, Rotterdam,
+3015GD, the NetherlandsDepartment of Cell Biology, Institute for
+Biomedical Engineering, Faculty of Medicine, RWTH Aachen University,
+Aachen, 52074 GermanyOncode Institute, Erasmus Medical Center,
+Rotterdam, 3015GD, the
+Netherlands<br><h4 data-toc-skip class="author">Ivan
+G. Costa</h4>
             <address class="author_afil">
-      Institute for Computational Genomics, Faculty of Medicine, RWTH Aachen University, Aachen, 52074 Germany<br><small class="dont-index">Source: <a href="https://github.com/CostaLab/CrossTalkeR/blob/HEAD/vignettes/Install.Rmd" class="external-link"><code>vignettes/Install.Rmd</code></a></small>
+      Institute for Computational Genomics, Faculty of Medicine, RWTH
+Aachen University, Aachen, 52074 Germany<br><small class="dont-index">Source: <a href="https://github.com/CostaLab/CrossTalkeR/blob/HEAD/vignettes/Install.Rmd" class="external-link"><code>vignettes/Install.Rmd</code></a></small>
       <div class="d-none name"><code>Install.Rmd</code></div>
     </address>
 </address>
@@ -98,7 +118,8 @@
 <div class="section level3">
 <h3 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h3>
-<p>You can install and load the CrossTalkeR package with the simple commands below:</p>
+<p>You can install and load the CrossTalkeR package with the simple
+commands below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"https://github.com/CostaLab/CrossTalkeR"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

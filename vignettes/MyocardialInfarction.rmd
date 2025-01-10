@@ -193,7 +193,7 @@ plot_cci(graph = data@graphs$ischemic_x_myogenic,
         pg = data@rankings[["ischemic_x_myogenic"]]$Pagerank)
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/CCI_heart_unfiltered.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -210,7 +210,7 @@ EnhancedVolcano(data@stats$ischemic_x_myogenic,
                 pCutoff = 0.05)
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images//CCI_Volcano.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -233,7 +233,7 @@ plot_cci(graph = data@graphs$ischemic_x_myogenic_filtered,
         pg = data@rankings[["ischemic_x_myogenic_filtered"]]$Pagerank)
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/CCI_heart_filtered.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -246,7 +246,7 @@ To confirm the top cell types identified by Pagerank, we can examine their Pager
 plot_bar_rankings(data, "ischemic_x_myogenic_filtered", "Pagerank", type = NULL, filter_sign = NULL)
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/CCI_barplot_Pagerank.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -282,7 +282,7 @@ Next, we shift to the gene-cell interaction (GCI) level. Similar to the CCI leve
 plot_bar_rankings(data, "ischemic_x_myogenic_ggi", "Pagerank", type = "LR", filter_sign = NULL, mode = "cgi")
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/LR_barplot_Pagerank.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -328,7 +328,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
 )
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/Fib2_SPP1_Mac_Sankey.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -346,7 +346,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
 )
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/SPP1_Mac_Fib2_Sankey.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -375,7 +375,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
     tfflag = FALSE)
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
   <img src="heart_images/subset_TGFB1_Sankey.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>

@@ -216,11 +216,11 @@ plot_bar_rankings_cgi(data, "PMF_MF2_x_control_ggi", ranking = "Pagerank")
 Now we can compare the results from CrossTalkeR with only LR (left) and the results with TFs (right):
 
 <div style = "display: flex; align-items: center; justify-content: center;">
-<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
   <img src="TF_images/Pagerank_LR.png" alt=""/>
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
-<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
   <img src="TF_images/Pagerank_TF.png" alt=""/>
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
@@ -245,16 +245,16 @@ plot_bar_rankings_cgi(data, "PMF_MF2_x_control_ggi", ranking = "Mediator", type 
 &nbsp;   
 
 <div style = "display: flex; align-items: center; justify-content: center;">
-<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
   <img src="TF_images/L_Influencers.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
-<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
   <img src="TF_images/R_Listener.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
 </div>
-<figure class="figure" style="display: table; margin: auto; height: 50%; width: 50%;">
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
   <img src="TF_images/TF_Mediators.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>

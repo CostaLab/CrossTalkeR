@@ -139,7 +139,7 @@ The "results" object contains the results of the performed analyses, consisting 
 
 As already outlined in the result object description, two different analysis approaches are used to identify which predicted TF activities are significant. The first approach focuses on the comparison between different sample conditions (here, control vs. fibrosis). During the analysis, a large heatmap is generated that includes all TFs showing significant differential activity between the conditions in at least one of the cell clusters.
 
-<img style="display: block; margin: auto; height: 40%; width: 40%;" src="TF_images/TF_large_heatmap.png"/>
+<img style="display: block; margin: auto; height: 60%; width: 60%;" src="TF_images/TF_large_heatmap.png"/>
 <figcaption>Heatmap showing TFs that show significant differences in their activities between the PMF_MF2 and control condition. The significance level is given by the asterisk symbol: * p-value < 0.05, ** p-value < 0.01, *** p-value < 0.001.</figcaption>
 
 &nbsp;
@@ -147,11 +147,11 @@ As already outlined in the result object description, two different analysis app
 The second approach focuses on identifying cluster-specific TFs within the different conditions separately. In addition to a similar heatmap as in the condition comparison, heatmaps are provided to show the most variable TFs among all cell clusters.
 
 <div style = "display: flex; align-items: center; justify-content: center;">
-<figure class="figure" style="display: table; margin: auto; height: 40%; width: 40%;">
+<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
   <img src="TF_images/Control_Variable_Gene_Heatmap.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;">Heatmap showing TFs with highly variable activity between the clusters in the control condition.</figcaption>
 </figure>
-<figure class="figure" style="display: table; margin: auto; height: 40%; width: 40%;">
+<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
   <img src="TF_images/PMF_MF2_Variable_Gene_Heatmap.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;">Heatmap showing TFs with highly variable activity between the clusters in the PMF_MF2 condition.</figcaption>
 </figure>

@@ -32,11 +32,11 @@
 #'
 #'genes <- c('TGFB1')
 #'
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
@@ -65,7 +65,7 @@ plot_cci <- function(graph,
                      log = FALSE,
                      efactor = 8,
                      vfactor = 12,
-                     vnames = T,
+                     vnames = TRUE,
                      pg = NULL,
                      vnamescol = NULL) {
 
@@ -285,11 +285,11 @@ plot_cci <- function(graph,
 #'
 #'genes <- c('TGFB1')
 #'
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
@@ -540,13 +540,13 @@ new_plot_cci <- function(graph,
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
@@ -679,13 +679,13 @@ set_coords <- function(df, type) {
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
@@ -920,17 +920,17 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
-plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { ## Pweeseee Test me!!!
+plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = FALSE, ggi = TRUE) { ## Pweeseee Test me!!!
   x <- max(abs(lrobj_tblPCA[[curr]]$x[, dims[1]]))
   y <- max(abs(lrobj_tblPCA[[curr]]$x[, dims[2]]))
   if (ggi) {
@@ -993,17 +993,17 @@ plot_pca <- function(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE) { 
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'
 #'data <- generate_report(paths,
 #'                        genes,
-#'                        out_path=paste0(output,'/'),
-#'                        threshold=0,
+#'                        out_path = output_path,
+#'                        threshold = 0,
 #'                        out_file = 'vignettes_example.html',
 #'                        output_fmt = "html_document",
 #'                        report = FALSE)
-plot_pca_LR_comparative <- function(lrobj_tblPCA, pca_table, dims = c(1, 2), ret = F, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
+plot_pca_LR_comparative <- function(lrobj_tblPCA, pca_table, dims = c(1, 2), ret = FALSE, ggi = TRUE, include_tf = TRUE, gene_types = "all") {
   pca_plot <- list()
   if (ggi) {
     #Filter for LR or TF

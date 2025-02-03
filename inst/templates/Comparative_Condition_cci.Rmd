@@ -74,6 +74,8 @@ for (i in 1:length(names(all_data@tables))) {
 
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
+This is a hotfix branch
+
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <- params$obj1
 thr <- params$thr
@@ -83,17 +85,22 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
     curr <- names(all_data@graphs)[i]
     if (str_detect(curr, '_filtered', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
       curr_net <- all_data@graphs[[curr]]
-      low <- thr
-      E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
-      par(cex.axis = 7, cex.lab = 7)
-      plot_cci(graph = curr_net,
-               coords = all_data@coords[V(curr_net)$name,],
-               colors = all_data@colors[V(curr_net)$name],
-               plt_name = paste0(curr, ' CCI'),
-               leg = TRUE,
-               low = 0,
-               high = low / 100,
-               log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+      if(length(E(curr_net))>1){    
+        low <- thr
+        E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
+        par(cex.axis = 7, cex.lab = 7)
+        plot_cci(graph = curr_net,
+                 coords = all_data@coords[V(curr_net)$name,],
+                 colors = all_data@colors[V(curr_net)$name],
+                 plt_name = paste0(curr, ' CCI'),
+                 leg = TRUE,
+                 low = 0,
+                 high = low / 100,
+                 log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+      }else{
+          print(curr)
+          print("no significant interactions")
+      }
     }
   }
 } else {
@@ -104,17 +111,22 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
       f <- tail_of(all_data@graphs[[curr]], E(all_data@graphs[[curr]]))$name
       curr_net <- all_data@graphs[[curr]]
       curr_net <- subgraph.edges(all_data@graphs[[curr]], E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p <= 0.05], paste(h, f, sep = '@'), nomatch = F)])
-      low <- thr
-      E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
-      par(cex.axis = 7, cex.lab = 7)
-      plot_cci(graph = curr_net,
-               coords = all_data@coords[V(curr_net)$name,],
-               colors = all_data@colors[V(curr_net)$name],
-               plt_name = paste0(curr, ' CCI'),
-               leg = TRUE,
-               low = 0,
-               high = low / 100,
-               log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+      if(length(E(curr_net))>0){    
+        low <- thr
+        E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
+        par(cex.axis = 7, cex.lab = 7)
+        plot_cci(graph = curr_net,
+                 coords = all_data@coords[V(curr_net)$name,],
+                 colors = all_data@colors[V(curr_net)$name],
+                 plt_name = paste0(curr, ' CCI'),
+                 leg = TRUE,
+                 low = 0,
+                 high = low / 100,
+                 log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+      }else{
+          print(curr)
+          print("no significant interactions")
+      }
     }
   }
 }

@@ -18,7 +18,7 @@ analise_LR(
     "MeanLR"),
   org = "hsa",
   comparison = NULL,
-  filtered_net = F
+  filtered_net = FALSE
 )
 }
 \arguments{
@@ -55,11 +55,11 @@ paths <- c('CTR' = system.file("extdata",
           'EXP' = system.file("extdata",
                               "EXP_LR.csv",
                               package = "CrossTalkeR"))
-output =  system.file("extdata", package = "CrossTalkeR")
+output_path <- system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')
 data <- generate_report(lrpaths = paths,
                        genes = genes,
-                       out_path = paste0(output,'/'),
+                       out_path = output_path,
                        threshold = 0,
                          out_file = "report.html")
 

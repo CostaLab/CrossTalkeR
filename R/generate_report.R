@@ -26,13 +26,13 @@
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <-  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'data <- generate_report(lrpaths = paths,
 #'                        genes = genes,
-#'                        out_path = paste0(output,'/'),
+#'                        out_path = output_path,
 #'                        threshold = 0,
-#'                          out_file = "report.html")
+#'                        out_file = "report.html")
 #'
 generate_report <- function(lrpaths,
                             genes = NULL,
@@ -108,11 +108,11 @@ generate_report <- function(lrpaths,
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path <- system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'data <- generate_report(lrpaths = paths,
 #'                        genes = genes,
-#'                        out_path = paste0(output,'/'),
+#'                        out_path = output_path,
 #'                        threshold = 0,
 #'                          out_file = "report.html")
 #'
@@ -125,10 +125,10 @@ analise_LR <- function(lrpaths,
                             colors = NULL,
                             out_file = NULL,
                             output_fmt = "html_document",
-                            sel_columns=c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
-                            org='hsa',
+                            sel_columns = c('source','target','gene_A','gene_B','type_gene_A','type_gene_B','MeanLR'),
+                            org = 'hsa',
                             comparison = NULL,
-                            filtered_net = F) {
+                            filtered_net = FALSE) {
   data <- read_lr_single_condition(lrpaths,
                                     sel_columns,
                                     out_path,
@@ -140,10 +140,10 @@ analise_LR <- function(lrpaths,
     data <- create_diff_table1(data, out_path, comparison)
   }
   # Generating the single condition report
-  lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
+  lrobj_path1 <- file.path(out_path, "LR_data_final.Rds")
 
   if (length(lrpaths) > 1) {
-     data <- fisher_test_cci(data,'LRScore',out_path=out_path,comparison)
+     data <- fisher_test_cci(data, 'LRScore', out_path = out_path, comparison)
   }
 
   if (filtered_net) {
@@ -151,17 +151,17 @@ analise_LR <- function(lrpaths,
   }
 
   message("Calculating CCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs")})
+  data <- suppressWarnings({ ranking(data, out_path, sel_columns = sel_columns, slot = "graphs")})
   message("Calculating GCI Ranking")
-  data <- suppressWarnings({ ranking(data, out_path,sel_columns=sel_columns,slot = "graphs_ggi")})
+  data <- suppressWarnings({ ranking(data, out_path, sel_columns = sel_columns, slot = "graphs_ggi")})
   message("Annotating the top Cell Genes")
   if(org=='hsa'){
-    data <- suppressWarnings({kegg_annotation(data=data,
-                            slot='rankings',out_path=out_path,database=org.Hs.eg.db::org.Hs.eg.db,org=org)})
+    data <- suppressWarnings({kegg_annotation(data = data,
+                            slot = 'rankings', out_path = out_path, database = org.Hs.eg.db::org.Hs.eg.db, org = org)})
   }
   else if(is.list(org)){
-    data <- suppressWarnings({kegg_annotation(data=data,
-                            slot='rankings',out_path=out_path,database=org[2], org=org[1])})
+    data <- suppressWarnings({kegg_annotation(data = data,
+                            slot = 'rankings', out_path = out_path, database = org[2], org = org[1])})
   }
 
   message("Network Analysis Done")
@@ -195,11 +195,11 @@ analise_LR <- function(lrpaths,
 #'           'EXP' = system.file("extdata",
 #'                               "EXP_LR.csv",
 #'                               package = "CrossTalkeR"))
-#'output =  system.file("extdata", package = "CrossTalkeR")
+#'output_path =  system.file("extdata", package = "CrossTalkeR")
 #'genes <- c('TGFB1')
 #'data <- generate_report(lrpaths = paths,
 #'                        genes = genes,
-#'                        out_path = paste0(output,'/'),
+#'                        out_path = output_path,
 #'                        threshold = 0,
 #'                          out_file = "report.html")
 #'
@@ -219,11 +219,11 @@ make_report <- function(genes = NULL,
   index <- system.file("templates",
                        "FinalReport.Rmd",
                        package = "CrossTalkeR")
-  lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
+  lrobj_path1 <- file.path(out_path, "LR_data_final.Rds")
   if(!is.null(LRObj)){
     if(!is.null(out_path)){
-      lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
-      saveRDS(LRObj,paste0(out_path, "LR_data_final.Rds"))
+      lrobj_path1 <- file.path(out_path, "LR_data_final.Rds")
+      saveRDS(LRObj, file.path(out_path, "LR_data_final.Rds"))
     }else{
       message("missing output path (out_path)")
     }

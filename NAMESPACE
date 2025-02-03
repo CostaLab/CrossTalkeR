@@ -3,6 +3,7 @@
 export(analise_LR)
 export(generate_report)
 export(make_report)
+export(new_plot_cci)
 export(plot_cci)
 export(plot_deregulated_pathways)
 export(plot_graph_sankey_tf)

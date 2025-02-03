@@ -17,7 +17,7 @@ plot_cci(
   log = FALSE,
   efactor = 8,
   vfactor = 12,
-  vnames = T,
+  vnames = TRUE,
   pg = NULL,
   vnamescol = NULL
 )
@@ -69,11 +69,11 @@ paths <- c('CTR' = system.file("extdata",
 
 genes <- c('TGFB1')
 
-output =  system.file("extdata", package = "CrossTalkeR")
+output_path <- system.file("extdata", package = "CrossTalkeR")
 data <- generate_report(paths,
                        genes,
-                       out_path=paste0(output,'/'),
-                       threshold=0,
+                       out_path = output_path,
+                       threshold = 0,
                        out_file = 'vignettes_example.html',
                        output_fmt = "html_document",
                        report = FALSE)

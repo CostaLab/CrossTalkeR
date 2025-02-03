@@ -22,9 +22,9 @@ read_lr_single_condition <- function(lrpaths,
   assertthat::assert_that(assertthat::not_empty(lrpaths))
   assertthat::assert_that(!is.null(names(lrpaths)))
 
-  data <- graphs <-graphs_ggi <- list()
+  data <- graphs <- graphs_ggi <- list()
   conds <- names(lrpaths)
-  max <- max_nodes <-0
+  max <- max_nodes <- 0
   unif_celltypes <- c()
   for (i in seq_len(length(lrpaths))){
       ## Reading from tables
@@ -153,7 +153,7 @@ read_lr_single_condition <- function(lrpaths,
               colors = colors,
               rankings = list(),
               pca = list(),
-              stats=list())
+              stats = list())
     saveRDS(lr,file.path(out_path, "LR_data.Rds"))
     return(lr)
 }

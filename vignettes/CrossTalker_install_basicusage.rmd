@@ -64,13 +64,13 @@ require(CrossTalkeR)
 
 There are the following possible system dependencies:
 ```{r, eval = FALSE}
-libudunits2-dev
-libgdal-dev
-gdal-bin
-libproj-dev
-proj-data
-proj-bin
-libgeos-dev
+libudunits2 - dev
+libgdal - dev
+gdal - bin
+libproj - dev
+proj - data
+proj - bin
+libgeos - dev
 ```
 
 ## Basic Execution
@@ -78,17 +78,19 @@ Here we show the most basic way to execute CrossTalkeR. All you need to provide 
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
-paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
-           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+paths <- c(
+  "Condition1" = "/path/to/condition1/LR-interactions.csv",
+  "Condition2" = "/path/to/condition2/LR-interactions.csv"
+)
 
-output <- "/path/to/output/folder/"
+output_path <- "/path/to/output/folder/"
 data <- generate_report(paths,
-                out_path=output,
-                out_file = 'vignettes_example.html',
-                output_fmt = "html_document",
-                report = TRUE,
-                org = "hsa")
-
+  out_path = output_path,
+  out_file = "vignettes_example.html",
+  output_fmt = "html_document",
+  report = TRUE,
+  org = "hsa"
+)
 ```
 
 
@@ -96,26 +98,29 @@ It is also possible to just perform the analysis part of CrossTalker, without ge
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
-paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
-           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+paths <- c(
+  "Condition1" = "/path/to/condition1/LR-interactions.csv",
+  "Condition2" = "/path/to/condition2/LR-interactions.csv"
+)
 
-output <- "/path/to/output/folder/"
+output_path <- "/path/to/output/folder/"
 data <- analise_LR(paths,
-                out_path=output,
-                org = "hsa")
-
+  out_path = output_path,
+  org = "hsa"
+)
 ```
 
 A second possibility is to generate the reports from existing CrossTalkeR objects. In this case the out_path should point to the folder with the 'LR_data_final.Rds' file.
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
-output <- "/path/to/output/folder/"
-data <- make_report(out_path=output,
-                out_file = 'vignettes_example.html',
-                output_fmt = "html_document",
-                report = TRUE,
-                org = "hsa")
-
+output_path <- "/path/to/output/folder/"
+data <- make_report(
+  out_path = output_path,
+  out_file = "vignettes_example.html",
+  output_fmt = "html_document",
+  report = TRUE,
+  org = "hsa"
+)
 ```
 

@@ -4,7 +4,7 @@
 \alias{plot_pca}
 \title{This function is a proxy to the PCA plot}
 \usage{
-plot_pca(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE)
+plot_pca(lrobj_tblPCA, curr, dims = c(1, 2), ret = FALSE, ggi = TRUE)
 }
 \arguments{
 \item{curr}{table entry}
@@ -30,13 +30,13 @@ paths <- c('CTR' = system.file("extdata",
           'EXP' = system.file("extdata",
                               "EXP_LR.csv",
                               package = "CrossTalkeR"))
-output =  system.file("extdata", package = "CrossTalkeR")
+output_path <- system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')
 
 data <- generate_report(paths,
                        genes,
-                       out_path=paste0(output,'/'),
-                       threshold=0,
+                       out_path = output_path,
+                       threshold = 0,
                        out_file = 'vignettes_example.html',
                        output_fmt = "html_document",
                        report = FALSE)

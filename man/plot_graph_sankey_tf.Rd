@@ -41,13 +41,13 @@ paths <- c('CTR' = system.file("extdata",
           'EXP' = system.file("extdata",
                               "EXP_LR.csv",
                               package = "CrossTalkeR"))
-output =  system.file("extdata", package = "CrossTalkeR")
+output_path <- system.file("extdata", package = "CrossTalkeR")
 genes <- c('TGFB1')
 
 data <- generate_report(paths,
                        genes,
-                       out_path=paste0(output,'/'),
-                       threshold=0,
+                       out_path = output_path,
+                       threshold = 0,
                        out_file = 'vignettes_example.html',
                        output_fmt = "html_document",
                        report = FALSE)

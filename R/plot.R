@@ -1509,3 +1509,35 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
   }
   return(p)
 }
+
+
+#' This function generates the graph adjacency matrix Heatmap
+#'
+#' @param graph cell-cell communication graph
+#' @param weight cell-cell communication graph's slot
+#' @import igraph
+#' @import ComplexHeatmap
+#' @importFrom stats reorder
+#' @return R default plot
+#' @export
+plot_Heatmap <- function(graph,weight) {
+  p1<-ComplexHeatmap::Heatmap(as.matrix(igraph::as_adj(graph,attr = weight)),
+          row_title = "Ligand cluster",column_title = "Receptor cluster",
+          column_title_side = "bottom",row_title_side = "right")
+  return(p1)
+}
+
+#' This function generates the enhancedVolcanoplot
+#'
+#' @param table  Table with the test Results
+#' @param feature_name column with names
+#' @import EnhancedVolcano
+#' @return R default plot
+#' @export
+plot_Volcano <- function(table,feature_name, pvalcutoff=0.05,x='lodds',y='p') {
+  p1<-EnhancedVolcano::EnhancedVolcano(table, 
+                      lab=table[[feature_name]],
+                      x=x,y=y,pCutoff=pvalcutoff)
+  return(p1)
+}
+

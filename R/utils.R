@@ -419,6 +419,70 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   }
 }
 
+
+#' Evaluate Differences in the edge strenght 
+#'@param data datafromlian
+#'@param measure intensity
+#'@param out_path save path
+#'@importFrom tidyr %>%
+#'@import tibble dplyr rstatix
+#'@return tibble
+#'@noRd
+mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
+  lcellpair <- lapply(names(data@tables),function(x){
+        data@tables[[x]] |>
+        select(cellpair) |>
+        pull(unique(cellpair))
+  })
+  if (!is.null(comparison)) {
+    for (pair in comparison) {
+      ctr_name <- pair[2]
+      exp_name <- pair[1]
+      res<-lapply(unique(unlist(lcellpair)), function(x){
+                  c <- data@tables[[ctr_name]] |>
+                      filter(cellpair == x) |>
+                      select(allpair,measure)
+                  e <- data@tables[[exp_name]] |>
+                      filter(cellpair == x) |>
+                      select(allpair,measure)
+                  joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
+                  joined[is.na(joined)] <- 0 
+                  joined<-joined %>%
+                      reshape2::melt() |>
+                      wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
+                      mutate(cellpair=x)
+                      return(joined)
+            })
+       data@stats[[paste0(exp_name, '_x_', ctr_name,":MannU")]] <- res 
+    }
+    return(data)
+  } else {
+    if (length(data@tables) >= 2) {
+      c <- data@tables[[1]] %>%
+        group_by(cellpair) %>%
+        select(c(source, target, measure)) %>%
+        summarise(measure = n())
+      for (i in 2:length(names(data@tables))) {
+         res<-lapply(unique(unlist(lcellpair)), function(x){
+                      e <- data@tables[[2]] |>
+                          filter(cellpair == x) |>
+                          select(allpair,measure)
+                      joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
+                      joined[is.na(joined)] <- 0 
+                      joined<-joined %>%
+                          reshape2::melt() |>
+                          wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
+                          mutate(cellpair=x)
+                          return(joined)
+                })
+          data@stats[[paste0(names(data@tables)[i], '_x_', names(data@tables)[1],":MannU")]] <- res
+      }
+      return(data)
+    }
+  }
+}
+
+
 #' Adding genetype to the gene names to distinguish biological function
 #'@param df dataframe with interaction data
 #'@import tidyr

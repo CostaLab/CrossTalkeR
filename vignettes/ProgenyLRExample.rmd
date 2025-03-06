@@ -1,5 +1,5 @@
 ---
-title: Ligand-Receptor Pathway Enrichment with Progeny - Example
+title: Ligand-Receptor Pathway Enrichment with Progeny - Bone Marrow Fibrosis in Human
 author:
 - name: Vanessa Klöker
   affiliation: Institute for Computational Genomics,
@@ -121,7 +121,7 @@ sns.clustermap(estimate.T, annot=pval_mapping.T, fmt='', row_cluster=False, figs
 
 ```
 
-<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
+<figure class="figure" style="display: table; margin: auto; height: 60%; width: 60%;">
   <img src="Progeny_images/MSC_Fibroblast_enrichment.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>

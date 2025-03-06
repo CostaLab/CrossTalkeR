@@ -24,7 +24,7 @@ navbar:
           href: articles/LR2TF_analysis.html
         - text: "Ligand-Receptor Inference with Liana"
           href: articles/run_liana.html
-        - text: "Ligand-Receptor Pathway Enrichment with Progeny - Example"
+        - text: "Ligand-Receptor Pathway Enrichment with Progeny - Bone Marrow Fibrosis in Human"
           href: articles/ProgenyLRExample.html  
      install:
       text: Install

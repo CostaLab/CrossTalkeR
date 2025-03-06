@@ -11,7 +11,9 @@ plot_sankey(
   receptor_cluster = NULL,
   plt_name = NULL,
   threshold = 50,
-  tfflag = TRUE
+  tfflag = TRUE,
+  score_col = "LRScore",
+  fil_col = "LRScore"
 )
 }
 \arguments{

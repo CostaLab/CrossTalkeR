@@ -1,0 +1,131 @@
+---
+title: Ligand-Receptor Pathway Enrichment with Progeny - Example
+author:
+- name: Vanessa Klöker
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: James S. Nagai
+  affiliation: Institute for Computational Genomics,
+               Faculty of Medicine,
+               RWTH Aachen University,
+               Aachen, 52074 Germany
+- name: Ivan G. Costa
+  affiliation:
+     - Institute for Computational Genomics,
+       Faculty of Medicine,
+       RWTH Aachen University,
+       Aachen, 52074 Germany
+output:
+     html_document
+vignette: |
+      %\VignetteIndexEntry{ProgenyLRExample}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+---
+
+# Ligand-Receptor Pathway Enrichment with Progeny - Example
+
+The liana+ Python documentation includes an example of performing pathway enrichment on ligand-receptor interactions derived from tensor cell2cell analysis ([liana+ Tutorial](https://liana-py.readthedocs.io/en/latest/notebooks/liana_c2c.html)). Here, we apply this downstream pathway enrichment approach to CrossTalkeR results using human bone marrow example data ([Tutorial](https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html)), focusing specifically on ligand-receptor interactions from mesenchymal stem cells (MSCs) to fibroblasts.
+
+## Filter CrossTalkeR Results (in R)
+
+We begin by loading the CrossTalkeR object and extracting the table of ligand-receptor interactions obtained from the comparison analysis of control and disease conditions.
+```{R, eval = FALSE}
+library(CrossTalkeR)
+
+CrossTalkeR_results <- readRDS("LR_data_final.Rds")
+EXP_x_CTR_table <- as.data.frame(CrossTalkeR_results@tables$EXP_x_CTR)
+```
+
+To facilitate the use of liana+ functions, we reformat and filter the table, resulting in a structured dataset with ligand-receptor pairs in the first and their corresponding LRScore in the second column.
+```{R, eval = FALSE}
+interactions_of_interest <- EXP_x_CTR_table[EXP_x_CTR_table$source == "MSC" & EXP_x_CTR_table$target == "MSC", ]
+
+interactions_of_interest$genepair <- paste(
+    gsub(
+        "\\|L",
+        "",
+        as.character(interactions_of_interest$gene_A)
+    ),
+    gsub(
+        "\\|R",
+        "",
+        as.character(interactions_of_interest$gene_B)
+    ),
+    sep = "@"
+)
+interactions_of_interest <- interactions_of_interest <- data.frame(LRScore = interactions_of_interest$LRScore, row.names = interactions_of_interest$genepair)
+
+write.csv(interactions_of_interest, paste("MSC_Megakaryocyte_LR_interactions.csv"))
+```
+
+Due to certain functionalities being unavailable in the R version of liana, the subsequent analyses are conducted in Python.
+
+## Enrichment Analysis with Progeny and decoupleR (in Python)
+We start with loading all necessary Python libraries.
+```{python, eval = FALSE}
+import pandas as pd
+
+import liana as li
+import omnipath as op
+import decoupler as dc
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+To perform pathway enrichment analysis, we require a pathway database containing gene sets. For this purpose, we utilize the Progeny Pathway database, setting the top argument to 20,000 to load the complete dataset.
+```{python, eval = FALSE}
+# Load Progeny Pathway Database
+progeny = dc.get_progeny(organism='human', top=20000)
+```
+
+Since the analysis considers ligand-receptor pairs rather than individual genes, we must first map these interactions to relevant pathways. To achieve this, we load the Consensus database from liana, which was also used for ligand-receptor interaction inference in this data. A dedicated function then assigns ligand-receptor pairs to their respective pathways.
+```{python, eval = FALSE}
+# Load Ligand-Receptor Pairs from liana Consensus Database
+lr_pairs = li.resource.select_resource('consensus')
+
+# Assign Ligand-Receptor Pairs to Progeny Pathways
+lr_progeny = li.rs.generate_lr_geneset(lr_pairs, progeny, lr_sep="@")
+```
+
+Next, we incorporate the ligand-receptor interactions of interest, extracted from the CrossTalkeR results, and conduct the enrichment analysis using the decoupler ULM method along with the ligand-receptor pathway mapping. This analysis yields two data frames: one containing the enrichment estimation values and another reporting the corresponding p-values, indicating statistical significance.
+```{python, eval = FALSE}
+# Load Ligand-Receptor Interactions for Enrichment Analysis
+lr_interactions = pd.read_csv("MSC_MSC_LR.csv", index_col=0)
+
+# Run Enrichment Analysis with decoupleR ULM Method
+estimate, pvals = dc.run_ulm(lr_interactions.transpose(), lr_progeny, source="source", target="interaction", use_raw=False)
+```
+
+## Visualize Results (in Python)
+
+To visualize the results, we generate a heatmap using seaborn. To highlight pathways with significant enrichment estimations, we first create an annotation data frame, which is then incorporated into the heatmap visualization.
+```{python, eval = FALSE}
+# Mapping to Vizualize P-Value Significance Levels
+def p_value_to_asterisks(p):
+    if p < 0.001:
+        return '***'
+    elif p < 0.01:
+        return '**'
+    elif p < 0.05:
+        return '*'
+    else:
+        return ' '
+pval_mapping = pvals.applymap(p_value_to_asterisks)
+
+# Vizualize Enrichment Results with Seaborn Clustermap
+sns.clustermap(estimate.T, annot=pval_mapping.T, fmt='', row_cluster=False, figsize=(7, 2), cmap="vlag")
+
+```
+
+<figure class="figure" style="display: table; margin: auto; height: 80%; width: 80%;">
+  <img src="Progeny_images/MSC_Fibroblast_enrichment.png" alt="">
+  <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
+</figure>
+
+<br/><br/>
+
+The heatmap shows, that signaling in the WNT pathway is significantly enriched in the ligand-receptor interactions between MSCs and fibroblasts. Further the result indicates that this pathway is up in the disease condition. On the other hand MAPK and VEGF pathways are predicted to be down in the disease condition.

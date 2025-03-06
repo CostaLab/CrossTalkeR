@@ -24,6 +24,8 @@ navbar:
           href: articles/LR2TF_analysis.html
         - text: "Ligand-Receptor Inference with Liana"
           href: articles/run_liana.html
+        - text: "Ligand-Receptor Pathway Enrichment with Progeny - Example"
+          href: articles/ProgenyLRExample.html  
      install:
       text: Install
       href: articles/Install.html

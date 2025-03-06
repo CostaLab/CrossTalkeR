@@ -37,7 +37,7 @@ For the prediction of ligand-receptor interactions, we are using the [liana](htt
 
 
 First of all, we are laoding all necessary libraries :
-```{python, eval = FALSE}
+```{R, eval = FALSE}
 library(Seurat)
 library(dplyr)
 library(liana)
@@ -167,7 +167,7 @@ p2 <- plot_cci(graph = data@graphs$EXP,
 print(p1+p2)
 ```
 
-In the CTR plot we can see that a high proportion of interactions are MSCs talking with themselves as well as MSC and Myeloid cells talking with each other. These interaction have also a higher weight, as can be seen by the edge color. The most important nodes by pagerank are also the MSC and Myeloid nodes. When analysing the plot of the EXP condition, we see again a high proportions of interactions are self-talking MSCs and one of the most important nodes by pagerank is again the MSC node. Here, the MSCs are predicted to talk more to Megakaryocytes than with the Myeloid cells. To really compare the two conditions we recommend using the comparative report results.
+In the CTR plot, we can see that a high proportion of interactions involve MSCs communicating with themselves, as well as MSCs and Myeloid cells interacting with each other. These interactions also have a higher weight, as indicated by the edge color. The most important nodes according to Pagerank are the MSC, Myeloid, and Megakaryocyte nodes. When analyzing the plot of the EXP condition, we again observe a high proportion of interactions involving self-communicating MSCs, and one of the most significant nodes by pagerank remains the MSC node. Here, the MSCs are predicted to communicate more with Megakaryocytes and Fibroblasts than with Myeloid cells. To effectively compare the two conditions, we recommend utilizing the comparative report results.
 
 ### Analysis on the Gene-Cell Interaction Level
 We provide several different possibilities to analyse the ligand-receptor interactions on the gene level. In CrossTalkeR, topological network measures are calculated for each node(gene) in the build networks. These measures include Influencer (depending on outgoing edges), Listener(depending on incoming edges), Mediator (depending on outgoing and incoming edges), and Pagerank (overall importance) rankings. The ligand and receptors can be ranked by these measures and we can identify possibly relevant genes by considering the top genes of the rankings. In the report we provide an interactive table with all the rankings for each gene in the network. Here is an example for the top 10 genes in the Pagerank ranking for both preset conditions in form of Barplots:

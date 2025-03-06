@@ -19,7 +19,8 @@ generate_report(
     "MeanLR"),
   org = "hsa",
   comparison = NULL,
-  filtered_net = F
+  filtered_net = F,
+  score_col = "LRScore"
 )
 }
 \arguments{
@@ -52,18 +53,24 @@ It assumes that the table present the following columns ('source','target','gene
 measure
 }
 \examples{
-paths <- c('CTR' = system.file("extdata",
-                              "CTR_LR.csv",
-                              package = "CrossTalkeR"),
-          'EXP' = system.file("extdata",
-                              "EXP_LR.csv",
-                              package = "CrossTalkeR"))
-output =  system.file("extdata", package = "CrossTalkeR")
-genes <- c('TGFB1')
-data <- generate_report(lrpaths = paths,
-                       genes = genes,
-                       out_path = paste0(output,'/'),
-                       threshold = 0,
-                         out_file = "report.html")
+paths <- c(
+  "CTR" = system.file("extdata",
+    "CTR_LR.csv",
+    package = "CrossTalkeR"
+  ),
+  "EXP" = system.file("extdata",
+    "EXP_LR.csv",
+    package = "CrossTalkeR"
+  )
+)
+output <- system.file("extdata", package = "CrossTalkeR")
+genes <- c("TGFB1")
+data <- generate_report(
+  lrpaths = paths,
+  genes = genes,
+  out_path = paste0(output, "/"),
+  threshold = 0,
+  out_file = "report.html"
+)
 
 }

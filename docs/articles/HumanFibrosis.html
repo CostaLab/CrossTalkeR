@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="../articles/MyocardialInfarction.html">Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)</a></li>
     <li><a class="dropdown-item" href="../articles/LR2TF_analysis.html">Intracellular Communication Analysis Bone Marrow Fibrosis in Human</a></li>
     <li><a class="dropdown-item" href="../articles/run_liana.html">Ligand-Receptor Inference with Liana</a></li>
+    <li><a class="dropdown-item" href="../articles/ProgenyLRExample.html">Ligand-Receptor Pathway Enrichment with Progeny - Example</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -116,9 +117,10 @@ framework for R. Here we show the usage of liana on our example data and
 we are using the CellphoneDB method and the Consensus DB provided with
 liana.</p>
 <p>First of all, we are laoding all necessary libraries :</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>library(Seurat)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>library(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>library(liana)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://saezlab.github.io/liana/" class="external-link">liana</a></span><span class="op">)</span></span></code></pre></div>
 <p>We assume here that the necessary libraries are already
 installed.</p>
 <p>Then we can continue to load the Seurat object of our example. The
@@ -134,20 +136,20 @@ tables can directly be used as input for the CrossTalkeR analysis:</p>
 <code class="sourceCode R"><span><span class="va">outpath</span> <span class="op">&lt;-</span> <span class="st">"/path/to/save/results/"</span></span>
 <span><span class="va">pval_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span>
 <span></span>
-<span><span class="va">seurat_object_list</span> <span class="op">&lt;-</span> <span class="fu">SplitObject</span><span class="op">(</span><span class="va">seurat_object</span>, split.by <span class="op">=</span> <span class="st">"protocol"</span><span class="op">)</span></span>
+<span><span class="va">seurat_object_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SplitObject.html" class="external-link">SplitObject</a></span><span class="op">(</span><span class="va">seurat_object</span>, split.by <span class="op">=</span> <span class="st">"protocol"</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">condition</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">seurat_object_list</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">sub_object</span> <span class="op">&lt;-</span> <span class="va">seurat_object_list</span><span class="op">[[</span><span class="va">condition</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span>  <span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="fu">liana_wrap</span><span class="op">(</span><span class="va">sub_object</span>,</span>
+<span>  <span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://saezlab.github.io/liana/reference/liana_wrap.html" class="external-link">liana_wrap</a></span><span class="op">(</span><span class="va">sub_object</span>,</span>
 <span>    method <span class="op">=</span> <span class="st">"cellphonedb"</span>,</span>
 <span>    resource <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Consensus"</span><span class="op">)</span>,</span>
 <span>    expr_prop <span class="op">=</span> <span class="fl">0.1</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">liana_results</span> <span class="op">&lt;-</span> <span class="va">liana_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">&lt;</span> <span class="va">pval_threshold</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu">select</span><span class="op">(</span><span class="va">source</span>, <span class="va">target</span>, <span class="va">ligand</span>, <span class="va">receptor.complex</span>, <span class="va">lr.mean</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu">rename</span><span class="op">(</span>gene_A <span class="op">=</span> <span class="va">ligand</span>, gene_B <span class="op">=</span> <span class="va">receptor.complex</span>, MeanLR <span class="op">=</span> <span class="va">lr.mean</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pvalue</span> <span class="op">&lt;</span> <span class="va">pval_threshold</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">target</span>, <span class="va">ligand</span>, <span class="va">receptor.complex</span>, <span class="va">lr.mean</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>gene_A <span class="op">=</span> <span class="va">ligand</span>, gene_B <span class="op">=</span> <span class="va">receptor.complex</span>, MeanLR <span class="op">=</span> <span class="va">lr.mean</span><span class="op">)</span></span>
 <span>  <span class="va">liana_results</span><span class="op">$</span><span class="va">type_gene_A</span> <span class="op">=</span> <span class="st">'Ligand'</span></span>
 <span>  <span class="va">liana_results</span><span class="op">$</span><span class="va">type_gene_B</span> <span class="op">=</span> <span class="st">'Receptor'</span></span>
 <span></span>
@@ -255,16 +257,17 @@ show a plot for each analysed condition:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p1</span><span class="op">+</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="HumanFibrosis_files/figure-html/vignete2-1.png" width="960"><img src="HumanFibrosis_files/figure-html/vignete2-2.png" width="960"></p>
-<p>In the CTR plot we can see that a high proportion of interactions are
-MSCs talking with themselves as well as MSC and Myeloid cells talking
-with each other. These interaction have also a higher weight, as can be
-seen by the edge color. The most important nodes by pagerank are also
-the MSC and Myeloid nodes. When analysing the plot of the EXP condition,
-we see again a high proportions of interactions are self-talking MSCs
-and one of the most important nodes by pagerank is again the MSC node.
-Here, the MSCs are predicted to talk more to Megakaryocytes than with
-the Myeloid cells. To really compare the two conditions we recommend
-using the comparative report results.</p>
+<p>In the CTR plot, we can see that a high proportion of interactions
+involve MSCs communicating with themselves, as well as MSCs and Myeloid
+cells interacting with each other. These interactions also have a higher
+weight, as indicated by the edge color. The most important nodes
+according to Pagerank are the MSC, Myeloid, and Megakaryocyte nodes.
+When analyzing the plot of the EXP condition, we again observe a high
+proportion of interactions involving self-communicating MSCs, and one of
+the most significant nodes by pagerank remains the MSC node. Here, the
+MSCs are predicted to communicate more with Megakaryocytes and
+Fibroblasts than with Myeloid cells. To effectively compare the two
+conditions, we recommend utilizing the comparative report results.</p>
 </div>
 <div class="section level4">
 <h4 id="analysis-on-the-gene-cell-interaction-level">Analysis on the Gene-Cell Interaction Level<a class="anchor" aria-label="anchor" href="#analysis-on-the-gene-cell-interaction-level"></a>
@@ -283,7 +286,7 @@ genes in the Pagerank ranking for both preset conditions in form of
 Barplots:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">$</span><span class="va">CTR_ggi</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">Pagerank</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Pagerank</span><span class="op">)</span></span>
 <span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">rankings_table</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">signal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">rankings_table</span><span class="op">$</span><span class="va">Pagerank</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="st">'negative'</span>, <span class="st">'positive'</span><span class="op">)</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rankings_table</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Pagerank</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">nodes</span>, <span class="va">Pagerank</span><span class="op">)</span>, fill <span class="op">=</span> <span class="va">signal</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -294,7 +297,7 @@ Barplots:</p>
 <span></span>
 <span></span>
 <span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">$</span><span class="va">EXP_ggi</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">Pagerank</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Pagerank</span><span class="op">)</span></span>
 <span><span class="va">rankings_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">rankings_table</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">signal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">rankings_table</span><span class="op">$</span><span class="va">Pagerank</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="st">'negative'</span>, <span class="st">'positive'</span><span class="op">)</span></span>
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rankings_table</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Pagerank</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">nodes</span>, <span class="va">Pagerank</span><span class="op">)</span>, fill <span class="op">=</span> <span class="va">signal</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>

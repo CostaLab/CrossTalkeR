@@ -164,12 +164,7 @@ for(i in entries){
 for (i in 2:length(names(all_data@rankings))) {
   curr <- names(all_data@rankings)[i]
   if (str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
-    signal <- ifelse(all_data@rankings[[curr]]$Pagerank < 0, 'negative', 'positive')
-    print(ggplot(all_data@rankings[[curr]], aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
-            geom_bar(stat = "identity") +
-            ggtitle(curr) +
-            scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-            theme_minimal())
+    print(plot_bar_rankings(all_data, curr, "Pagerank", mode = "cci", top_num = 10))
   }
 }
 ```

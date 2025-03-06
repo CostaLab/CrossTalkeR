@@ -41,32 +41,23 @@ if (is.null(params$obj3)) {
   tfFlag <- TRUE
 }
 
-all_data <- readRDS(params$obj1)
-PCA_TF_flag <- FALSE
-for (name in names(all_data@tables)) {
-  if (str_detect(name, '_x_', negate = FALSE)) {
-    if (("Transcription Factor" %in% all_data@tables[[name]]$type_gene_A) | ("Transcription Factor" %in% all_data@tables[[name]]$type_gene_B)) {
-      PCA_TF_flag <- TRUE
-    }
-  }
-}
 ```
 
 
 
-### Pagerank Log Ratio
+### Top Genes by network measure
 
 ```{r fig.align='center',warning=FALSE,echo=FALSE,eval=TRUE}
 all_data <- readRDS(path)
 for (i in 2:length(names(all_data@rankings))) {
   curr <- names(all_data@rankings)[i]
   if (str_detect(curr, '_x_', negate = FALSE) & str_detect(curr, 'ggi', negate = FALSE)) {
-    tmp <- top_n(all_data@rankings[[curr]], 20, abs(.data$Pagerank))
-    signal <- ifelse(tmp$Pagerank < 0, 'negative', 'positive')
-    print(ggplot(tmp, aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
-            geom_bar(stat = "identity") +
-            scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-            theme_minimal())
+    print(plot_bar_rankings(all_data, curr, "Pagerank", type = "LR", mode = "cgi", top_num = 10))
+    print(plot_bar_rankings(all_data, curr, "Influencer", type = "L", mode = "cgi", top_num = 10))
+    print(plot_bar_rankings(all_data, curr, "Listener", type = "R", mode = "cgi", top_num = 10))
+    if(tfFlag){
+      print(plot_bar_rankings(all_data, curr, "Mediator", type = "TF", mode = "cgi", top_num = 10))
+     }
   }
 }
 ```

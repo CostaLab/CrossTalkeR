@@ -52,3 +52,17 @@ for(i in 1:length(names(all_data@tables))){
    }
 }
 ```
+
+
+### Pagerank Log Ratio
+
+```{r fig.align='center',warning=FALSE,echo=FALSE,results='asis'}
+for (i in 1:length(names(all_data@rankings))) {
+  curr <- names(all_data@rankings)[i]
+  if (!str_detect(curr, '_x_', negate = FALSE) & !str_detect(curr, 'ggi', negate = FALSE)) {
+    cat(paste0("#### ", curr, "\n\n"))
+    print(plot_bar_rankings(all_data, curr, "Pagerank", mode = "cci", top_num = 10))
+    cat("\n\n")
+  }
+}
+```

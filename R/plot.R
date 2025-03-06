@@ -631,7 +631,10 @@ plot_sankey <- function(lrobj_tbl,
                         ligand_cluster = NULL,
                         receptor_cluster = NULL,
                         plt_name = NULL,
-                        threshold = 50, tfflag = TRUE) {
+                        threshold = 50,
+                        tfflag = TRUE,
+                        score_col = "LRScore",
+                        fil_col = "LRScore") {
   lrobj_tbl <- lrobj_tbl %>%
     filter(type_gene_A == "Ligand" & type_gene_B == "Receptor")
   if (!is.null(target)) {
@@ -678,16 +681,16 @@ plot_sankey <- function(lrobj_tbl,
   if (dim(data)[1] >= 1) {
     data$freq <- 1
     tmp <- dplyr::slice_max(data,
-      order_by = abs(.data$LRScore),
+      order_by = abs(.data[[fil_col]]),
       n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE
     )
     print(ggplot2::ggplot(tmp, aes(
       y = .data$freq, axis1 = .data$source,
-      axis2 = stats::reorder(.data$gene_A, -.data$LRScore),
-      axis3 = stats::reorder(.data$gene_B, -.data$LRScore),
+      axis2 = stats::reorder(.data$gene_A, -.data[[score_col]]),
+      axis3 = stats::reorder(.data$gene_B, -.data[[score_col]]),
       axis4 = .data$target
     )) +
-      ggalluvial::geom_alluvium(aes(fill = .data$LRScore, color = "b"),
+      ggalluvial::geom_alluvium(aes(fill = .data[[score_col]], color = "b"),
         width = 1 / 12,
         discern = FALSE
       ) +
@@ -1235,83 +1238,6 @@ plot_deregulated_pathways <- function(data_object, name, title = NULL) {
   }
 }
 
-#' This function generates the barplot for a given network ranking on the CCI level
-#'
-#' @param data_object LRobject with all data
-#' @param table_name name of the ranking table
-#' @param ranking name of the network ranking to use
-#' @param filter_sign show all (NULL), only positive (pos), or only negativ (neg) results
-#' @import ggplot2
-#' @import ggrepel
-#' @import reshape2
-#' @import colorBlindness
-#' @import dplyr
-#' @importFrom stats reorder
-#' @return R default plot
-#' @export
-plot_bar_rankings_cci <- function(data_object, table_name, ranking = "pagerank", filter_sign = NULL) {
-  rankings_table <- data_object@rankings[[table_name]]
-
-  curr_table <- rankings_table %>%
-    arrange(get(ranking)) %>%
-    as.data.frame()
-
-  if (all(curr_table[[ranking]] > 0)) {
-    curr_table <- head(curr_table, n = 20)
-    curr_table <- unique(curr_table)
-    rownames(curr_table) <- curr_table$nodes
-    signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-    p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-      geom_bar(stat = "identity") +
-      ylab("Cell Type") +
-      xlab(ranking) +
-      scale_fill_manual(values = c(Blue2DarkOrange18Steps[14])) +
-      theme_minimal())
-  } else {
-    if (is.null(filter_sign)) {
-      curr_table <- rbind(head(curr_table, n = 10), tail(curr_table, n = 10))
-      curr_table <- unique(curr_table)
-      rownames(curr_table) <- curr_table$nodes
-      signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-        geom_bar(stat = "identity") +
-        ylab("Cell Type") +
-        xlab(ranking) +
-        scale_fill_manual(values = c(Blue2DarkOrange18Steps[4], Blue2DarkOrange18Steps[14])) +
-        theme_minimal())
-    } else {
-      if (filter_sign == "pos") {
-        curr_table <- curr_table[curr_table[[ranking]] > 0, ]
-        curr_table <- head(curr_table, n = 20)
-        curr_table <- unique(curr_table)
-        rownames(curr_table) <- curr_table$nodes
-        signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-        p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-          geom_bar(stat = "identity") +
-          ylab("Cell Type") +
-          xlab(ranking) +
-          scale_fill_manual(values = c(Blue2DarkOrange18Steps[14])) +
-          theme_minimal())
-      } else if (filter_sign == "neg") {
-        curr_table <- curr_table[curr_table[[ranking]] < 0, ]
-        curr_table <- tail(curr_table, n = 20)
-        curr_table <- unique(curr_table)
-        rownames(curr_table) <- curr_table$nodes
-        signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-        p <- (ggplot(curr_table, aes(x = get(ranking), y = reorder(nodes, get(ranking)), fill = signal)) +
-          geom_bar(stat = "identity") +
-          ylab("Cell Type") +
-          xlab(ranking) +
-          scale_fill_manual(values = c(Blue2DarkOrange18Steps[4])) +
-          theme_minimal())
-      } else {
-        print("Unvalid filter_sign argument!")
-        p <- NULL
-      }
-    }
-  }
-  return(p)
-}
 
 #' This function generates the barplot for a given network ranking on the CGI level.
 #' Further, the genes can be filtered by selected gene types to filter the plot.
@@ -1379,30 +1305,78 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
 
   if (is.null(filter_sign)) {
     if (mode == "cci") {
-      curr_table <- rbind(
-        head(curr_table, n = top_num),
-        tail(curr_table, n = top_num)
-      )
-      curr_table <- unique(curr_table)
-      rownames(curr_table) <- curr_table$nodes
-      signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
-      p <- (ggplot(curr_table, aes(
-        x = get(ranking),
-        y = reorder(nodes, get(ranking)),
-        fill = signal
-      )) +
-        geom_bar(stat = "identity") +
-        ylab("Gene") +
-        xlab(ranking) +
-        scale_fill_manual(values = c(
-          Blue2DarkOrange18Steps[4],
-          Blue2DarkOrange18Steps[14]
-        )) +
-        theme_minimal()) +
-        theme(
-          axis.text = element_text(size = 14),
-          axis.title = element_text(size = 16)
+      if (all(curr_table[[ranking]] > 0)) {
+        curr_table <- rbind(
+          head(curr_table, n = top_num),
+          tail(curr_table, n = top_num)
         )
+        curr_table <- unique(curr_table)
+        rownames(curr_table) <- curr_table$nodes
+        signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
+        p <- (ggplot(curr_table, aes(
+          x = get(ranking),
+          y = reorder(nodes, get(ranking)),
+          fill = signal
+        )) +
+          geom_bar(stat = "identity") +
+          ylab("Cell Type") +
+          xlab(ranking) +
+          scale_fill_manual(values = Blue2DarkOrange18Steps[14]) +
+          theme_minimal()) +
+          theme(
+            axis.text = element_text(size = 14),
+            axis.title = element_text(size = 16)
+          )
+      } else if (all(curr_table[[ranking]] < 0)) {
+        curr_table <- rbind(
+          head(curr_table, n = top_num),
+          tail(curr_table, n = top_num)
+        )
+        curr_table <- unique(curr_table)
+        rownames(curr_table) <- curr_table$nodes
+        signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
+        p <- (ggplot(curr_table, aes(
+          x = get(ranking),
+          y = reorder(nodes, get(ranking)),
+          fill = signal
+        )) +
+          geom_bar(stat = "identity") +
+          ylab("Cell Type") +
+          xlab(ranking) +
+          scale_fill_manual(values = Blue2DarkOrange18Steps[4]) +
+          theme_minimal()) +
+          theme(
+            axis.text = element_text(size = 14),
+            axis.title = element_text(size = 16)
+          )
+      } else {
+        curr_table <- rbind(
+          head(curr_table, n = top_num),
+          tail(curr_table, n = top_num)
+        )
+        curr_table <- unique(curr_table)
+        curr_table <- curr_table[(curr_table[[ranking]] > 0 |
+          curr_table[[ranking]] < 0), ]
+        rownames(curr_table) <- curr_table$nodes
+        signal <- ifelse(curr_table[[ranking]] < 0, "negative", "positive")
+        p <- (ggplot(curr_table, aes(
+          x = get(ranking),
+          y = reorder(nodes, get(ranking)),
+          fill = signal
+        )) +
+          geom_bar(stat = "identity") +
+          ylab("Cell Type") +
+          xlab(ranking) +
+          scale_fill_manual(values = c(
+            Blue2DarkOrange18Steps[4],
+            Blue2DarkOrange18Steps[14]
+          )) +
+          theme_minimal()) +
+          theme(
+            axis.text = element_text(size = 14),
+            axis.title = element_text(size = 16)
+          )
+      }
     } else {
       curr_table <- rbind(
         head(curr_table, n = top_num),
@@ -1520,10 +1494,11 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
 #' @importFrom stats reorder
 #' @return R default plot
 #' @export
-plot_Heatmap <- function(graph,weight) {
-  p1<-ComplexHeatmap::Heatmap(as.matrix(igraph::as_adj(graph,attr = weight)),
-          row_title = "Ligand cluster",column_title = "Receptor cluster",
-          column_title_side = "bottom",row_title_side = "right")
+plot_Heatmap <- function(graph, weight) {
+  p1 <- ComplexHeatmap::Heatmap(as.matrix(igraph::as_adj(graph, attr = weight)),
+    row_title = "Ligand cluster", column_title = "Receptor cluster",
+    column_title_side = "bottom", row_title_side = "right"
+  )
   return(p1)
 }
 
@@ -1534,10 +1509,10 @@ plot_Heatmap <- function(graph,weight) {
 #' @import EnhancedVolcano
 #' @return R default plot
 #' @export
-plot_Volcano <- function(table,feature_name, pvalcutoff=0.05,x='lodds',y='p') {
-  p1<-EnhancedVolcano::EnhancedVolcano(table, 
-                      lab=table[[feature_name]],
-                      x=x,y=y,pCutoff=pvalcutoff)
+plot_Volcano <- function(table, feature_name, pvalcutoff = 0.05, x = "lodds", y = "p") {
+  p1 <- EnhancedVolcano::EnhancedVolcano(table,
+    lab = table[[feature_name]],
+    x = x, y = y, pCutoff = pvalcutoff
+  )
   return(p1)
 }
-

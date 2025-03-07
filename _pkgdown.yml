@@ -3,6 +3,8 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 template: 
   bootstrap: 5
+  includes:
+    after_body: pkgdown/extra.js
 #  theme: arrow-dark  
 navbar:
   type: dark
@@ -14,18 +16,12 @@ navbar:
      articles:
       text: Tutorials
       menu:
-        - text: "CrossTalkeR 101"
+        - text: "CrossTalkeR - Basic Usage"
           href: articles/CrossTalker_basicusage.html
-        - text: "Example: Bone Marrow Fibrosis in Human (Leimkuhler et. al., 2021)"
-          href: articles/HumanFibrosis.html
-        - text: "Example: Heart Myocardial Infarcition in Human (Kuppe et. al., 2022)"
-          href: articles/MyocardialInfarction.html
-        - text: "Intracellular Communication Analysis Bone Marrow Fibrosis in Human"
-          href: articles/LR2TF_analysis.html
         - text: "Ligand-Receptor Inference with Liana"
           href: articles/run_liana.html
-        - text: "Ligand-Receptor Pathway Enrichment with Progeny - Bone Marrow Fibrosis in Human"
-          href: articles/ProgenyLRExample.html  
+        - text: "Example: Heart Myocardial Infarction in Human (Kuppe et. al., 2022)"
+          href: articles/MyocardialInfarction.html
      install:
       text: Install
       href: articles/Install.html

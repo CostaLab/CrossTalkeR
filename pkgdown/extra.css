@@ -2,3 +2,10 @@ p {
     text-align: justify;
 }
 
+.dropdown-menu.show {
+    display: ruby;
+}
+
+.subsub {
+    text-align: center;
+}

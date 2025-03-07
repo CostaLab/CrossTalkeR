@@ -7,9 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     submenuItem.innerHTML = `
       <a class="dropdown-item dropdown-toggle" href="#">Example: Bone Marrow Fibrosis in Human (Leimkuhler et. al., 2021)</a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="articles/HumanFibrosis.html">CrossTalkeR Analysis</a></li>
-        <li><a class="dropdown-item" href="articles/LR2TF_analysis.html">Intracellular Communication Analysis</a></li>
-        <li><a class="dropdown-item" href="articles/ProgenyLRExample.html">Ligand-Receptor Pathway Enrichment with Progeny</a></li>
+        <li><a class="dropdown-item subsub" href="articles/HumanFibrosis.html">CrossTalkeR Analysis</a></li>
+        <li><a class="dropdown-item subsub" href="articles/LR2TF_analysis.html">Intracellular Communication Analysis</a></li>
+        <li><a class="dropdown-item subsub" href="articles/ProgenyLRExample.html">Ligand-Receptor Pathway Enrichment with Progeny</a></li>
       </ul>
     `;
   

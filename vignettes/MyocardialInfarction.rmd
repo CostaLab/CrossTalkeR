@@ -217,6 +217,7 @@ EnhancedVolcano(data@stats$ischemic_x_myogenic,
 
 Statistically significant points are labeled with the names of the corresponding edge pairs, with the significance threshold set to a p-value greater than 0.05 and a log2 fold change above one. We see that many of these significant interactions involve high Pagerank cell types, including fibroblast, cardiomyocyte, and myeloid cell clusters. Using this threshold (the default in CrossTalkeR), we can retain only interacting cell pairs with a p-value greater than 0.05 as an example, and replot the CCI network:
 
+
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
 plot_cci(graph = data@graphs$ischemic_x_myogenic_filtered,
         colors = data@colors,
@@ -239,6 +240,25 @@ plot_cci(graph = data@graphs$ischemic_x_myogenic_filtered,
 </figure>
 
 In the filtered CCI plot, positive edges become more visible, though all cell types remain except for the Neuronal and Purkinje_fibers clusters. The Pagerank of the nodes remains largely unchanged. 
+
+We can also examine the filtered CCI network with the help of a heatmap:
+
+```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
+entries <- names(data@graphs)[grep("_x_",names(data@graphs))]
+entries <- entries[grep("filtered",entries)]
+for(i in entries){
+      p1<-plot_Heatmap(graph=data@graphs[[i]],weight = "LRScore")
+      draw(p1)
+}
+```
+
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
+  <img src="heart_images/CCI_Heatmap.png" alt="">
+  <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
+</figure>
+&nbsp;
+
+The heatmap provides a more detailed view of the interactions between cell types. The color intensity corresponds to the edge weight in the CCI plot, with red indicating a positive and blue indicating a negative interaction score in the ischemic condition. The sender cell type (Receptor cluster) is on the x axis, and the receiving cell type (Ligand Cluster) on the y axis.
 
 To confirm the top cell types identified by Pagerank, we can examine their Pagerank scores in more detail using a bar plot:
 

@@ -307,13 +307,29 @@ and replot the CCI network:</p>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_heart_filtered.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>In the filtered CCI plot, positive edges become more visible, though
 all cell types remain except for the Neuronal and Purkinje_fibers
 clusters. The Pagerank of the nodes remains largely unchanged.</p>
+<p>We can also examine the filtered CCI network with the help of a
+heatmap:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">entries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_x_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">entries</span> <span class="op">&lt;-</span> <span class="va">entries</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"filtered"</span>,<span class="va">entries</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">entries</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">p1</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/plot_Heatmap.html">plot_Heatmap</a></span><span class="op">(</span>graph<span class="op">=</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>,weight <span class="op">=</span> <span class="st">"LRScore"</span><span class="op">)</span></span>
+<span>      <span class="fu">draw</span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_Heatmap.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
+<p>The heatmap provides a more detailed view of the interactions between
+cell types. The color intensity corresponds to the edge weight in the
+CCI plot, with red indicating a positive and blue indicating a negative
+interaction score in the ischemic condition. The sender cell type
+(Receptor cluster) is on the x axis, and the receiving cell type (Ligand
+Cluster) on the y axis.</p>
 <p>To confirm the top cell types identified by Pagerank, we can examine
 their Pagerank scores in more detail using a bar plot:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>We can further take a look at the Influencer and Listener ranking to
 observe which cell types are more sending or more receiving:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -340,7 +356,7 @@ the CCI level, we can examine the network’s topological rankings. We
 begin by reviewing the top Pagerank results, which identify genes within
 a specific cell type that are important in the network’s signaling. For
 now, we will focus exclusively on ligand-receptor (LR) interactions.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="st">"LR"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FLR_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>In the top genes, we find both ligands (L) and receptors (R). Many of
@@ -354,7 +370,7 @@ SPP1_Macrophages.</p>
 <p>To gain a clearer understanding of outgoing and incoming signals, we
 examine the ligands with the top Influencer scores and the receptors
 with the top Listener scores:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="st">"L"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="st">"R"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -374,7 +390,7 @@ we are using newer versions of the LIANA package and, for simplicity, we
 are considering fewer samples in this tutorial.</p>
 <p>We begin with the Sankey plots showing signaling between the Fib2 and
 SPP1_Macrophages clusters (in both directions):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"Fib2_Myofib"</span>,</span>
@@ -384,7 +400,7 @@ SPP1_Macrophages clusters (in both directions):</p>
 <span>    tfflag <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FFib2_SPP1_Mac_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"SPP1_Macrophages"</span>,</span>
@@ -396,7 +412,7 @@ SPP1_Macrophages clusters (in both directions):</p>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FSPP1_Mac_Fib2_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>Additionally, a Sankey plot was created for a subset of cell types,
 displaying only interactions involving the TGFB1 ligand:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LYVE_FOLR_Macrophages"</span>,</span>
 <span><span class="st">"LYVE_PLTP_Macrophages"</span>,</span>
 <span><span class="st">"CCL18_Macrophages"</span>,</span>

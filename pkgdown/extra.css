@@ -3,7 +3,7 @@ p {
 }
 
 .dropdown-menu.show {
-    display: ruby;
+    display: block;
 }
 
 .subsub {

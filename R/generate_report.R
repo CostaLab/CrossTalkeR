@@ -54,7 +54,8 @@ generate_report <- function(lrpaths,
                             org = "hsa",
                             comparison = NULL,
                             filtered_net = F,
-                            score_col = "LRScore") {
+                            score_col = "LRScore",
+                            p_val = 0.05) {
   data <- analise_LR(
     lrpaths,
     genes,
@@ -69,7 +70,8 @@ generate_report <- function(lrpaths,
     org,
     comparison,
     filtered_net,
-    score_col
+    score_col,
+    p_val
   )
   if (report) {
     make_report(
@@ -147,7 +149,8 @@ analise_LR <- function(lrpaths,
                        org = "hsa",
                        comparison = NULL,
                        filtered_net = F,
-                       score_col = "LRScore") {
+                       score_col = "LRScore",
+                       p_val = 0.05) {
   data <- read_lr_single_condition(lrpaths,
     sel_columns,
     out_path,
@@ -167,7 +170,7 @@ analise_LR <- function(lrpaths,
   }
 
   if (filtered_net) {
-    data <- filtered_graphs(data, out_path)
+    data <- filtered_graphs(data, out_path, p_val)
   }
 
   message("Calculating CCI Ranking")

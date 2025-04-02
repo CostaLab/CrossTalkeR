@@ -512,14 +512,14 @@ add_node_type <- function(df) {
 #'@import tibble dplyr rstatix
 #'@return tibble
 #'@noRd
-filtered_graphs <- function(data, out_path) {
+filtered_graphs <- function(data, out_path, p_val = 0.05) {
   for (name in names(data@graphs)) {
     if (str_detect(name, '_x_', negate = FALSE)) {
       h <- head_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       f <- tail_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       curr_net <- subgraph.edges(data@graphs[[name]],
                                  E(data@graphs[[name]])[
-                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= 0.05],
+                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= p_val],
                                          paste(h, f, sep = '@'),
                                          nomatch = F)])
       data@graphs[[paste0(name, "_filtered")]] <- curr_net

@@ -77,7 +77,7 @@ for (condition in names(seurat_object_list)) {
 }
 ```
 
-We have a more general example on how we recommend to run liana in R [here](link github page).
+We have a more general example on how we recommend to run liana in R [here](https://costalab.github.io/CrossTalkeR/articles/run_liana.html).
 
 ## Running CrossTalkeR
 

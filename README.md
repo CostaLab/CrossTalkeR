@@ -1,4 +1,4 @@
-# CrossTalkeR <img src="man/figures/logo1.png" align="right" width="200" />
+# CrossTalkeR <img src="man/figures/logo.png" align="right" width="200" />
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4740646.svg)](https://doi.org/10.5281/zenodo.4740646)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity)
@@ -38,7 +38,7 @@ Ivan G. Costa<sup>1*</sup>
 You can install CrossTalkeR with the simple commands below:
 
 
-```{r}
+```
 install.packages("devtools")
 devtools::install_github("https://github.com/CostaLab/CrossTalkeR", build_vignettes = TRUE)
 require(CrossTalkeR)
@@ -62,7 +62,7 @@ libgeos-dev
 
 We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq.
 
-```{r}
+```
 vignette('CrossTalkeR-HumanMyfib')
 ```
 

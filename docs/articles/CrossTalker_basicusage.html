@@ -66,7 +66,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>CrossTalkeR - Basic Usage</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>CrossTalkeR - Basic Usage</h1>
                         <h4 data-toc-skip class="author">James S.
 Nagai</h4>
             <address class="author_afil">
@@ -159,16 +159,17 @@ the functions below).</p>
 </h3>
 <p>To just <strong>perform the analysis</strong> part of CrossTalker,
 <strong>without generating the report</strong>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(CrossTalkeR)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Condition1'</span> <span class="ot">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>           <span class="st">'Condition2'</span> <span class="ot">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">analise_LR</span>(paths,</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                <span class="at">out_path=</span>output,</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>                <span class="at">org =</span> <span class="st">"hsa"</span> </span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>                <span class="at">filtered_net=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Condition1'</span> <span class="op">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
+<span>           <span class="st">'Condition2'</span> <span class="op">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analise_LR.html">analise_LR</a></span><span class="op">(</span><span class="va">paths</span>,</span>
+<span>                out_path<span class="op">=</span><span class="va">output</span>,</span>
+<span>                org <span class="op">=</span> <span class="st">"hsa"</span>, </span>
+<span>                filtered_net<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="getting-report-from-an-existing-project">Getting Report from an existing project<a class="anchor" aria-label="anchor" href="#getting-report-from-an-existing-project"></a>
@@ -176,15 +177,16 @@ the functions below).</p>
 <p>An addictional possibility is to <strong>generate the reports from
 existing CrossTalkeR objects</strong>. In this case the out_path should
 point to the folder with the ‘LR_data_final.Rds’ file.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(CrossTalkeR)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_report</span>(<span class="at">out_path=</span>output,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                <span class="at">out_file =</span> <span class="st">'vignettes_example.html'</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                <span class="at">output_fmt =</span> <span class="st">"html_document"</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                <span class="at">report =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>                <span class="at">org =</span> <span class="st">"hsa"</span> </span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>                <span class="at">filtered_net=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_report.html">make_report</a></span><span class="op">(</span>out_path<span class="op">=</span><span class="va">output</span>,</span>
+<span>                out_file <span class="op">=</span> <span class="st">'vignettes_example.html'</span>,</span>
+<span>                output_fmt <span class="op">=</span> <span class="st">"html_document"</span>,</span>
+<span>                report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                org <span class="op">=</span> <span class="st">"hsa"</span>, </span>
+<span>                filtered_net<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

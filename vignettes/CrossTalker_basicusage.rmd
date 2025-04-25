@@ -105,7 +105,7 @@ paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
 output <- "/path/to/output/folder/"
 data <- analise_LR(paths,
                 out_path=output,
-                org = "hsa" 
+                org = "hsa", 
                 filtered_net=TRUE)
 
 ```
@@ -120,7 +120,7 @@ data <- make_report(out_path=output,
                 out_file = 'vignettes_example.html',
                 output_fmt = "html_document",
                 report = TRUE,
-                org = "hsa" 
+                org = "hsa", 
                 filtered_net=TRUE)
 
 ```

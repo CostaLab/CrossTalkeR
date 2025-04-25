@@ -20,7 +20,7 @@
 <script src="extra.js"></script><meta property="og:title" content="Single Cell Ligand Receptor Downstream analysis">
 <meta name="description" content="This Package allows the network based analysis over ligand receptor network infered data.">
 <meta property="og:description" content="This Package allows the network based analysis over ligand receptor network infered data.">
-<meta property="og:image" content="/logo.png">
+<meta property="og:image" content="/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -66,7 +66,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="crosstalker-">CrossTalkeR <a class="anchor" aria-label="anchor" href="#crosstalker-"></a>
+<img src="logo.svg" class="logo" alt=""><h1 id="crosstalker-">CrossTalkeR <a class="anchor" aria-label="anchor" href="#crosstalker-"></a>
 </h1>
 </div>
 <p><a href="https://doi.org/10.5281/zenodo.4740646" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4740646.svg" alt="DOI"></a> <a href="https://GitHub.com/CostaLab/CrossTalkeR.js/graphs/commit-activity" class="external-link"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/CostaLab/CrossTalkeR.js/blob/master/LICENSE" class="external-link"><img src="https://img.shields.io/github/license/CostaLab/CrossTalkeR.svg" alt="GitHub license"></a> <a href="https://GitHub.com/CostaLab/CrossTalkeR.js/releases/" class="external-link"><img src="https://img.shields.io/github/release/CostaLab/CrossTalkeR.svg" alt="GitHub release"></a></p>
@@ -84,7 +84,9 @@
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h2>
 <p>You can install CrossTalkeR with the simple commands below:</p>
-<p><code>{r} install.packages("devtools") devtools::install_github("https://github.com/CostaLab/CrossTalkeR", build_vignettes = TRUE) require(CrossTalkeR)</code></p>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"https://github.com/CostaLab/CrossTalkeR"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span></code></pre>
 <p><em>Note: Please avoid to use the following characters in celltype name: ‘$’</em></p>
 </div>
 <div class="section level2">
@@ -102,7 +104,7 @@
 <h2 id="crosstalker-plots-examples-and-vignette">CrossTalkeR Plots examples and vignette<a class="anchor" aria-label="anchor" href="#crosstalker-plots-examples-and-vignette"></a>
 </h2>
 <p>We provide in our vignette examples on how to analyse cell interactions from a human myelofibrosis single cell RNA-seq.</p>
-<p><code>{r} vignette('CrossTalkeR-HumanMyfib')</code></p>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'CrossTalkeR-HumanMyfib'</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="integration-of-liana-with-crosstalker">Integration of liana with CrossTalkeR<a class="anchor" aria-label="anchor" href="#integration-of-liana-with-crosstalker"></a>

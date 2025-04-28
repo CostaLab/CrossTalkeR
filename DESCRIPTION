@@ -1,6 +1,6 @@
 Package: CrossTalkeR
 Title: Single Cell Ligand Receptor Downstream analysis
-Version: 1.4.0
+Version: 1.4.2
 Authors@R: c(
     person(given = "Vanessa",
                   family = "Kloeker",

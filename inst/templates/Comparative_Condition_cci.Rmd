@@ -106,16 +106,18 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
       curr_net <- all_data@graphs[[curr]]
       curr_net <- subgraph.edges(all_data@graphs[[curr]], E(all_data@graphs[[curr]])[match(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p <= 0.05], paste(h, f, sep = '@'), nomatch = F)])
       low <- thr
-      E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
-      par(cex.axis = 7, cex.lab = 7)
-      plot_cci(graph = curr_net,
-               coords = all_data@coords[V(curr_net)$name,],
-               colors = all_data@colors[V(curr_net)$name],
-               plt_name = paste0(curr, ' CCI'),
-               leg = TRUE,
-               low = 0,
-               high = low / 100,
-               log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+      if(length(all_data@stats[[curr]]$columns_name[all_data@stats[[curr]]$p <= 0.05])!=0){
+        E(curr_net)$inter <- E(curr_net)$inter.raw / max(E(curr_net)$inter.raw)
+        par(cex.axis = 7, cex.lab = 7)
+        plot_cci(graph = curr_net,
+                coords = all_data@coords[V(curr_net)$name,],
+                colors = all_data@colors[V(curr_net)$name],
+                plt_name = paste0(curr, ' CCI'),
+                leg = TRUE,
+                low = 0,
+                high = low / 100,
+                log = TRUE, pg = all_data@rankings[[curr]]$Pagerank[V(curr_net)$name])
+     }
     }
   }
 }

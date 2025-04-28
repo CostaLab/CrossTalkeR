@@ -188,8 +188,14 @@ analise_LR <- function(lrpaths,
         data = data,
         slot = "rankings", out_path = out_path, database = org.Hs.eg.db::org.Hs.eg.db, org = org
       )
+    })} else if (org == "mmu") {
+    data <- suppressWarnings({
+      kegg_annotation(
+        data = data,
+        slot = "rankings", out_path = out_path, database = org.Mm.eg.db::org.Mm.eg.db, org = org
+      )
     })
-  } else if (is.list(org)) {
+  } else{
     data <- suppressWarnings({
       kegg_annotation(
         data = data,

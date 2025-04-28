@@ -119,8 +119,12 @@ for (i in names(all_data@annot)) {
       mat <- reshape2::acast(filtered, Description ~ type, value.var = "p.adjust")
       mat[is.na(mat)] = 1
       log_mat <- -log10(mat)
+      col <- c('#FFFFFF', Blue2DarkOrange18Steps[11:18])
+      if(length(unique(as.vector(log_mat)))==1){
+          col = '#FFFFFF'
+      }
       p1 <- Heatmap(log_mat,
-                    col = c('#FFFFFF', Blue2DarkOrange18Steps[11:18]),
+                    col = col,
                     column_title = i,
                     name = 'NES_pval',
                     row_names_gp = gpar(fontsize = 10))

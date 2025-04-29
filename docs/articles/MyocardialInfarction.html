@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CrossTalkeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -263,13 +263,14 @@ plot:</p>
 <span>        efactor <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>        vfactor <span class="op">=</span> <span class="fl">12</span>, </span>
 <span>        pg <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">[[</span><span class="st">"ischemic_x_myogenic"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Pagerank</span><span class="op">)</span></span></code></pre></div>
-<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_heart_unfiltered.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>In ischemic conditions, CCIs are generally reduced. However, certain
-cell types remain notably important, as highlighted by their higher
-Pagerank scores. These key cell types include cardiomyocyte clusters,
-two of the four fibroblast clusters, and specific myeloid cells, such as
-SPP1-expressing macrophages and mast cells. These findings indicate that
-despite the reduced overall interactions, these cell types are predicted
-to have a central role in the CCI network of the ischemic condition.</p>
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_heart_unfiltered.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>In the ischemic condition, CCIs are generally reduced. However,
+certain cell types remain notably important, as highlighted by their
+higher Pagerank scores. These key cell types include cardiomyocyte
+clusters, two of the four fibroblast clusters, and specific myeloid
+cells, such as SPP1-expressing macrophages and mast cells. These
+findings indicate that despite the reduced overall interactions, these
+cell types are predicted to have a central role in the CCI network of
+the ischemic condition.</p>
 <p>CrossTalkeR also offers a refined CCI network by employing Fisher’s
 exact test to filter the network based on interaction proportions. We
 can plot the resulting statistics in a Violon Plot:</p>
@@ -319,14 +320,45 @@ cell types. The color intensity corresponds to the edge weight in the
 CCI plot, with red indicating a positive and blue indicating a negative
 interaction score in the ischemic condition. The sender cell type
 (Receptor cluster) is on the x axis, and the receiving cell type (Ligand
-Cluster) on the y axis.</p>
+Cluster) on the y axis. We can use the order of the cell types in the
+heatmap to reorder the nodes in the CCI plot. Here we are sorting the
+nodes by the order of the sending clusters in the heatmap.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extracting the cell cluster order from the Heatmap</span></span>
+<span><span class="va">row_order</span> <span class="op">&lt;-</span> <span class="fu">row_order</span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span>
+<span><span class="va">ordered_row_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">p1</span><span class="op">@</span><span class="va">ht_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">matrix</span><span class="op">)</span><span class="op">[</span><span class="va">row_order</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Generating a new layout template for the CCI plot and define order of the nodes</span></span>
+<span><span class="va">template</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/make_full_graph.html" class="external-link">make_full_graph</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ordered_row_names</span><span class="op">)</span>,</span>
+<span>  directed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  loops <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">new_circle</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_in_circle.html" class="external-link">layout_in_circle</a></span><span class="op">(</span><span class="va">template</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">new_circle</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">ordered_row_names</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_cci.html">plot_cci</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">ischemic_x_myogenic_filtered</span>,</span>
+<span>        colors <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">colors</span>,</span>
+<span>        plt_name <span class="op">=</span> <span class="st">'ischemic vs myogenic filtered'</span>,</span>
+<span>        coords <span class="op">=</span> <span class="va">new_circle</span><span class="op">[</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">ischemic_x_myogenic_filtered</span><span class="op">)</span><span class="op">$</span><span class="va">name</span>,<span class="op">]</span>,</span>
+<span>        emax <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>        leg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>        low <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>        high <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>        ignore_alpha <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>        log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>        efactor <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>        vfactor <span class="op">=</span> <span class="fl">12</span>, </span>
+<span>        pg <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">rankings</span><span class="op">[[</span><span class="st">"ischemic_x_myogenic_filtered"</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Pagerank</span>,</span>
+<span>        node_label_position <span class="op">=</span> <span class="fl">1.3</span><span class="op">)</span></span></code></pre></div>
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_heart_filtered_sorted.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>To confirm the top cell types identified by Pagerank, we can examine
 their Pagerank scores in more detail using a bar plot:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FCCI_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>We can further take a look at the Influencer and Listener ranking to
 observe which cell types are more sending or more receiving:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -334,11 +366,11 @@ observe which cell types are more sending or more receiving:</p>
 </div>
 <p>These plots highlight that nearly all cell types are predicted to
 communicate less in the ischemic condition compared to the myogenic
-condition. Exceptions include the Prolif, Lymphatic_Endo, Fib2_Myofib,
-and Fib3_C7 clusters, which exhibit a higher Influencer Score in the
-ischemic condition (indicating more outgoing signals). Additionally, the
-Lymphatic_Endo, damaged_CM, and Mast clusters show a higher Listener
-Score, indicating more incoming signals in ischemia.</p>
+condition. Exceptions include the Lymphatic_Endo and Fib3_C7 clusters,
+which exhibit a higher Influencer Score in the ischemic condition
+(indicating more outgoing signals). Additionally, the Lymphatic_Endo,
+damaged_CM, and Mast clusters show a higher Listener Score, indicating
+more incoming signals in ischemia.</p>
 <p>Most of the observations at the CCI level are consistent with the
 findings in the paper. For instance, fibrotic structures are more
 prominent in the ischemic condition, which is also reflected in the
@@ -353,21 +385,20 @@ the CCI level, we can examine the network’s topological rankings. We
 begin by reviewing the top Pagerank results, which identify genes within
 a specific cell type that are important in the network’s signaling. For
 now, we will focus exclusively on ligand-receptor (LR) interactions.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="st">"LR"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FLR_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>In the top genes, we find both ligands (L) and receptors (R). Many of
 these genes are involved in immune system processes, such as integrin
 receptors (e.g., ITGA10_ITGB1, ITGA9, ITGB1, and others). These are
 predicted to play a larger role in certain clusters (e.g., Venous_Endo,
-Lymphatic_Endo, CD_8) or a smaller role in others (e.g., Pericyte_1,
-CD_4, Pericyte_2). Additionally, the TGFB1 ligand is among the top genes
-in the Fib3_C7 cluster, and the LRP1 receptor is found in
-SPP1_Macrophages.</p>
+Lymphatic_Endo, SPP1_macrophages) or a smaller role in others (e.g.,
+Pericyte_1, CD_4, Pericyte_2). Additionally, the TGFB1 ligand is among
+the top genes in the damaged_CM cluster.</p>
 <p>To gain a clearer understanding of outgoing and incoming signals, we
 examine the ligands with the top Influencer scores and the receptors
 with the top Listener scores:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="st">"L"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="st">"R"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -387,7 +418,7 @@ we are using newer versions of the LIANA package and, for simplicity, we
 are considering fewer samples in this tutorial.</p>
 <p>We begin with the Sankey plots showing signaling between the Fib2 and
 SPP1_Macrophages clusters (in both directions):</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"Fib2_Myofib"</span>,</span>
@@ -397,7 +428,7 @@ SPP1_Macrophages clusters (in both directions):</p>
 <span>    tfflag <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FFib2_SPP1_Mac_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"SPP1_Macrophages"</span>,</span>
@@ -409,7 +440,7 @@ SPP1_Macrophages clusters (in both directions):</p>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images%2FSPP1_Mac_Fib2_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>Additionally, a Sankey plot was created for a subset of cell types,
 displaying only interactions involving the TGFB1 ligand:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LYVE_FOLR_Macrophages"</span>,</span>
 <span><span class="st">"LYVE_PLTP_Macrophages"</span>,</span>
 <span><span class="st">"CCL18_Macrophages"</span>,</span>

@@ -198,7 +198,7 @@ plot_cci(graph = data@graphs$ischemic_x_myogenic,
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
 
-In ischemic conditions, CCIs are generally reduced. However, certain cell types remain notably important, as highlighted by their higher Pagerank scores. These key cell types include cardiomyocyte clusters, two of the four fibroblast clusters, and specific myeloid cells, such as SPP1-expressing macrophages and mast cells. These findings indicate that despite the reduced overall interactions, these cell types are predicted to have a central role in the CCI network of the ischemic condition.
+In the ischemic condition, CCIs are generally reduced. However, certain cell types remain notably important, as highlighted by their higher Pagerank scores. These key cell types include cardiomyocyte clusters, two of the four fibroblast clusters, and specific myeloid cells, such as SPP1-expressing macrophages and mast cells. These findings indicate that despite the reduced overall interactions, these cell types are predicted to have a central role in the CCI network of the ischemic condition.
 
 CrossTalkeR also offers a refined CCI network by employing Fisher's exact test to filter the network based on interaction proportions. We can plot the resulting statistics in a Violon Plot:
 
@@ -259,6 +259,43 @@ for(i in entries){
 &nbsp;
 
 The heatmap provides a more detailed view of the interactions between cell types. The color intensity corresponds to the edge weight in the CCI plot, with red indicating a positive and blue indicating a negative interaction score in the ischemic condition. The sender cell type (Receptor cluster) is on the x axis, and the receiving cell type (Ligand Cluster) on the y axis.
+We can use the order of the cell types in the heatmap to reorder the nodes in the CCI plot. Here we are sorting the nodes by the order of the sending clusters in the heatmap.
+
+```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
+# Extracting the cell cluster order from the Heatmap
+row_order <- row_order(p1)
+ordered_row_names <- rownames(p1@ht_list[[1]]@matrix)[row_order]
+
+# Generating a new layout template for the CCI plot and define order of the nodes
+template <- igraph::make_full_graph(
+  n = length(ordered_row_names),
+  directed = TRUE,
+  loops = TRUE
+)
+new_circle <- igraph::layout_in_circle(template)
+rownames(new_circle) <- ordered_row_names
+
+plot_cci(graph = data@graphs$ischemic_x_myogenic_filtered,
+        colors = data@colors,
+        plt_name = 'ischemic vs myogenic filtered',
+        coords = new_circle[V(data@graphs$ischemic_x_myogenic_filtered)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12, 
+        pg = data@rankings[["ischemic_x_myogenic_filtered"]]$Pagerank,
+        node_label_position = 1.3)
+```
+
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
+  <img src="heart_images/CCI_heart_filtered_sorted.png" alt="">
+  <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
+</figure>
+&nbsp;
 
 To confirm the top cell types identified by Pagerank, we can examine their Pagerank scores in more detail using a bar plot:
 
@@ -289,7 +326,7 @@ plot_bar_rankings(data, "ischemic_x_myogenic_filtered", "Listener", type = NULL,
 </figure>
 </div>
 
-These plots highlight that nearly all cell types are predicted to communicate less in the ischemic condition compared to the myogenic condition. Exceptions include the Prolif, Lymphatic_Endo, Fib2_Myofib, and Fib3_C7 clusters, which exhibit a higher Influencer Score in the ischemic condition (indicating more outgoing signals). Additionally, the Lymphatic_Endo, damaged_CM, and Mast clusters show a higher Listener Score, indicating more incoming signals in ischemia.
+These plots highlight that nearly all cell types are predicted to communicate less in the ischemic condition compared to the myogenic condition. Exceptions include the Lymphatic_Endo and Fib3_C7 clusters, which exhibit a higher Influencer Score in the ischemic condition (indicating more outgoing signals). Additionally, the Lymphatic_Endo, damaged_CM, and Mast clusters show a higher Listener Score, indicating more incoming signals in ischemia.
 
 Most of the observations at the CCI level are consistent with the findings in the paper. For instance, fibrotic structures are more prominent in the ischemic condition, which is also reflected in the Pagerank scores, as at least two out of the four fibroblast clusters have a higher Pagerank in the ischemic condition.
 
@@ -309,7 +346,7 @@ plot_bar_rankings(data, "ischemic_x_myogenic_ggi", "Pagerank", type = "LR", filt
 
 &nbsp;  
 
-In the top genes, we find both ligands (L) and receptors (R). Many of these genes are involved in immune system processes, such as integrin receptors (e.g., ITGA10_ITGB1, ITGA9, ITGB1, and others). These are predicted to play a larger role in certain clusters (e.g., Venous_Endo, Lymphatic_Endo, CD_8) or a smaller role in others (e.g., Pericyte_1, CD_4, Pericyte_2). Additionally, the TGFB1 ligand is among the top genes in the Fib3_C7 cluster, and the LRP1 receptor is found in SPP1_Macrophages.
+In the top genes, we find both ligands (L) and receptors (R). Many of these genes are involved in immune system processes, such as integrin receptors (e.g., ITGA10_ITGB1, ITGA9, ITGB1, and others). These are predicted to play a larger role in certain clusters (e.g., Venous_Endo, Lymphatic_Endo, SPP1_macrophages) or a smaller role in others (e.g., Pericyte_1, CD_4, Pericyte_2). Additionally, the TGFB1 ligand is among the top genes in the damaged_CM cluster.
 
 To gain a clearer understanding of outgoing and incoming signals, we examine the ligands with the top Influencer scores and the receptors with the top Listener scores:
 

@@ -20,7 +20,8 @@ generate_report(
   org = "hsa",
   comparison = NULL,
   filtered_net = F,
-  score_col = "LRScore"
+  score_col = "LRScore",
+  p_val = 0.05
 )
 }
 \arguments{

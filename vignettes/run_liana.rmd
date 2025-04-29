@@ -93,11 +93,11 @@ data = {}
 for i in os.listdir():
     if i.endswith('lr_liana_consensus_unfiltered.csv'):
         evfull = pd.read_csv(i)
-        evfull = evfull.loc[:,['ligand','receptor','source','target','lr_means','cellphone_pvals']]
+        evfull = evfull.loc[:,['ligand','receptor.complex','source','target','lr_means','cellphone_pvals']]
         evfull['type_gene_A'] = 'Ligand'
         evfull['type_gene_B'] = 'Receptor'
         evfull['gene_A'] = evfull['ligand']
-        evfull['gene_B'] = evfull['receptor']
+        evfull['gene_B'] = evfull['receptor.complex']
         evfull['MeanLR'] = evfull['lr_means']
         evfull.loc[list(evfull.cellphone_pvals.to_numpy()<=0.05),:].to_csv(f'{k}_lr_ready.csv')
         evfull = evfull.loc[:, ['source', 'target', 'type_gene_A', 'type_gene_B', 'gene_A', 'gene_B', 'MeanLR']]

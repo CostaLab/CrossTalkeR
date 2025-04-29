@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CrossTalkeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -183,11 +183,11 @@ should contain the columns “source”, “target”, “type_gene_A”, “gen
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> os.listdir():</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="cf">if</span> i.endswith(<span class="st">'lr_liana_consensus_unfiltered.csv'</span>):</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>        evfull <span class="op">=</span> pd.read_csv(i)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:,[<span class="st">'ligand'</span>,<span class="st">'receptor'</span>,<span class="st">'source'</span>,<span class="st">'target'</span>,<span class="st">'lr_means'</span>,<span class="st">'cellphone_pvals'</span>]]</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:,[<span class="st">'ligand'</span>,<span class="st">'receptor.complex'</span>,<span class="st">'source'</span>,<span class="st">'target'</span>,<span class="st">'lr_means'</span>,<span class="st">'cellphone_pvals'</span>]]</span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>        evfull[<span class="st">'type_gene_A'</span>] <span class="op">=</span> <span class="st">'Ligand'</span></span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>        evfull[<span class="st">'type_gene_B'</span>] <span class="op">=</span> <span class="st">'Receptor'</span></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>        evfull[<span class="st">'gene_A'</span>] <span class="op">=</span> evfull[<span class="st">'ligand'</span>]</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>        evfull[<span class="st">'gene_B'</span>] <span class="op">=</span> evfull[<span class="st">'receptor'</span>]</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>        evfull[<span class="st">'gene_B'</span>] <span class="op">=</span> evfull[<span class="st">'receptor.complex'</span>]</span>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>        evfull[<span class="st">'MeanLR'</span>] <span class="op">=</span> evfull[<span class="st">'lr_means'</span>]</span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>        evfull.loc[<span class="bu">list</span>(evfull.cellphone_pvals.to_numpy()<span class="op">&lt;=</span><span class="fl">0.05</span>),:].to_csv(<span class="ss">f'</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">_lr_ready.csv'</span>)</span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:, [<span class="st">'source'</span>, <span class="st">'target'</span>, <span class="st">'type_gene_A'</span>, <span class="st">'type_gene_B'</span>, <span class="st">'gene_A'</span>, <span class="st">'gene_B'</span>, <span class="st">'MeanLR'</span>]]</span>

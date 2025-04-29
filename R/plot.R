@@ -1491,13 +1491,21 @@ plot_bar_rankings <- function(data_object, table_name, ranking, type = NULL, fil
 #' @param weight cell-cell communication graph's slot
 #' @import igraph
 #' @import ComplexHeatmap
+#' @importFrom circlize colorRamp2
 #' @importFrom stats reorder
 #' @return R default plot
 #' @export
 plot_Heatmap <- function(graph, weight) {
-  p1 <- ComplexHeatmap::Heatmap(as.matrix(igraph::as_adj(graph, attr = weight)),
+  adj_matrix <- as.matrix(igraph::as_adj(graph, attr = weight))
+  max_val <- max(abs(adj_matrix), na.rm = TRUE)
+
+  p1 <- ComplexHeatmap::Heatmap(adj_matrix,
     row_title = "Ligand cluster", column_title = "Receptor cluster",
-    column_title_side = "bottom", row_title_side = "right"
+    column_title_side = "bottom", row_title_side = "right",
+    col = circlize::colorRamp2(
+    breaks = c(-max_val, 0, max_val),
+    colors = c("blue", "white", "red")
+    )
   )
   return(p1)
 }

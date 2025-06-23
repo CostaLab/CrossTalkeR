@@ -26,6 +26,8 @@ plot_bar_rankings(
 
 \item{filter_sign}{show all (NULL), only positive (pos), or only negativ (neg) results}
 
+\item{mode}{mode of the ranking (cci, ggi)}
+
 \item{top_num}{number of top genes to show in positive or negative direction}
 }
 \value{

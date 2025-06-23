@@ -7,7 +7,7 @@
 #'
 #'
 #'@param lrpaths Named vector with the lrpaths of each output
-#'@param sel selected columns
+#'@param sel_columns selected columns
 #'@param out_path Path to deposit the results
 #'@param sep character used to divide the columns on input file
 #'@param colors colorlist

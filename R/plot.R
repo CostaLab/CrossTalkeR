@@ -595,6 +595,9 @@ new_plot_cci <- function(graph,
 #' @param receptor_cluster Receptor Clusters
 #' @param plt_name plot title
 #' @param threshold top_n n value
+#' @param tfflag if true, input includes transcription factors
+#' @param score_col column name for the LR Score
+#' @param fil_col score column name to filter
 #' @import ggplot2
 #' @import stringr
 #' @import dplyr
@@ -744,11 +747,13 @@ set_coords <- function(df, type) {
 #' This function creates a sankey plot for a selected gene including transcription factor interactions.
 #'
 #' @param lrobj_tbl LRobject table with all data
+#' @param pagerank_table table with pagerank scores
 #' @param target gene
 #' @param cluster cluster
 #' @param target_type type of target
 #' @param plt_name plot title
 #' @param threshold top_n n value
+#' @param save_path path to save the plot
 #' @import ggplot2
 #' @import dplyr
 #' @import colorBlindness
@@ -1202,6 +1207,7 @@ plot_pca_LR_comparative <- function(lrobj_tblPCA, pca_table, dims = c(1, 2), ret
 #'
 #' @param data_object LRobject with all data
 #' @param name name of the table
+#' @param title title of the plot
 #' @import ggplot2
 #' @import ggrepel
 #' @import reshape2
@@ -1247,6 +1253,7 @@ plot_deregulated_pathways <- function(data_object, name, title = NULL) {
 #' @param ranking name of the network ranking to use
 #' @param type gene type (L,R,TF, LR/RL, RTF/TFR, LTF/TFL)
 #' @param filter_sign show all (NULL), only positive (pos), or only negativ (neg) results
+#' @param mode mode of the ranking (cci, ggi)
 #' @param top_num number of top genes to show in positive or negative direction
 #' @import ggplot2
 #' @import ggrepel
@@ -1514,6 +1521,9 @@ plot_Heatmap <- function(graph, weight) {
 #'
 #' @param table  Table with the test Results
 #' @param feature_name column with names
+#' @param pvalcutoff p-value threshold
+#' @param x x-axis column name
+#' @param y y-axis column name
 #' @import EnhancedVolcano
 #' @return R default plot
 #' @export

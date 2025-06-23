@@ -18,6 +18,8 @@ plot_graph_sankey_tf(
 \arguments{
 \item{lrobj_tbl}{LRobject table with all data}
 
+\item{pagerank_table}{table with pagerank scores}
+
 \item{target}{gene}
 
 \item{cluster}{cluster}
@@ -27,6 +29,8 @@ plot_graph_sankey_tf(
 \item{plt_name}{plot title}
 
 \item{threshold}{top_n n value}
+
+\item{save_path}{path to save the plot}
 }
 \value{
 R default plot

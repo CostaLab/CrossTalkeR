@@ -10,6 +10,12 @@ plot_Volcano(table, feature_name, pvalcutoff = 0.05, x = "lodds", y = "p")
 \item{table}{Table with the test Results}
 
 \item{feature_name}{column with names}
+
+\item{pvalcutoff}{p-value threshold}
+
+\item{x}{x-axis column name}
+
+\item{y}{y-axis column name}
 }
 \value{
 R default plot

@@ -2,6 +2,8 @@
 #'
 #' @param data LRObj with single condition
 #' @param out_path output path
+#' @param comparison condition pairs to be used for differential analysis
+#' @param score_col column name for the score to be used in the comparison, default is "LRScore"
 #' @return LRObject
 #' @import dplyr
 #' @importFrom tidyr %>%

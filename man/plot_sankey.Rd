@@ -28,6 +28,12 @@ plot_sankey(
 \item{plt_name}{plot title}
 
 \item{threshold}{top_n n value}
+
+\item{tfflag}{if true, input includes transcription factors}
+
+\item{score_col}{column name for the LR Score}
+
+\item{fil_col}{score column name to filter}
 }
 \value{
 R default plot

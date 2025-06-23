@@ -44,6 +44,16 @@ generate_report(
 \item{output_fmt}{rmarkdown render output format parameter}
 
 \item{sel_columns}{columns from data}
+
+\item{org}{organism to be used for annotation, default is "hsa" (human)}
+
+\item{comparison}{condition pairs to be used for differential analysis}
+
+\item{filtered_net}{if TRUE, filter the CCI network based on p-value}
+
+\item{score_col}{column name for the score used in the analysis, default is "LRScore"}
+
+\item{p_val}{p-value threshold for filtering the network, default is 0.05}
 }
 \value{
 Rmarkdown report all objects from each step

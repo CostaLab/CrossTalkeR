@@ -14,6 +14,11 @@
 #' @param report decide if a report is generated or not
 #' @param output_fmt rmarkdown render output format parameter
 #' @param sel_columns columns from data
+#' @param org organism to be used for annotation, default is "hsa" (human)
+#' @param comparison condition pairs to be used for differential analysis
+#' @param filtered_net if TRUE, filter the CCI network based on p-value
+#' @param score_col column name for the score used in the analysis, default is "LRScore"
+#' @param p_val p-value threshold for filtering the network, default is 0.05
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
 #' @importFrom tidyr %>%
@@ -110,6 +115,11 @@ generate_report <- function(lrpaths,
 #' @param report decide if a report is generated or not
 #' @param output_fmt rmarkdown render output format parameter
 #' @param sel_columns columns from data
+#' @param org organism to be used for annotation, default is "hsa" (human)
+#' @param comparison condition pairs to be used for differential analysis
+#' @param filtered_net if TRUE, filter the CCI network based on p-value
+#' @param score_col column name for the score used in the analysis, default is "LRScore"
+#' @param p_val p-value threshold for filtering the network, default is 0.05
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
 #' @importFrom tidyr %>%

@@ -180,6 +180,7 @@ ranking_net <- function(graph, mode = TRUE) {
 #'@param out_path save path
 #'@param database annotation database
 #'@param org organism to be considered
+#'@param n number of top genes to be considered 
 #'@import clusterProfiler
 #'@import org.Hs.eg.db
 #'@import org.Mm.eg.db
@@ -351,6 +352,7 @@ enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
 #'@param data datafromlian
 #'@param measure intensity
 #'@param out_path save path
+#'@param comparison condition pairs to be used for differential analysis
 #'@importFrom tidyr %>%
 #'@import tibble dplyr rstatix
 #'@return tibble

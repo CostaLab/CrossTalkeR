@@ -10,6 +10,10 @@ create_diff_table(data, out_path, comparison = NULL, score_col = "LRScore")
 \item{data}{LRObj with single condition}
 
 \item{out_path}{output path}
+
+\item{comparison}{condition pairs to be used for differential analysis}
+
+\item{score_col}{column name for the score to be used in the comparison, default is "LRScore"}
 }
 \value{
 LRObject

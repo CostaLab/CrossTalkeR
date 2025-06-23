@@ -35,6 +35,9 @@ read_lr_single_condition <- function(lrpaths,
                tibble::is_tibble(lrpaths[[conds[i]]])){ ## Reading From DF
         data1 <- tibble(lrpaths[[conds[i]]])
       }
+      if(any(is.na(data1)))
+        message("Warning: NA values found in the input data. Removing rows with NA values!")
+        data1 <- data1[complete.cases(data1), ]
       if(!(sum(str_detect(data1$gene_A, '\\|')) > 0)){
          data1 <- add_node_type(data1)
       }

@@ -27,7 +27,7 @@ vignette: |
 
 # Ligand-Receptor Pathway Enrichment with Progeny - Example
 
-The liana+ Python documentation includes an example of performing pathway enrichment on ligand-receptor interactions derived from tensor cell2cell analysis ([liana+ Tutorial](https://liana-py.readthedocs.io/en/latest/notebooks/liana_c2c.html)). Here, we apply this downstream pathway enrichment approach to CrossTalkeR results using human bone marrow example data ([Tutorial](https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html)), focusing specifically on outgoing ligand-receptor interactions from mesenchymal stem cells (MSCs).
+The liana+ Python documentation includes an example of performing pathway enrichment on ligand-receptor interactions derived from tensor cell2cell analysis ([liana+ Tutorial](https://liana-py.readthedocs.io/en/latest/notebooks/liana_c2c.html)). Here, we apply this downstream pathway enrichment approach to CrossTalkeR results using human bone marrow example data ([Tutorial](https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html)).
 
 ## Filter CrossTalkeR Results (in R)
 
@@ -41,33 +41,33 @@ EXP_x_CTR_table <- as.data.frame(CrossTalkeR_results@tables$EXP_x_CTR)
 
 To facilitate the use of liana+ functions, we reformat and filter the table, resulting in a structured dataset with ligand-receptor pairs in the first column and the corresponding LRScores for each cell pair in the other columns.
 ```{R, eval = FALSE}
-source_cluster <- c("MSC")
+source_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
 target_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
 
 merged_df <- data.frame()
 
-for (target in target_cluster) {
-  comparisonLR_filtered <- comparison_LR[comparison_LR$source == source_cluster & comparison_LR$target == target, ]
-  
-  comparisonLR_filtered$genepair <- paste(gsub("\\|L", "", as.character(comparisonLR_filtered$gene_A)),
-                                          gsub("\\|R", "", as.character(comparisonLR_filtered$gene_B)),
-                                          sep = "@")
-  
-  comparisonLR_filtered <- data.frame(LRScore = comparisonLR_filtered$LRScore, row.names = comparisonLR_filtered$genepair)
-  colnames(comparisonLR_filtered) <- paste("MSC", target, sep = "_")
-  
-  if (nrow(merged_df) == 0) {
-    merged_df <- comparisonLR_filtered
-  } else {
-    merged_df <- merge(merged_df, comparisonLR_filtered, by = "row.names", all = TRUE)
-    rownames(merged_df) <- merged_df$Row.names
-    merged_df <- merged_df[ , -1]
+for (source in source_cluster){
+  for (target in target_cluster) {
+    comparisonLR_filtered <- comparison_LR[comparison_LR$source == source & comparison_LR$target == target, ]
+    
+    comparisonLR_filtered$genepair <- paste(gsub("\\|L", "", as.character(comparisonLR_filtered$gene_A)),
+                                            gsub("\\|R", "", as.character(comparisonLR_filtered$gene_B)),
+                                            sep = "@")
+    
+    comparisonLR_filtered <- data.frame(LRScore = comparisonLR_filtered$LRScore, row.names = comparisonLR_filtered$genepair)
+    colnames(comparisonLR_filtered) <- paste(source, target, sep = "_")
+    
+    if (nrow(merged_df) == 0) {
+      merged_df <- comparisonLR_filtered
+    } else {
+      merged_df <- merge(merged_df, comparisonLR_filtered, by = "row.names", all = TRUE)
+      rownames(merged_df) <- merged_df$Row.names
+      merged_df <- merged_df[ , -1]
+    }
   }
 }
 
-merged_df[is.na(merged_df)] <- 0
-
-write.csv(merged_df, paste("MSC_source_LR_interactions.csv"))
+write.csv(merged_df, paste("pairwise_LR_interactions.csv"))
 
 ```
 
@@ -104,7 +104,7 @@ lr_progeny = li.rs.generate_lr_geneset(lr_pairs, progeny, lr_sep="@")
 Next, we incorporate the ligand-receptor interactions of interest, extracted from the CrossTalkeR results, and conduct the enrichment analysis using the decoupler ULM method along with the ligand-receptor pathway mapping. This analysis yields two data frames: one containing the enrichment estimation values and another reporting the corresponding p-values, indicating statistical significance. Since we consider multiple cell pairs, we need to iterate over the coloumns of the interactions table.
 ```{python, eval = FALSE}
 # Load Ligand-Receptor Interactions for Enrichment Analysis
-lr_interactions = pd.read_csv("MSC_source_LR_interactions.csv", index_col=0)
+lr_interactions = pd.read_csv("pairwise_LR_interactions.csv", index_col=0)
 
 # Empty Lists for Enrichment Results
 estimate_list = []
@@ -142,9 +142,15 @@ def p_value_to_asterisks(p):
         return ' '
 pval_mapping = merged_pvals.applymap(p_value_to_asterisks)
 
+# Removing rows with only non-significnt enrichment values
+is_significant_enriched = pval_mapping.apply(lambda row: any('*' in str(val) for val in row), axis=1)
+filtered_estimate = merged_estimate[is_significant_enriched]
+filtered_pval_mapping = pval_mapping[is_significant_enriched]
+
+
 # Vizualize Enrichment Results with Seaborn Clustermap
-sns.clustermap(merged_estimate, 
-               annot=pval_mapping,
+sns.clustermap(filtered_estimate, 
+               annot=filtered_pval_mapping,
                fmt='',
                row_cluster=False,
                figsize=(7, 2),
@@ -156,7 +162,7 @@ sns.clustermap(merged_estimate,
 ```
 
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
-  <img src="Progeny_images/MSC_enrichment.png" alt="">
+  <img src="Progeny_images/all_celltypes_enrichment.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
 

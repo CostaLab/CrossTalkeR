@@ -41,10 +41,10 @@ for(i in 1:length(names(all_data@tables))){
       curr_net <- all_data@graphs[[curr]]
       low <- thr
       par(cex.axis=4, cex.lab=4)
-      plot_cci(curr_net,
-                 all_data@colors[V(curr_net)$name],
-                 paste0(curr,' CCI'),
-                 all_data@coords[V(curr_net)$name,],
+      plot_cci(graph = curr_net,
+                 colors = all_data@colors[V(curr_net)$name],
+                 plt_name = paste0(curr,' CCI'),
+                 coords = all_data@coords[V(curr_net)$name,],
                  leg=TRUE,
                  low=0,
                  high=low/100,

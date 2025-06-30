@@ -97,9 +97,7 @@ Aachen University, Aachen, 52074 Germany<br><small class="dont-index">Source: <a
 pathway enrichment on ligand-receptor interactions derived from tensor
 cell2cell analysis (<a href="https://liana-py.readthedocs.io/en/latest/notebooks/liana_c2c.html" class="external-link">liana+
 Tutorial</a>). Here, we apply this downstream pathway enrichment
-approach to CrossTalkeR results using human bone marrow example data (<a href="https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html" class="external-link">Tutorial</a>),
-focusing specifically on outgoing ligand-receptor interactions from
-mesenchymal stem cells (MSCs).</p>
+approach to CrossTalkeR results using human bone marrow example data (<a href="https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html" class="external-link">Tutorial</a>).</p>
 <div class="section level3">
 <h3 id="filter-crosstalker-results-in-r">Filter CrossTalkeR Results (in R)<a class="anchor" aria-label="anchor" href="#filter-crosstalker-results-in-r"></a>
 </h3>
@@ -116,33 +114,33 @@ table, resulting in a structured dataset with ligand-receptor pairs in
 the first column and the corresponding LRScores for each cell pair in
 the other columns.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">source_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MSC"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">source_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MSC"</span>, <span class="st">"Megakaryocyte"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Myeloid"</span><span class="op">)</span></span>
 <span><span class="va">target_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MSC"</span>, <span class="st">"Megakaryocyte"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Myeloid"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">target</span> <span class="kw">in</span> <span class="va">target_cluster</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">comparisonLR_filtered</span> <span class="op">&lt;-</span> <span class="va">comparison_LR</span><span class="op">[</span><span class="va">comparison_LR</span><span class="op">$</span><span class="va">source</span> <span class="op">==</span> <span class="va">source_cluster</span> <span class="op">&amp;</span> <span class="va">comparison_LR</span><span class="op">$</span><span class="va">target</span> <span class="op">==</span> <span class="va">target</span>, <span class="op">]</span></span>
-<span>  </span>
-<span>  <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">genepair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\|L"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">gene_A</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                                          <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\|R"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">gene_B</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                                          sep <span class="op">=</span> <span class="st">"@"</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="va">comparisonLR_filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>LRScore <span class="op">=</span> <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">LRScore</span>, row.names <span class="op">=</span> <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">genepair</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"MSC"</span>, <span class="va">target</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">merged_df</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="va">comparisonLR_filtered</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">merged_df</span>, <span class="va">comparisonLR_filtered</span>, by <span class="op">=</span> <span class="st">"row.names"</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">merged_df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">merged_df</span><span class="op">$</span><span class="va">Row.names</span></span>
-<span>    <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="va">merged_df</span><span class="op">[</span> , <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">source</span> <span class="kw">in</span> <span class="va">source_cluster</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">target</span> <span class="kw">in</span> <span class="va">target_cluster</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">comparisonLR_filtered</span> <span class="op">&lt;-</span> <span class="va">comparison_LR</span><span class="op">[</span><span class="va">comparison_LR</span><span class="op">$</span><span class="va">source</span> <span class="op">==</span> <span class="va">source</span> <span class="op">&amp;</span> <span class="va">comparison_LR</span><span class="op">$</span><span class="va">target</span> <span class="op">==</span> <span class="va">target</span>, <span class="op">]</span></span>
+<span>    </span>
+<span>    <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">genepair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\|L"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">gene_A</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                                            <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\|R"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">gene_B</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                                            sep <span class="op">=</span> <span class="st">"@"</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">comparisonLR_filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>LRScore <span class="op">=</span> <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">LRScore</span>, row.names <span class="op">=</span> <span class="va">comparisonLR_filtered</span><span class="op">$</span><span class="va">genepair</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">comparisonLR_filtered</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">source</span>, <span class="va">target</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">merged_df</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="va">comparisonLR_filtered</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">merged_df</span>, <span class="va">comparisonLR_filtered</span>, by <span class="op">=</span> <span class="st">"row.names"</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">merged_df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">merged_df</span><span class="op">$</span><span class="va">Row.names</span></span>
+<span>      <span class="va">merged_df</span> <span class="op">&lt;-</span> <span class="va">merged_df</span><span class="op">[</span> , <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="op">}</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">merged_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">merged_df</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">merged_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"MSC_source_LR_interactions.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">merged_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"pairwise_LR_interactions.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Due to certain functionalities being unavailable in the R version of
 liana, the subsequent analyses are conducted in Python.</p>
 </div>
@@ -184,7 +182,7 @@ p-values, indicating statistical significance. Since we consider
 multiple cell pairs, we need to iterate over the coloumns of the
 interactions table.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Load Ligand-Receptor Interactions for Enrichment Analysis</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>lr_interactions <span class="op">=</span> pd.read_csv(<span class="st">"MSC_source_LR_interactions.csv"</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>lr_interactions <span class="op">=</span> pd.read_csv(<span class="st">"pairwise_LR_interactions.csv"</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Empty Lists for Enrichment Results</span></span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>estimate_list <span class="op">=</span> []</span>
@@ -224,17 +222,23 @@ heatmap visualization.</p>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">' '</span></span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>pval_mapping <span class="op">=</span> merged_pvals.applymap(p_value_to_asterisks)</span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># Vizualize Enrichment Results with Seaborn Clustermap</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>sns.clustermap(merged_estimate, </span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>               annot<span class="op">=</span>pval_mapping,</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>               fmt<span class="op">=</span><span class="st">''</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>               row_cluster<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>               figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">2</span>),</span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>               cmap<span class="op">=</span><span class="st">"vlag"</span>,</span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>               cbar_pos<span class="op">=</span>(<span class="dv">1</span>, <span class="fl">.2</span>, <span class="fl">.03</span>, <span class="fl">.4</span>),</span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>               vmin<span class="op">=-</span><span class="fl">3.5</span>,</span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>               vmax<span class="op">=</span><span class="fl">3.5</span>)</span></code></pre></div>
-<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="Progeny_images%2FMSC_enrichment.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p><br><br></p>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># Removing rows with only non-significnt enrichment values</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>is_significant_enriched <span class="op">=</span> pval_mapping.<span class="bu">apply</span>(<span class="kw">lambda</span> row: <span class="bu">any</span>(<span class="st">'*'</span> <span class="kw">in</span> <span class="bu">str</span>(val) <span class="cf">for</span> val <span class="kw">in</span> row), axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>filtered_estimate <span class="op">=</span> merged_estimate[is_significant_enriched]</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>filtered_pval_mapping <span class="op">=</span> pval_mapping[is_significant_enriched]</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># Vizualize Enrichment Results with Seaborn Clustermap</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>sns.clustermap(filtered_estimate, </span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>               annot<span class="op">=</span>filtered_pval_mapping,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>               fmt<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>               row_cluster<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>               figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">2</span>),</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>               cmap<span class="op">=</span><span class="st">"vlag"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>               cbar_pos<span class="op">=</span>(<span class="dv">1</span>, <span class="fl">.2</span>, <span class="fl">.03</span>, <span class="fl">.4</span>),</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>               vmin<span class="op">=-</span><span class="fl">3.5</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>               vmax<span class="op">=</span><span class="fl">3.5</span>)</span></code></pre></div>
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="Progeny_images%2Fall_celltypes_enrichment.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p><br><br></p>
 <p>The heatmap shows, that signaling in the WNT pathway is significantly
 enriched in the ligand-receptor interactions between MSCs and
 fibroblasts. Further the result indicates that this pathway is up in the

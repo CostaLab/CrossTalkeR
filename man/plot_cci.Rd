@@ -6,9 +6,7 @@
 \usage{
 plot_cci(
   graph,
-  colors,
   plt_name,
-  coords,
   emax = NULL,
   leg = FALSE,
   low = 25,
@@ -17,19 +15,27 @@ plot_cci(
   log = FALSE,
   efactor = 8,
   vfactor = 12,
-  vnames = T,
+  vnames = TRUE,
   pg = NULL,
-  vnamescol = NULL
+  vnamescol = NULL,
+  colors,
+  coords,
+  col_pallet = NULL,
+  standard_node_size = 20,
+  pg_node_size_low = 10,
+  pg_node_size_high = 60,
+  arrow_size = 0.4,
+  arrow_width = 0.8,
+  node_label_position = 1.2,
+  node_label_size = 0.6,
+  score_filter = 0,
+  cell_name_filter = NULL
 )
 }
 \arguments{
 \item{graph}{Paths of single condition LR data}
 
-\item{colors}{Cell type (Cluster) Colors}
-
 \item{plt_name}{Plot Name (Title)}
-
-\item{coords}{object coordinates}
 
 \item{emax}{Max MeanLR across the all inputs, if its not defined,
 the method going to consider the max find within a sample}
@@ -52,12 +58,36 @@ which will be filtered. Edges within the interval [low\,high] are filtered.}
 \item{vnames}{remove vertex labels}
 
 \item{pg}{pagerank values}
+
+\item{colors}{Cell type (Cluster) Colors}
+
+\item{coords}{object coordinates}
+
+\item{col_pallet}{Custom color pallet for the Edges}
+
+\item{standard_node_size}{Node size if no Pagerank values are given}
+
+\item{pg_node_size_low}{Smallest node size if Pagerank values are given}
+
+\item{pg_node_size_high}{Largest node size if Pagerank values are given}
+
+\item{arrow_size}{Scale value for the arrow size}
+
+\item{arrow_width}{Scale value for the arrow width}
+
+\item{node_label_position}{Scale Factor to move the node labels}
+
+\item{node_label_size}{Scale Factor to change the node label size}
+
+\item{score_filter}{Filter Graph by LR Score symmetrically around 0}
+
+\item{cell_name_filter}{Filter incoming and outgoing interactions by defined cell types}
 }
 \value{
 R default plot
 }
 \description{
-This function do a CCI plot
+This function does a CCI plot
 }
 \examples{
 paths <- c(

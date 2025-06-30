@@ -3,7 +3,6 @@
 export(analise_LR)
 export(generate_report)
 export(make_report)
-export(new_plot_cci)
 export(plot_Heatmap)
 export(plot_Volcano)
 export(plot_bar_rankings)

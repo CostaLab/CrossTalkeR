@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_sankey}
 \alias{plot_sankey}
-\title{This function selected genes sankey plot}
+\title{This function plots a sankey plot for selected genes or cell types}
 \usage{
 plot_sankey(
   lrobj_tbl,
@@ -39,7 +39,7 @@ plot_sankey(
 R default plot
 }
 \description{
-This function selected genes sankey plot
+This function plots a sankey plot for selected genes or cell types
 }
 \examples{
 paths <- c(

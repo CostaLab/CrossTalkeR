@@ -15,13 +15,13 @@ read_lr_single_condition(
 \arguments{
 \item{lrpaths}{Named vector with the lrpaths of each output}
 
+\item{sel_columns}{selected columns}
+
 \item{out_path}{Path to deposit the results}
 
 \item{sep}{character used to divide the columns on input file}
 
 \item{colors}{colorlist}
-
-\item{sel}{selected columns}
 }
 \value{
 LRObject

@@ -10,6 +10,8 @@ plot_deregulated_pathways(data_object, name, title = NULL)
 \item{data_object}{LRobject with all data}
 
 \item{name}{name of the table}
+
+\item{title}{title of the plot}
 }
 \value{
 R default plot

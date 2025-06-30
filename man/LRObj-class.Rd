@@ -32,5 +32,7 @@ measure
 \item{\code{pca}}{PCA results}
 
 \item{\code{annot}}{Annotation Results}
+
+\item{\code{stats}}{Statistics of the analysis}
 }}
 

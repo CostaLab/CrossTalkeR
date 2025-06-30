@@ -41,18 +41,24 @@ Rmarkdown report all objects from each step
 Generate a report for given LRObj
 }
 \examples{
-paths <- c('CTR' = system.file("extdata",
-                              "CTR_LR.csv",
-                              package = "CrossTalkeR"),
-          'EXP' = system.file("extdata",
-                              "EXP_LR.csv",
-                              package = "CrossTalkeR"))
-output_path =  system.file("extdata", package = "CrossTalkeR")
-genes <- c('TGFB1')
-data <- generate_report(lrpaths = paths,
-                       genes = genes,
-                       out_path = output_path,
-                       threshold = 0,
-                         out_file = "report.html")
+paths <- c(
+  "CTR" = system.file("extdata",
+    "CTR_LR.csv",
+    package = "CrossTalkeR"
+  ),
+  "EXP" = system.file("extdata",
+    "EXP_LR.csv",
+    package = "CrossTalkeR"
+  )
+)
+output <- system.file("extdata", package = "CrossTalkeR")
+genes <- c("TGFB1")
+data <- generate_report(
+  lrpaths = paths,
+  genes = genes,
+  out_path = paste0(output, "/"),
+  threshold = 0,
+  out_file = "report.html"
+)
 
 }

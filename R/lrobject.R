@@ -17,6 +17,7 @@
 #'@slot loadings  CCI values to remove multiple times genes
 #'@slot pca  PCA results
 #'@slot annot  Annotation Results
+#'@slot stats  Statistics of the analysis
 lrbject <- setClass("LRObj",
                     slots = list(graphs = "list",
                                graphs_ggi = "list",

@@ -1,0 +1,30 @@
+pandoc: 2.9.2.1
+pkgdown: 2.1.1
+pkgdown_sha: ~
+template: 
+  bootstrap: 5
+  includes:
+    after_body: pkgdown/extra.js
+#  theme: arrow-dark  
+navbar:
+  type: dark
+  bg: black
+  structure:
+    left:  [intro, articles, reference, news, install]
+    right: [search, github, lightswitch]
+  components:
+     articles:
+      text: Tutorials
+      menu:
+        - text: "CrossTalkeR - Basic Usage"
+          href: articles/CrossTalker_basicusage.html
+        - text: "Ligand-Receptor Inference with Liana"
+          href: articles/run_liana.html
+        - text: "Example: Heart Myocardial Infarction in Human (Kuppe et. al., 2022)"
+          href: articles/MyocardialInfarction.html
+     install:
+      text: Install
+      href: articles/Install.html
+  urls:
+    reference: https://github.com/CostaLab/CrossTalkeR/reference
+    article: https://github.com/CostaLab/CrossTalkeR/articles

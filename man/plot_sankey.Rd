@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_sankey}
 \alias{plot_sankey}
-\title{This function selected genes sankey plot}
+\title{This function plots a sankey plot for selected genes or cell types}
 \usage{
 plot_sankey(
   lrobj_tbl,
@@ -11,7 +11,9 @@ plot_sankey(
   receptor_cluster = NULL,
   plt_name = NULL,
   threshold = 50,
-  tfflag = TRUE
+  tfflag = TRUE,
+  score_col = "LRScore",
+  fil_col = "LRScore"
 )
 }
 \arguments{
@@ -26,28 +28,39 @@ plot_sankey(
 \item{plt_name}{plot title}
 
 \item{threshold}{top_n n value}
+
+\item{tfflag}{if true, input includes transcription factors}
+
+\item{score_col}{column name for the LR Score}
+
+\item{fil_col}{score column name to filter}
 }
 \value{
 R default plot
 }
 \description{
-This function selected genes sankey plot
+This function plots a sankey plot for selected genes or cell types
 }
 \examples{
-paths <- c('CTR' = system.file("extdata",
-                              "CTR_LR.csv",
-                              package = "CrossTalkeR"),
-          'EXP' = system.file("extdata",
-                              "EXP_LR.csv",
-                              package = "CrossTalkeR"))
-output_path <- system.file("extdata", package = "CrossTalkeR")
-genes <- c('TGFB1')
+paths <- c(
+  "CTR" = system.file("extdata",
+    "CTR_LR.csv",
+    package = "CrossTalkeR"
+  ),
+  "EXP" = system.file("extdata",
+    "EXP_LR.csv",
+    package = "CrossTalkeR"
+  )
+)
+output <- system.file("extdata", package = "CrossTalkeR")
+genes <- c("TGFB1")
 
 data <- generate_report(paths,
-                       genes,
-                       out_path = output_path,
-                       threshold = 0,
-                       out_file = 'vignettes_example.html',
-                       output_fmt = "html_document",
-                       report = FALSE)
+  genes,
+  out_path = paste0(output, "/"),
+  threshold = 0,
+  out_file = "vignettes_example.html",
+  output_fmt = "html_document",
+  report = FALSE
+)
 }

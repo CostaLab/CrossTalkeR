@@ -8,6 +8,5 @@ omnipathr-log
 /markdown/omnipathr-log
 .ipynb_checkpoints
 /markdown/.ipynb_checkpoints
-_pkgdown.yml
 .Rhistory
-
+/.vscode/

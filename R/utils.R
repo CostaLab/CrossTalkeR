@@ -11,6 +11,7 @@
 #'@importFrom tidyr %>%
 #'@importFrom stats prcomp
 #'@noRd
+#'@noRd
 ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
   for (graph in names(slot(data, slot))) {
     if (grepl("_x_", graph)) {  # Signed Analysis
@@ -80,17 +81,17 @@ ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
         table <- slot(data, 'tables')[[graph]]
         cls <- unique(union(table[[sel_columns[1]]], table[[sel_columns[2]]]))
         for (i in cls) {
-            all.eq <- unique(union(table$ligpair[table[[sel_columns[1]]] == i], table$recpair[table[[sel_columns[2]]] == i]))
-            if(length(grep("\\|R$",all.eq))>0){
-                edges <- t(utils::combn(all.eq, 2))
-                df <- tibble::tibble(u = edges[, 1], v = edges[, 2], MeanLR = rep(0.0, dim(edges)[1]), .name_repair = ~c('u', 'v', 'LRScore'))
-                if (is.null(all)) {
-                  final <- df
-                }
-                else {
-                  final <- dplyr::bind_rows(final, df)
-                }
+          all.eq <- unique(union(table$ligpair[table[[sel_columns[1]]] == i], table$recpair[table[[sel_columns[2]]] == i]))
+          if (length(grep("\\|R$",all.eq))>0 & length(grep("\\|L$",all.eq))>0){
+            edges <- t(utils::combn(all.eq, 2))
+            df <- tibble::tibble(u = edges[, 1], v = edges[, 2], MeanLR = rep(0.0, dim(edges)[1]), .name_repair = ~c('u', 'v', 'LRScore'))
+            if (is.null(all)) {
+              final <- df
             }
+            else {
+              final <- dplyr::bind_rows(final, df)
+            }
+          }
         }
         names(final) <- c('ligpair', 'recpair', 'LRScore')
         tmp_tbl = table[, c('ligpair', 'recpair', 'LRScore')]
@@ -128,6 +129,7 @@ ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
 #'@return list
 #'@import igraph
 #'@importFrom tidyr %>%
+#'@noRd
 #'@noRd
 ranking_net <- function(graph, mode = TRUE) {
   if (!mode) {
@@ -180,10 +182,12 @@ ranking_net <- function(graph, mode = TRUE) {
 #'@param out_path save path
 #'@param database annotation database
 #'@param org organism to be considered
+#'@param n number of top genes to be considered 
 #'@import clusterProfiler
 #'@import org.Hs.eg.db
 #'@import org.Mm.eg.db
 #'@importFrom tidyr %>%
+#'@noRd
 #'@noRd
 kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.Hs.eg.db, org = 'hsa', n = 100) {
   rkg <- slot(data, slot)
@@ -223,6 +227,7 @@ kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.H
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
+#'@noRd
 #'@noRd
 comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
   p_f1 <- p_f2 <- 0.5 # prob to be at disease
@@ -272,6 +277,7 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
 #'@import stringr
 #'@return list
 #'@noRd
+#'@noRd
 comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
   allnodes <- curr.rkg$nodes
   if (str_detect(graphname, '_filtered', negate = FALSE)){
@@ -309,6 +315,7 @@ comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
 #'@import stringr
 #'@import clusterProfiler
 #'@return list
+#'@noRd
 #'@noRd
 enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
   lrdb <- system.file("extdata",
@@ -351,9 +358,11 @@ enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
 #'@param data datafromlian
 #'@param measure intensity
 #'@param out_path save path
+#'@param comparison condition pairs to be used for differential analysis
 #'@importFrom tidyr %>%
 #'@import tibble dplyr rstatix
 #'@return tibble
+#'@noRd
 #'@noRd
 fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   if (!is.null(comparison)) {
@@ -419,11 +428,76 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   }
 }
 
+
+#' Evaluate Differences in the edge strenght 
+#'@param data datafromlian
+#'@param measure intensity
+#'@param out_path save path
+#'@importFrom tidyr %>%
+#'@import tibble dplyr rstatix
+#'@return tibble
+#'@noRd
+mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
+  lcellpair <- lapply(names(data@tables),function(x){
+        data@tables[[x]] |>
+        select(cellpair) |>
+        pull(unique(cellpair))
+  })
+  if (!is.null(comparison)) {
+    for (pair in comparison) {
+      ctr_name <- pair[2]
+      exp_name <- pair[1]
+      res<-lapply(unique(unlist(lcellpair)), function(x){
+                  c <- data@tables[[ctr_name]] |>
+                      filter(cellpair == x) |>
+                      select(allpair,measure)
+                  e <- data@tables[[exp_name]] |>
+                      filter(cellpair == x) |>
+                      select(allpair,measure)
+                  joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
+                  joined[is.na(joined)] <- 0 
+                  joined<-joined %>%
+                      reshape2::melt() |>
+                      wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
+                      mutate(cellpair=x)
+                      return(joined)
+            })
+       data@stats[[paste0(exp_name, '_x_', ctr_name,":MannU")]] <- res 
+    }
+    return(data)
+  } else {
+    if (length(data@tables) >= 2) {
+      c <- data@tables[[1]] %>%
+        group_by(cellpair) %>%
+        select(c(source, target, measure)) %>%
+        summarise(measure = n())
+      for (i in 2:length(names(data@tables))) {
+         res<-lapply(unique(unlist(lcellpair)), function(x){
+                      e <- data@tables[[2]] |>
+                          filter(cellpair == x) |>
+                          select(allpair,measure)
+                      joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
+                      joined[is.na(joined)] <- 0 
+                      joined<-joined %>%
+                          reshape2::melt() |>
+                          wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
+                          mutate(cellpair=x)
+                          return(joined)
+                })
+          data@stats[[paste0(names(data@tables)[i], '_x_', names(data@tables)[1],":MannU")]] <- res
+      }
+      return(data)
+    }
+  }
+}
+
+
 #' Adding genetype to the gene names to distinguish biological function
 #'@param df dataframe with interaction data
 #'@import tidyr
 #'@import tibble dplyr
 #'@return df
+#'@noRd
 #'@noRd
 add_node_type <- function(df) {
   df = df %>%
@@ -448,14 +522,14 @@ add_node_type <- function(df) {
 #'@import tibble dplyr rstatix
 #'@return tibble
 #'@noRd
-filtered_graphs <- function(data, out_path) {
+filtered_graphs <- function(data, out_path, p_val = 0.05) {
   for (name in names(data@graphs)) {
     if (str_detect(name, '_x_', negate = FALSE)) {
       h <- head_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       f <- tail_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       curr_net <- subgraph.edges(data@graphs[[name]],
                                  E(data@graphs[[name]])[
-                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= 0.05],
+                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= p_val],
                                          paste(h, f, sep = '@'),
                                          nomatch = F)])
       data@graphs[[paste0(name, "_filtered")]] <- curr_net

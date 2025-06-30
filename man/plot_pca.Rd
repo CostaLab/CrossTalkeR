@@ -4,7 +4,7 @@
 \alias{plot_pca}
 \title{This function is a proxy to the PCA plot}
 \usage{
-plot_pca(lrobj_tblPCA, curr, dims = c(1, 2), ret = F, ggi = TRUE)
+plot_pca(lrobj_tblPCA, curr, dims = c(1, 2), ret = FALSE, ggi = TRUE)
 }
 \arguments{
 \item{curr}{table entry}

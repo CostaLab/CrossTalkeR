@@ -59,10 +59,12 @@ Here we show the most basic way to execute CrossTalkeR. All you need to provide 
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
-paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
-           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+paths <- c(
+  "Condition1" = "/path/to/condition1/LR-interactions.csv",
+  "Condition2" = "/path/to/condition2/LR-interactions.csv"
+)
 
-output <- "/path/to/output/folder/"
+output_path <- "/path/to/output/folder/"
 data <- generate_report(paths,
                 out_path=output,
                 out_file = 'vignettes_example.html',
@@ -99,10 +101,12 @@ To just **perform the analysis** part of CrossTalker, **without generating the r
 ```{r, eval = FALSE}
 library(CrossTalkeR)
 
-paths <- c('Condition1' = "/path/to/condition1/LR-interactions.csv",
-           'Condition2' = "/path/to/condition2/LR-interactions.csv")
+paths <- c(
+  "Condition1" = "/path/to/condition1/LR-interactions.csv",
+  "Condition2" = "/path/to/condition2/LR-interactions.csv"
+)
 
-output <- "/path/to/output/folder/"
+output_path <- "/path/to/output/folder/"
 data <- analise_LR(paths,
                 out_path=output,
                 org = "hsa", 

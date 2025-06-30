@@ -29,11 +29,18 @@ vignette: |
 
 # Version Info
 ```{r vignete0, eval = FALSE}
-suppressPackageStartupMessages({require(CrossTalkeR)})
-suppressPackageStartupMessages({require(igraph)})
-suppressPackageStartupMessages({require(ggraph)})
-suppressPackageStartupMessages({require(ggplot2)})
-
+suppressPackageStartupMessages({
+  require(CrossTalkeR)
+})
+suppressPackageStartupMessages({
+  require(igraph)
+})
+suppressPackageStartupMessages({
+  require(ggraph)
+})
+suppressPackageStartupMessages({
+  require(ggplot2)
+})
 ```
 
 **R version**: `r R.version.string`
@@ -65,29 +72,31 @@ data <- generate_report(paths,
 
 ## CCI
 ```{r vignete2, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=8,fig.height=8, eval = FALSE}
-plot_cci(graph = data@graphs$CTR,
-        colors = data@colors,
-        plt_name = 'Example 1',
-        coords = data@coords[V(data@graphs$CTR)$name,],
-        emax = NULL,
-        leg = FALSE,
-        low = 0,
-        high = 0,
-        ignore_alpha = FALSE,
-        log = FALSE,
-        efactor = 8,
-        vfactor = 12)
-
+plot_cci(
+  graph = data@graphs$CTR,
+  colors = data@colors,
+  plt_name = "Example 1",
+  coords = data@coords[V(data@graphs$CTR)$name, ],
+  emax = NULL,
+  leg = FALSE,
+  low = 0,
+  high = 0,
+  ignore_alpha = FALSE,
+  log = FALSE,
+  efactor = 8,
+  vfactor = 12
+)
 ```
 
 ## Sankey plot
 ```{r vignete4, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=15,fig.height=10, eval = FALSE}
-plot_sankey(lrobj_tbl = data@tables$EXP_x_CTR,
-            target = c("TGFB1|L"),
-            ligand_cluster = NULL,
-            receptor_cluster = NULL,
-            plt_name = "TGFB1")
-
+plot_sankey(
+  lrobj_tbl = data@tables$EXP_x_CTR,
+  target = c("TGFB1|L"),
+  ligand_cluster = NULL,
+  receptor_cluster = NULL,
+  plt_name = "TGFB1"
+)
 ```
 
 ## Report Samples

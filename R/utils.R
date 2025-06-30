@@ -11,6 +11,7 @@
 #'@importFrom tidyr %>%
 #'@importFrom stats prcomp
 #'@noRd
+#'@noRd
 ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
   for (graph in names(slot(data, slot))) {
     if (grepl("_x_", graph)) {  # Signed Analysis
@@ -129,6 +130,7 @@ ranking <- function(data, out_path, sel_columns, slot = "graphs_ggi") {
 #'@import igraph
 #'@importFrom tidyr %>%
 #'@noRd
+#'@noRd
 ranking_net <- function(graph, mode = TRUE) {
   if (!mode) {
     sub_graph <- igraph::subgraph.edges(graph, igraph::E(graph)[igraph::E(graph)$weight > 0])
@@ -186,6 +188,7 @@ ranking_net <- function(graph, mode = TRUE) {
 #'@import org.Mm.eg.db
 #'@importFrom tidyr %>%
 #'@noRd
+#'@noRd
 kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.Hs.eg.db, org = 'hsa', n = 100) {
   rkg <- slot(data, slot)
   for (x in names(rkg)) {
@@ -224,6 +227,7 @@ kegg_annotation <- function(data, slot, out_path, database = org.Hs.eg.db::org.H
 #'@importFrom tidyr %>%
 #'@import stringr
 #'@return list
+#'@noRd
 #'@noRd
 comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
   p_f1 <- p_f2 <- 0.5 # prob to be at disease
@@ -273,6 +277,7 @@ comparative_pagerank <- function(rankings, slotname, graphname, curr.rkg) {
 #'@import stringr
 #'@return list
 #'@noRd
+#'@noRd
 comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
   allnodes <- curr.rkg$nodes
   if (str_detect(graphname, '_filtered', negate = FALSE)){
@@ -310,6 +315,7 @@ comparative_med <- function(rankings, slotname, graphname, curr.rkg) {
 #'@import stringr
 #'@import clusterProfiler
 #'@return list
+#'@noRd
 #'@noRd
 enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
   lrdb <- system.file("extdata",
@@ -356,6 +362,7 @@ enrich <- function(list, name, db = org.Hs.eg.db, org = 'hsa', univ = NULL) {
 #'@importFrom tidyr %>%
 #'@import tibble dplyr rstatix
 #'@return tibble
+#'@noRd
 #'@noRd
 fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   if (!is.null(comparison)) {
@@ -490,6 +497,7 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
 #'@import tidyr
 #'@import tibble dplyr
 #'@return df
+#'@noRd
 #'@noRd
 add_node_type <- function(df) {
   df = df %>%

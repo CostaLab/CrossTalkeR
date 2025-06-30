@@ -8,7 +8,7 @@ plot_pca_LR_comparative(
   lrobj_tblPCA,
   pca_table,
   dims = c(1, 2),
-  ret = F,
+  ret = FALSE,
   ggi = TRUE,
   include_tf = TRUE,
   gene_types = "all"

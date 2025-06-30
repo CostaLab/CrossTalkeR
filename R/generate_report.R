@@ -173,7 +173,7 @@ analise_LR <- function(lrpaths,
     data <- create_diff_table(data, out_path, comparison, score_col)
   }
   # Generating the single condition report
-  lrobj_path1 <- paste0(out_path, "LR_data_final.Rds")
+  lrobj_path1 <- file.path(out_path, "LR_data_final.Rds")
 
   if (length(lrpaths) > 1) {
     data <- fisher_test_cci(data, "LRScore", out_path = out_path, comparison)

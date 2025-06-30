@@ -297,7 +297,7 @@ genes_of_interest <- c('TGFB1|L',
                        'ITGB1|R',
                        'CXCR4|R')
 
-data <- make_report(out_path=output,
+data <- make_report(out_path = output_path,
                     genes = genes_of_interest,
                     out_file = 'vignettes_example.html',
                     output_fmt = "html_document",

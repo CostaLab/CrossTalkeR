@@ -189,7 +189,7 @@ paths <- c(
   "PMF_MF2" = exp_input
 )
 
-output <- ("/path/to/save/folder")
+output_path <- ("/path/to/save/folder")
 data <- generate_report(paths,
   out_path = paste0(output, "/"),
   out_file = "HumanMyfib_TF_example.html",

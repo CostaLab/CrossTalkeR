@@ -1,0 +1,11 @@
+p {
+    text-align: justify;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.subsub {
+    text-align: center;
+}

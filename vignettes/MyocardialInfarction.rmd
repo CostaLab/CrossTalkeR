@@ -32,6 +32,33 @@ Nature paper "Spatial multi-omic map of human myocardial infarction" (Kuppe et a
 Aim of the study was to build a high-resolution map of human cardiac remodelling after myocardial infarction to provide a better understanding of these remodelling processes.
 We are focusing here on the conditions "myogenic" (control condition) and "ischemic" (disease condition) and go through the CrossTalkeR results step by step. The original paper already contains CrossTalkeR results and in a later part of this tutorial we will replicate a few of the results.
 
+## Data Availability
+
+The data used in this tutorial is available in the following Zenodo repository: [ISMB/ECCB25 - VT3 tutorial data](https://zenodo.org/records/15722171). We are using the Seurat object `2306_scRNAseq_MOIZ.rds` which contains the snRNA-seq data of the human myocardian infarction study. The object is already preprocessed and contains the necessary metadata for the CrossTalkeR analysis.
+
+Since the data set includes all conditions and we intend to use the python version of LIANA+, we first filter the object to only include the conditions "myogenic" and "ischemic" and then convert the Seurat object to an AnnData object. For the conversion we use the `MuDataSeurat` package, which allows us to convert Seurat objects directly to AnnData objects.
+
+```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
+# Loading the necessary libraries
+library(Seurat)
+library(MuDataSeurat)
+
+# Reading the Seurat object
+# Note: Please adjust the path to the Seurat object accordingly
+complete_heart_data <- readRDS("2306_scRNAseq_MOIZ.rds")
+
+# Filtering the Seurat object to only include the conditions "myogenic" and "ischemic"
+filtered_heart_data <- subset(
+  complete_heart_data,
+  subset = sampleType %in% c("myogenic", "ischemic")
+)
+# Saving the filtered Seurat object
+saveRDS(filtered_heart_data, "heart_data_object.rds")
+
+# Converting the Seurat object to an AnnData object
+MuDataSeurat::WriteH5AD(filtered_heart_data, "heart_data_object.h5ad")
+```
+
 ## Ligand-Receptor Interaction Prediction with LIANA
 
 Before we can run CrossTalkeR, we need the prediction of ligand-receptor interaction for our data set. Due to the large sample size we are using the python version of LIANA for a better performance:

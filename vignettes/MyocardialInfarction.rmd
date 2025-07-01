@@ -407,7 +407,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
     ligand_cluster = "Fib2_Myofib",
     receptor_cluster = "SPP1_Macrophages",
     plt_name = "Fib2_Myofib to SPP1_Macrophages Signaling ischemic vs myogenic",
-    threshold = 50, 
+    threshold = 30, 
     tfflag = FALSE
 )
 ```
@@ -425,7 +425,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
     ligand_cluster = "SPP1_Macrophages",
     receptor_cluster = "Fib2_Myofib",
     plt_name = "SPP1_Macrophages to Fib2_Myofib Signaling ischemic vs myogenic",
-    threshold = 50, 
+    threshold = 30, 
     tfflag = FALSE
 )
 ```
@@ -455,7 +455,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
     ligand_cluster = subset,
     receptor_cluster = subset,
     plt_name = "TGFB1 Signaling Between Cell Type Subset ischemic vs myogenic",
-    threshold = 50,
+    threshold = 30,
     tfflag = FALSE)
 ```
 

@@ -168,52 +168,52 @@ sns.clustermap(filtered_estimate,
 
 <br/><br/>
 
-The heatmap shows, that signaling in the WNT pathway is significantly enriched in the ligand-receptor interactions between MSCs and fibroblasts. Further the result indicates that this pathway is up in the disease condition. On the other hand MAPK and VEGF pathways are predicted to be down in the disease condition.
+The heatmap highlights pathway-specific enrichment of ligand–receptor interactions across cell–cell communication pairs. Notably, we observe a strong positive enrichment for **TGFβ signaling** in **MSC-to-MSC** interactions and for **EGFR signaling** from **Fibroblasts to Megakaryocytes**. In contrast, several pathways show negative enrichment patterns, such as **VEGF signaling** in **MSC-to-MSC** communication.
 
-## Extraction and Visualization of WNT-Related Ligand-Receptor Interactions
+## Extraction and Visualization of TGFb-Related Ligand-Receptor Interactions
 
-To further dissect which interaction in our analysis relate to the WNT pathway, we can extract the relevant ligand-receptor pairs ftom the previous assignment with the progeny database:
+To further dissect which interaction in our analysis relate to the TGFb pathway, we can extract the relevant ligand-receptor pairs ftom the previous assignment with the progeny database:
 
 ```{python, eval = FALSE}
-# Extracting all WNT-related Ligand-Receptor Interactions
-wnt_interactions = lr_progeny[lr_progeny['source'] == 'WNT']
+# Extracting all TGFb-related Ligand-Receptor Interactions
+TGFb_interactions = lr_progeny[lr_progeny['source'] == 'TGFb']
 
 # Split the "interaction" column by "@"
-split_interactions = wnt_interactions['interaction'].str.split('@', expand=True)
+split_interactions = TGFb_interactions['interaction'].str.split('@', expand=True)
 
 # Rename the columns to "ligand" and "receptor"
 split_interactions.rename(columns={0: 'ligand', 1: 'receptor'}, inplace=True)
 
 # Save the result as a CSV file
-split_interactions.to_csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/WNT_interactions.csv", index=False)
+split_interactions.to_csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv", index=False)
 
 ```
 
-With the saved ligand-receptor pairs, we can filter the differential interactions table from CrossTalkeR and visualize the WNT-related interactions with a sankey plot:
+With the saved ligand-receptor pairs, we can filter the differential interactions table from CrossTalkeR and visualize the TGFb-related interactions with a sankey plot:
 
 ```{R, eval = FALSE}
-# Load CSV file with WNT-related interactions from Progeny
-WNT_interactions <- read.csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/WNT_interactions.csv")
+# Load CSV file with TGFb-related interactions from Progeny
+TGFb_interactions <- read.csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv")
 
 # Add suffixes to ligand and receptor columns
-WNT_interactions$ligand <- paste0(WNT_interactions$ligand, "|L")
-WNT_interactions$receptor <- paste0(WNT_interactions$receptor, "|R")
+TGFb_interactions$ligand <- paste0(TGFb_interactions$ligand, "|L")
+TGFb_interactions$receptor <- paste0(TGFb_interactions$receptor, "|R")
 
-# Filter the differential EXP_x_CTR table for WNT-related interactions
-WNT_filtered_interactions <- EXP_x_CTR_table[EXP_x_CTR_table$gene_A %in% WNT_interactions$ligand & 
-                                             EXP_x_CTR_table$gene_B %in% WNT_interactions$receptor, ]
+# Filter the differential EXP_x_CTR table for TGFb-related interactions
+TGFb_filtered_interactions <- EXP_x_CTR_table[EXP_x_CTR_table$gene_A %in% TGFb_interactions$ligand & 
+                                             EXP_x_CTR_table$gene_B %in% TGFb_interactions$receptor, ]
 
 #Plot the filtered interactions with CrossTalkeR sankey plot function
-plot_sankey(WNT_filtered_interactions,
+plot_sankey(TGFb_filtered_interactions,
             target = NULL,
             ligand_cluster = "MSC",
             receptor_cluster = "Fibroblast",
-            plt_name = "WNT Signaling Related Interactions MSC to Fibroblast EXP vs CTR",
+            plt_name = "TGFb Signaling Related Interactions MSC to Fibroblast EXP vs CTR",
             threshold = 50, tfflag = FALSE)
 ```
 
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">
-  <img src="Progeny_images/MSC_Fibroblast_WNT_Interactions.png" alt="">
+  <img src="Progeny_images/MSC_MSC_TGFb_Interactions.png" alt="">
   <figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"> </figcaption>
 </figure>
 

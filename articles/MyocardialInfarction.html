@@ -104,43 +104,79 @@ condition) and go through the CrossTalkeR results step by step. The
 original paper already contains CrossTalkeR results and in a later part
 of this tutorial we will replicate a few of the results.</p>
 <div class="section level3">
+<h3 id="data-availability">Data Availability<a class="anchor" aria-label="anchor" href="#data-availability"></a>
+</h3>
+<p>The data used in this tutorial is available in the following Zenodo
+repository: <a href="https://zenodo.org/records/15722171" class="external-link">ISMB/ECCB25 -
+VT3 tutorial data</a>. We are using the Seurat object
+<code>2306_scRNAseq_MOIZ.rds</code> which contains the snRNA-seq data of
+the human myocardian infarction study. The object is already
+preprocessed and contains the necessary metadata for the CrossTalkeR
+analysis.</p>
+<p>Since the data set includes all conditions and we intend to use the
+python version of LIANA+, we first filter the object to only include the
+conditions “myogenic” and “ischemic” and then convert the Seurat object
+to an AnnData object. For the conversion we use the
+<code>MuDataSeurat</code> package, which allows us to convert Seurat
+objects directly to AnnData objects.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Loading the necessary libraries</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">MuDataSeurat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reading the Seurat object</span></span>
+<span><span class="co"># Note: Please adjust the path to the Seurat object accordingly</span></span>
+<span><span class="va">complete_heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"2306_scRNAseq_MOIZ.rds"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Filtering the Seurat object to only include the conditions "myogenic" and "ischemic"</span></span>
+<span><span class="va">filtered_heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span></span>
+<span>  <span class="va">complete_heart_data</span>,</span>
+<span>  subset <span class="op">=</span> <span class="va">sampleType</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"myogenic"</span>, <span class="st">"ischemic"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Saving the filtered Seurat object</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">filtered_heart_data</span>, <span class="st">"heart_data_object.rds"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Converting the Seurat object to an AnnData object</span></span>
+<span><span class="fu">MuDataSeurat</span><span class="fu">::</span><span class="fu">WriteH5AD</span><span class="op">(</span><span class="va">filtered_heart_data</span>, <span class="st">"heart_data_object.h5ad"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="ligand-receptor-interaction-prediction-with-liana">Ligand-Receptor Interaction Prediction with LIANA<a class="anchor" aria-label="anchor" href="#ligand-receptor-interaction-prediction-with-liana"></a>
 </h3>
 <p>Before we can run CrossTalkeR, we need the prediction of
 ligand-receptor interaction for our data set. Due to the large sample
 size we are using the python version of LIANA for a better
 performance:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="im">import</span> liana <span class="im">as</span> li</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>out_path <span class="op">=</span> <span class="st">"/out/path/"</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>data <span class="op">=</span> sc.read_h5ad(<span class="st">"heart_data_object.h5ad"</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>data.raw <span class="op">=</span> data</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">set</span>(data.obs[<span class="st">'sampleType'</span>]):</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="bu">print</span>(i)</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    lr<span class="op">=</span>li.method.cellphonedb(data[data.obs[<span class="st">'sampleType'</span>]<span class="op">==</span>i],</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>                        groupby<span class="op">=</span><span class="st">'cell_subtype2'</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>                        expr_prop<span class="op">=</span><span class="fl">0.1</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>                        verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>                        resource_name<span class="op">=</span><span class="st">'consensus'</span>,inplace<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    lr.to_csv(<span class="ss">f"</span><span class="sc">{</span>out_path<span class="sc">}{</span>i<span class="sc">}</span><span class="ss">_lr_liana_consensus.csv"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> os.listdir(out_path):</span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>    <span class="cf">if</span> i.endswith(<span class="st">'lr_liana_consensus.csv'</span>):</span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>        evfull <span class="op">=</span> pd.read_csv(out_path<span class="op">+</span>i)</span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:,[<span class="st">'ligand'</span>,<span class="st">'receptor_complex'</span>,<span class="st">'source'</span>,<span class="st">'target'</span>,<span class="st">'lr_means'</span>,<span class="st">'cellphone_pvals'</span>]]</span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>        evfull[<span class="st">'type_gene_A'</span>] <span class="op">=</span> <span class="st">'Ligand'</span></span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>        evfull[<span class="st">'type_gene_B'</span>] <span class="op">=</span> <span class="st">'Receptor'</span></span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>        evfull[<span class="st">'gene_A'</span>] <span class="op">=</span> evfull[<span class="st">'ligand'</span>]</span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>        evfull[<span class="st">'gene_B'</span>] <span class="op">=</span> evfull[<span class="st">'receptor_complex'</span>]</span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>        evfull[<span class="st">'MeanLR'</span>] <span class="op">=</span> evfull[<span class="st">'lr_means'</span>]</span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>        k <span class="op">=</span> i[<span class="dv">0</span>:i.find(<span class="st">'_lr_'</span>)]</span>
-<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[<span class="bu">list</span>(evfull.cellphone_pvals.to_numpy()<span class="op">&lt;=</span><span class="fl">0.05</span>),:]</span>
-<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:, [<span class="st">'source'</span>, <span class="st">'target'</span>, <span class="st">'type_gene_A'</span>, <span class="st">'type_gene_B'</span>, <span class="st">'gene_A'</span>, <span class="st">'gene_B'</span>, <span class="st">'MeanLR'</span>]].to_csv(<span class="ss">f'</span><span class="sc">{</span>out_path<span class="sc">}{</span>k<span class="sc">}</span><span class="ss">_lr_ready.csv'</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="im">import</span> liana <span class="im">as</span> li</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>out_path <span class="op">=</span> <span class="st">"/out/path/"</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>data <span class="op">=</span> sc.read_h5ad(<span class="st">"heart_data_object.h5ad"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>data.raw <span class="op">=</span> data</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">set</span>(data.obs[<span class="st">'sampleType'</span>]):</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="bu">print</span>(i)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    lr<span class="op">=</span>li.method.cellphonedb(data[data.obs[<span class="st">'sampleType'</span>]<span class="op">==</span>i],</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>                        groupby<span class="op">=</span><span class="st">'cell_subtype2'</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                        expr_prop<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                        verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                        resource_name<span class="op">=</span><span class="st">'consensus'</span>,inplace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    lr.to_csv(<span class="ss">f"</span><span class="sc">{</span>out_path<span class="sc">}{</span>i<span class="sc">}</span><span class="ss">_lr_liana_consensus.csv"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> os.listdir(out_path):</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>    <span class="cf">if</span> i.endswith(<span class="st">'lr_liana_consensus.csv'</span>):</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>        evfull <span class="op">=</span> pd.read_csv(out_path<span class="op">+</span>i)</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:,[<span class="st">'ligand'</span>,<span class="st">'receptor_complex'</span>,<span class="st">'source'</span>,<span class="st">'target'</span>,<span class="st">'lr_means'</span>,<span class="st">'cellphone_pvals'</span>]]</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>        evfull[<span class="st">'type_gene_A'</span>] <span class="op">=</span> <span class="st">'Ligand'</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>        evfull[<span class="st">'type_gene_B'</span>] <span class="op">=</span> <span class="st">'Receptor'</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>        evfull[<span class="st">'gene_A'</span>] <span class="op">=</span> evfull[<span class="st">'ligand'</span>]</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>        evfull[<span class="st">'gene_B'</span>] <span class="op">=</span> evfull[<span class="st">'receptor_complex'</span>]</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>        evfull[<span class="st">'MeanLR'</span>] <span class="op">=</span> evfull[<span class="st">'lr_means'</span>]</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>        k <span class="op">=</span> i[<span class="dv">0</span>:i.find(<span class="st">'_lr_'</span>)]</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[<span class="bu">list</span>(evfull.cellphone_pvals.to_numpy()<span class="op">&lt;=</span><span class="fl">0.05</span>),:]</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>        evfull <span class="op">=</span> evfull.loc[:, [<span class="st">'source'</span>, <span class="st">'target'</span>, <span class="st">'type_gene_A'</span>, <span class="st">'type_gene_B'</span>, <span class="st">'gene_A'</span>, <span class="st">'gene_B'</span>, <span class="st">'MeanLR'</span>]].to_csv(<span class="ss">f'</span><span class="sc">{</span>out_path<span class="sc">}{</span>k<span class="sc">}</span><span class="ss">_lr_ready.csv'</span>)</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="intracellular-communication-analysis-with-intratalker">Intracellular Communication Analysis with IntraTalker<a class="anchor" aria-label="anchor" href="#intracellular-communication-analysis-with-intratalker"></a>
@@ -149,31 +185,31 @@ performance:</p>
 intracellular communication. For this we use transcription factor
 activity predictions from decoupler and the IntraTalker package. Similar
 to usage of LIANA we are using the python version of decoupler:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="im">import</span> decoupler <span class="im">as</span> dc</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="bu">file</span> <span class="op">=</span> <span class="st">"heart_data_object.h5ad"</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>reg <span class="op">=</span> pd.read_csv(<span class="st">"regulon_dorothea_human_AB.csv"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>ann_data <span class="op">=</span> sc.read_h5ad(<span class="bu">file</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>dc.run_ulm(</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    mat<span class="op">=</span>ann_data,</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    net<span class="op">=</span>reg,</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    source<span class="op">=</span><span class="st">'source'</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    target<span class="op">=</span><span class="st">'target'</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    weight<span class="op">=</span><span class="st">'weight'</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    use_raw<span class="op">=</span><span class="va">False</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>)</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>estimates <span class="op">=</span>ann_data.obsm[<span class="st">'ulm_estimate'</span>]</span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>estimates.to_csv(<span class="st">"/out/path/decoupler_dorotheaAB_results_ulm.csv"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="im">import</span> scanpy <span class="im">as</span> sc</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="im">import</span> decoupler <span class="im">as</span> dc</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="bu">file</span> <span class="op">=</span> <span class="st">"heart_data_object.h5ad"</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>reg <span class="op">=</span> pd.read_csv(<span class="st">"regulon_dorothea_human_AB.csv"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>ann_data <span class="op">=</span> sc.read_h5ad(<span class="bu">file</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>dc.run_ulm(</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    mat<span class="op">=</span>ann_data,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    net<span class="op">=</span>reg,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    source<span class="op">=</span><span class="st">'source'</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    target<span class="op">=</span><span class="st">'target'</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    weight<span class="op">=</span><span class="st">'weight'</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    use_raw<span class="op">=</span><span class="va">False</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>estimates <span class="op">=</span>ann_data.obsm[<span class="st">'ulm_estimate'</span>]</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>estimates.to_csv(<span class="st">"/out/path/decoupler_dorotheaAB_results_ulm.csv"</span>)</span></code></pre></div>
 <p>To find the transcription factors that show a significant different
 between the conditions and to connect the transcription factors to
 upstream receptors and downstream ligands we use the IntraTalker
 package. First we generate the intracellular communication tables
 based:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -203,7 +239,7 @@ based:</p>
 </h3>
 <p>In the next step, we combine the ligand-receptor and intracellular
 communication predictions to generate the input for CrossTalkeR:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ischemic_LR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"/out/path/ischemic_lr_ready.csv"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">myogenic_LR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"/out/path/myogenic_lr_ready.csv"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
@@ -222,7 +258,7 @@ analysis.</p>
 <h3 id="running-crosstalker">Running CrossTalkeR<a class="anchor" aria-label="anchor" href="#running-crosstalker"></a>
 </h3>
 <p>The last step is to run CrossTalkeR:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'myogenic'</span> <span class="op">=</span> <span class="va">myogenic_combined</span>,              </span>
 <span>              <span class="st">'ischemic'</span> <span class="op">=</span> <span class="va">ischemic_combined</span><span class="op">)</span></span>
 <span></span>
@@ -248,7 +284,7 @@ comparative analysis of ischemic versus myogenic conditions.</p>
 <p>We start our result analysis with the cell-cell interaction (CCI)
 analysis of CrossTalkeR and therefore take a look at our CCI network
 plot:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cci.html">plot_cci</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>        colors <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">colors</span>,</span>
 <span>        plt_name <span class="op">=</span> <span class="st">"ischemic vs myogenic"</span>,</span>
@@ -273,7 +309,7 @@ the ischemic condition.</p>
 <p>CrossTalkeR also offers a refined CCI network by employing Fisher’s
 exact test to filter the network based on interaction proportions. We
 can plot the resulting statistics in a Violon Plot:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">EnhancedVolcano</span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">stats</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>                lab <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">stats</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span><span class="op">$</span><span class="va">columns_name</span>,</span>
 <span>                x <span class="op">=</span> <span class="st">"lodds"</span>,</span>
@@ -287,7 +323,7 @@ including fibroblast, cardiomyocyte, and myeloid cell clusters. Using
 this threshold (the default in CrossTalkeR), we can retain only
 interacting cell pairs with a p-value greater than 0.05 as an example,
 and replot the CCI network:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cci.html">plot_cci</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">$</span><span class="va">ischemic_x_myogenic_filtered</span>,</span>
 <span>        colors <span class="op">=</span> <span class="va">data</span><span class="op">@</span><span class="va">colors</span>,</span>
 <span>        plt_name <span class="op">=</span> <span class="st">"ischemic vs myogenic filtered"</span>,</span>
@@ -306,7 +342,7 @@ all cell types remain except for the Neuronal and Purkinje_fibers
 clusters. The Pagerank of the nodes remains largely unchanged.</p>
 <p>We can also examine the filtered CCI network with the help of a
 heatmap:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">entries</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_x_"</span>,<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">graphs</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">entries</span> <span class="op">&lt;-</span> <span class="va">entries</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"filtered"</span>,<span class="va">entries</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">entries</span><span class="op">)</span><span class="op">{</span></span>
@@ -322,7 +358,7 @@ interaction score in the ischemic condition. The sender cell type
 Cluster) on the y axis. We can use the order of the cell types in the
 heatmap to reorder the nodes in the CCI plot. Here we are sorting the
 nodes by the order of the sending clusters in the heatmap.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extracting the cell cluster order from the Heatmap</span></span>
 <span><span class="va">row_order</span> <span class="op">&lt;-</span> <span class="fu">row_order</span><span class="op">(</span><span class="va">p1</span><span class="op">)</span></span>
 <span><span class="va">ordered_row_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">p1</span><span class="op">@</span><span class="va">ht_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">@</span><span class="va">matrix</span><span class="op">)</span><span class="op">[</span><span class="va">row_order</span><span class="op">]</span></span>
@@ -353,11 +389,11 @@ nodes by the order of the sending clusters in the heatmap.</p>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/CCI_heart_filtered_sorted.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>To confirm the top cell types identified by Pagerank, we can examine
 their Pagerank scores in more detail using a bar plot:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/CCI_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p>We can further take a look at the Influencer and Listener ranking to
 observe which cell types are more sending or more receiving:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_filtered"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="cn">NULL</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -384,7 +420,7 @@ the CCI level, we can examine the network’s topological rankings. We
 begin by reviewing the top Pagerank results, which identify genes within
 a specific cell type that are important in the network’s signaling. For
 now, we will focus exclusively on ligand-receptor (LR) interactions.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Pagerank"</span>, type <span class="op">=</span> <span class="st">"LR"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/LR_barplot_Pagerank.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>In the top genes, we find both ligands (L) and receptors (R). Many of
@@ -397,7 +433,7 @@ the top genes in the damaged_CM cluster.</p>
 <p>To gain a clearer understanding of outgoing and incoming signals, we
 examine the ligands with the top Influencer scores and the receptors
 with the top Listener scores:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Influencer"</span>, type <span class="op">=</span> <span class="st">"L"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_bar_rankings.html">plot_bar_rankings</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"ischemic_x_myogenic_ggi"</span>, <span class="st">"Listener"</span>, type <span class="op">=</span> <span class="st">"R"</span>, filter_sign <span class="op">=</span> <span class="cn">NULL</span>, mode <span class="op">=</span> <span class="st">"cgi"</span><span class="op">)</span></span></code></pre></div>
 <div style="display: flex; align-items: center; justify-content: center;">
@@ -417,29 +453,29 @@ we are using newer versions of the LIANA package and, for simplicity, we
 are considering fewer samples in this tutorial.</p>
 <p>We begin with the Sankey plots showing signaling between the Fib2 and
 SPP1_Macrophages clusters (in both directions):</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"Fib2_Myofib"</span>,</span>
 <span>    receptor_cluster <span class="op">=</span> <span class="st">"SPP1_Macrophages"</span>,</span>
 <span>    plt_name <span class="op">=</span> <span class="st">"Fib2_Myofib to SPP1_Macrophages Signaling ischemic vs myogenic"</span>,</span>
-<span>    threshold <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>    threshold <span class="op">=</span> <span class="fl">30</span>, </span>
 <span>    tfflag <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/Fib2_SPP1_Mac_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">data</span><span class="op">@</span><span class="va">tables</span><span class="op">$</span><span class="va">ischemic_x_myogenic</span>,</span>
 <span>    target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    ligand_cluster <span class="op">=</span> <span class="st">"SPP1_Macrophages"</span>,</span>
 <span>    receptor_cluster <span class="op">=</span> <span class="st">"Fib2_Myofib"</span>,</span>
 <span>    plt_name <span class="op">=</span> <span class="st">"SPP1_Macrophages to Fib2_Myofib Signaling ischemic vs myogenic"</span>,</span>
-<span>    threshold <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>    threshold <span class="op">=</span> <span class="fl">30</span>, </span>
 <span>    tfflag <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/SPP1_Mac_Fib2_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 <p>Additionally, a Sankey plot was created for a subset of cell types,
 displaying only interactions involving the TGFB1 ligand:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LYVE_FOLR_Macrophages"</span>,</span>
 <span><span class="st">"LYVE_PLTP_Macrophages"</span>,</span>
 <span><span class="st">"CCL18_Macrophages"</span>,</span>
@@ -455,7 +491,7 @@ displaying only interactions involving the TGFB1 ligand:</p>
 <span>    ligand_cluster <span class="op">=</span> <span class="va">subset</span>,</span>
 <span>    receptor_cluster <span class="op">=</span> <span class="va">subset</span>,</span>
 <span>    plt_name <span class="op">=</span> <span class="st">"TGFB1 Signaling Between Cell Type Subset ischemic vs myogenic"</span>,</span>
-<span>    threshold <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>    threshold <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>    tfflag <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="heart_images/subset_TGFB1_Sankey.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p> </p>
 </div>

@@ -106,13 +106,46 @@
 <pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'CrossTalkeR-HumanMyfib'</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 id="integration-of-liana-with-crosstalker">Integration of liana with CrossTalkeR<a class="anchor" aria-label="anchor" href="#integration-of-liana-with-crosstalker"></a>
+<h2 id="crosstalker-python-package-">CrossTalkeR Python Package 🐍<a class="anchor" aria-label="anchor" href="#crosstalker-python-package-"></a>
 </h2>
-<p>We provide here a tutorial on how to integrate predictions from liana into Crosstalker.</p>
-<p><a href="https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd" class="external-link">Run liana</a></p>
+<p>Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our <a href="https://pycrosstalker.readthedocs.io/en/stable/index.html" class="external-link">Read the Docs</a></p>
 </div>
 <div class="section level2">
-<h2 id="new-features-v140">New Features v1.4.0<a class="anchor" aria-label="anchor" href="#new-features-v140"></a>
+<h2 id="crosstalker-docker-image">CrossTalkeR Docker image<a class="anchor" aria-label="anchor" href="#crosstalker-docker-image"></a>
+</h2>
+<p>We provide access to a Docker image, available at: <a href="https://gitlab.com/sysbiobig/ismb-eccb-2025-tutorial-vt3/container_registry" class="external-link uri">https://gitlab.com/sysbiobig/ismb-eccb-2025-tutorial-vt3/container_registry</a>. The Docker image comes preconfigured with all necessary libraries, tools, and software required to follow the hands-on exercises.</p>
+</div>
+<div class="section level2">
+<h2 id="id_-crosstalker-realease-v20---new-features-">🔥 CrossTalkeR Realease v2.0 - New Features 🔥<a class="anchor" aria-label="anchor" href="#id_-crosstalker-realease-v20---new-features-"></a>
+</h2>
+<ul>
+<li><p><strong>Statistical Filtering with Fisher’s Exact Test</strong><br>
+Filter cell-cell communication networks using Fisher’s test to identify statistically significant interactions.</p></li>
+<li><p><strong>Volcano Plot Visualization</strong><br>
+Visualize results of the Fisher’s test in a volcano plot</p></li>
+<li><p><strong>Heatmap Visualization with Clustering</strong><br>
+Explore communication patterns across cell types using heatmaps, including clustering by interaction weights</p></li>
+<li>
+<p><strong>Comprehensive Topological Analysis</strong><br>
+Generate bar plots for the calculated network topological measures, separately for:</p>
+<ul>
+<li>cell–cell interaction networks<br>
+</li>
+<li>cell-gene interaction networks</li>
+</ul>
+</li>
+<li><p><strong>Ligand–Receptor Enrichment Analysis with PROGENy</strong><br>
+Step-by-step tutorial for pathway enrichment analysis of ligand–receptor pairs using PROGENy.</p></li>
+<li><p><strong>Modeling Intracellular Communication</strong><br>
+Extend the communication network by incorporating transcription factors to model intracellular signaling.</p></li>
+<li><p><strong>Integration with LIANA+</strong><br>
+Seamlessly using ligand-receptor interaction results from LIANA+. We provide a detailed tutorial on how to perform the integration <a href="https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd" class="external-link">Run liana</a></p></li>
+<li><p><strong>Compatibility with scSeqComm</strong><br>
+Use <code>scSeqComm</code> outputs as inputs to the <strong>CrossTalkeR</strong> framework for downstream comparative analysis.</p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="features-v140">Features v1.4.0<a class="anchor" aria-label="anchor" href="#features-v140"></a>
 </h2>
 <ul>
 <li>Splitted generate_report function in two parts:
@@ -131,7 +164,7 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="old-features-v130">Old Features v1.3.0<a class="anchor" aria-label="anchor" href="#old-features-v130"></a>
+<h2 id="features-v130">Features v1.3.0<a class="anchor" aria-label="anchor" href="#features-v130"></a>
 </h2>
 <ul>
 <li>Single and Comparative Reports
@@ -146,15 +179,15 @@
 </ul>
 </li>
 <li>Leimkühler et. al. [2] data were added to the package</li>
-<li>Fisher Test were implemented to highlight the CCI edges significance (new) 🔥<strong>NEW</strong>🔥</li>
+<li>Fisher Test were implemented to highlight the CCI edges significance (new)</li>
 <li>
-<strong>Change input format: Please see the Documentation</strong> 🔥<strong>NEW</strong>🔥
+<strong>Change input format: Please see the Documentation</strong>
 <ul>
 <li>A python3 notebook are available to cast the old input to the new input.</li>
 </ul>
 </li>
-<li>Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input. 🔥<strong>NEW</strong>🔥</li>
-<li>LR pair visualization plot can be done using a Seurat Object 🔥<strong>NEW</strong>🔥</li>
+<li>Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input.</li>
+<li>LR pair visualization plot can be done using a Seurat Object</li>
 </ul>
 </li>
 </ul>

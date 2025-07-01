@@ -238,53 +238,56 @@ heatmap visualization.</p>
 <span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>               vmin<span class="op">=-</span><span class="fl">3.5</span>,</span>
 <span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>               vmax<span class="op">=</span><span class="fl">3.5</span>)</span></code></pre></div>
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="Progeny_images/all_celltypes_enrichment.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure><p><br><br></p>
-<p>The heatmap shows, that signaling in the WNT pathway is significantly
-enriched in the ligand-receptor interactions between MSCs and
-fibroblasts. Further the result indicates that this pathway is up in the
-disease condition. On the other hand MAPK and VEGF pathways are
-predicted to be down in the disease condition.</p>
+<p>The heatmap highlights pathway-specific enrichment of ligand–receptor
+interactions across cell–cell communication pairs. Notably, we observe a
+strong positive enrichment for <strong>TGFβ signaling</strong> in
+<strong>MSC-to-MSC</strong> interactions and for <strong>EGFR
+signaling</strong> from <strong>Fibroblasts to Megakaryocytes</strong>.
+In contrast, several pathways show negative enrichment patterns, such as
+<strong>VEGF signaling</strong> in <strong>MSC-to-MSC</strong>
+communication.</p>
 </div>
 <div class="section level3">
-<h3 id="extraction-and-visualization-of-wnt-related-ligand-receptor-interactions">Extraction and Visualization of WNT-Related Ligand-Receptor
-Interactions<a class="anchor" aria-label="anchor" href="#extraction-and-visualization-of-wnt-related-ligand-receptor-interactions"></a>
+<h3 id="extraction-and-visualization-of-tgfb-related-ligand-receptor-interactions">Extraction and Visualization of TGFb-Related Ligand-Receptor
+Interactions<a class="anchor" aria-label="anchor" href="#extraction-and-visualization-of-tgfb-related-ligand-receptor-interactions"></a>
 </h3>
 <p>To further dissect which interaction in our analysis relate to the
-WNT pathway, we can extract the relevant ligand-receptor pairs ftom the
+TGFb pathway, we can extract the relevant ligand-receptor pairs ftom the
 previous assignment with the progeny database:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Extracting all WNT-related Ligand-Receptor Interactions</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>wnt_interactions <span class="op">=</span> lr_progeny[lr_progeny[<span class="st">'source'</span>] <span class="op">==</span> <span class="st">'WNT'</span>]</span>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Extracting all TGFb-related Ligand-Receptor Interactions</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>TGFb_interactions <span class="op">=</span> lr_progeny[lr_progeny[<span class="st">'source'</span>] <span class="op">==</span> <span class="st">'TGFb'</span>]</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Split the "interaction" column by "@"</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>split_interactions <span class="op">=</span> wnt_interactions[<span class="st">'interaction'</span>].<span class="bu">str</span>.split(<span class="st">'@'</span>, expand<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>split_interactions <span class="op">=</span> TGFb_interactions[<span class="st">'interaction'</span>].<span class="bu">str</span>.split(<span class="st">'@'</span>, expand<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># Rename the columns to "ligand" and "receptor"</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>split_interactions.rename(columns<span class="op">=</span>{<span class="dv">0</span>: <span class="st">'ligand'</span>, <span class="dv">1</span>: <span class="st">'receptor'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co"># Save the result as a CSV file</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>split_interactions.to_csv(<span class="st">"/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/WNT_interactions.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>split_interactions.to_csv(<span class="st">"/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div>
 <p>With the saved ligand-receptor pairs, we can filter the differential
-interactions table from CrossTalkeR and visualize the WNT-related
+interactions table from CrossTalkeR and visualize the TGFb-related
 interactions with a sankey plot:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load CSV file with WNT-related interactions from Progeny</span></span>
-<span><span class="va">WNT_interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/WNT_interactions.csv"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Load CSV file with TGFb-related interactions from Progeny</span></span>
+<span><span class="va">TGFb_interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Add suffixes to ligand and receptor columns</span></span>
-<span><span class="va">WNT_interactions</span><span class="op">$</span><span class="va">ligand</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">WNT_interactions</span><span class="op">$</span><span class="va">ligand</span>, <span class="st">"|L"</span><span class="op">)</span></span>
-<span><span class="va">WNT_interactions</span><span class="op">$</span><span class="va">receptor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">WNT_interactions</span><span class="op">$</span><span class="va">receptor</span>, <span class="st">"|R"</span><span class="op">)</span></span>
+<span><span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">ligand</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">ligand</span>, <span class="st">"|L"</span><span class="op">)</span></span>
+<span><span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">receptor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">receptor</span>, <span class="st">"|R"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Filter the differential EXP_x_CTR table for WNT-related interactions</span></span>
-<span><span class="va">WNT_filtered_interactions</span> <span class="op">&lt;-</span> <span class="va">EXP_x_CTR_table</span><span class="op">[</span><span class="va">EXP_x_CTR_table</span><span class="op">$</span><span class="va">gene_A</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">WNT_interactions</span><span class="op">$</span><span class="va">ligand</span> <span class="op">&amp;</span> </span>
-<span>                                             <span class="va">EXP_x_CTR_table</span><span class="op">$</span><span class="va">gene_B</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">WNT_interactions</span><span class="op">$</span><span class="va">receptor</span>, <span class="op">]</span></span>
+<span><span class="co"># Filter the differential EXP_x_CTR table for TGFb-related interactions</span></span>
+<span><span class="va">TGFb_filtered_interactions</span> <span class="op">&lt;-</span> <span class="va">EXP_x_CTR_table</span><span class="op">[</span><span class="va">EXP_x_CTR_table</span><span class="op">$</span><span class="va">gene_A</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">ligand</span> <span class="op">&amp;</span> </span>
+<span>                                             <span class="va">EXP_x_CTR_table</span><span class="op">$</span><span class="va">gene_B</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">TGFb_interactions</span><span class="op">$</span><span class="va">receptor</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co">#Plot the filtered interactions with CrossTalkeR sankey plot function</span></span>
-<span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">WNT_filtered_interactions</span>,</span>
+<span><span class="fu"><a href="../reference/plot_sankey.html">plot_sankey</a></span><span class="op">(</span><span class="va">TGFb_filtered_interactions</span>,</span>
 <span>            target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>            ligand_cluster <span class="op">=</span> <span class="st">"MSC"</span>,</span>
 <span>            receptor_cluster <span class="op">=</span> <span class="st">"Fibroblast"</span>,</span>
-<span>            plt_name <span class="op">=</span> <span class="st">"WNT Signaling Related Interactions MSC to Fibroblast EXP vs CTR"</span>,</span>
+<span>            plt_name <span class="op">=</span> <span class="st">"TGFb Signaling Related Interactions MSC to Fibroblast EXP vs CTR"</span>,</span>
 <span>            threshold <span class="op">=</span> <span class="fl">50</span>, tfflag <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="Progeny_images/MSC_Fibroblast_WNT_Interactions.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure>
+<figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;"><img src="Progeny_images/MSC_MSC_TGFb_Interactions.png" alt=""><figcaption class="figcaption" style="display: table-caption; caption-side: bottom;"></figcaption></figure>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

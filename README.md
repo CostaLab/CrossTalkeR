@@ -66,14 +66,44 @@ We provide in our vignette examples on how to analyse cell interactions from a h
 vignette('CrossTalkeR-HumanMyfib')
 ```
 
+## CrossTalkeR Python Package 🐍
 
-## Integration of liana with CrossTalkeR
+Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our [Read the Docs](https://pycrosstalker.readthedocs.io/en/stable/index.html)
 
-We provide here a tutorial on how to integrate predictions from liana into Crosstalker.
+## CrossTalkeR Docker image
 
-[Run liana](https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd)
+We provide access to a Docker image, available at: https://gitlab.com/sysbiobig/ismb-eccb-2025-tutorial-vt3/container_registry.
+The Docker image comes preconfigured with all necessary libraries, tools, and software required to follow the hands-on exercises.
 
-## New Features v1.4.0
+## 🔥 CrossTalkeR Realease v2.0 - New Features 🔥
+
+- **Statistical Filtering with Fisher’s Exact Test**  
+  Filter cell-cell communication networks using Fisher’s test to identify statistically significant interactions.
+
+- **Volcano Plot Visualization**  
+  Visualize results of the Fisher's test in a volcano plot
+
+- **Heatmap Visualization with Clustering**  
+  Explore communication patterns across cell types using heatmaps, including clustering by interaction weights
+
+- **Comprehensive Topological Analysis**  
+  Generate bar plots for the calculated network topological measures, separately for:
+  - cell–cell interaction networks  
+  - cell-gene interaction networks
+
+- **Ligand–Receptor Enrichment Analysis with PROGENy**  
+  Step-by-step tutorial for pathway enrichment analysis of ligand–receptor pairs using PROGENy.
+
+- **Modeling Intracellular Communication**  
+  Extend the communication network by incorporating transcription factors to model intracellular signaling.
+
+- **Integration with LIANA+**  
+  Seamlessly using ligand-receptor interaction results from LIANA+. We provide a detailed tutorial on how to perform the integration [Run liana](https://github.com/CostaLab/CrossTalkeR/blob/master/vignettes/run_liana.rmd)
+
+- **Compatibility with scSeqComm**  
+  Use `scSeqComm` outputs as inputs to the **CrossTalkeR** framework for downstream comparative analysis.
+
+## Features v1.4.0
 
 - Splitted generate_report function in two parts:
   - analise_LR() to only run the analysis without generating the CrossTalkeR report
@@ -84,7 +114,7 @@ We provide here a tutorial on how to integrate predictions from liana into Cross
 - Integration with liana-py for ligand-receptor interaction predictions
   
 
-## Old Features v1.3.0
+## Features v1.3.0
 
 - Single and Comparative Reports
    - Cell Cell Interaction visualization
@@ -94,11 +124,12 @@ We provide here a tutorial on how to integrate predictions from liana into Cross
       - All measures and PC table
       - PC1 and PC2 based barplot
    - Leimkühler et. al. [2] data were added to the package
-   - Fisher Test were implemented to highlight the CCI edges significance (new) 🔥**NEW**🔥
-   - **Change input format: Please see the Documentation** 🔥**NEW**🔥
+   - Fisher Test were implemented to highlight the CCI edges significance (new) 
+   - **Change input format: Please see the Documentation** 
       - A python3 notebook are available to cast the old input to the new input.
-   - Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input. 🔥**NEW**🔥
-   - LR pair visualization plot can be done using a Seurat Object 🔥**NEW**🔥
+   - Liana (Dimitrov et. al. [3]) Output can be used as CrossTalkeR input.
+   - LR pair visualization plot can be done using a Seurat Object 
+   
 
 # References
 

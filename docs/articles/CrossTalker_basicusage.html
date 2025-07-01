@@ -124,10 +124,12 @@ results and a path to save the results to:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Condition1'</span> <span class="op">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
-<span>           <span class="st">'Condition2'</span> <span class="op">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span><span class="op">)</span></span>
+<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Condition1"</span> <span class="op">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
+<span>  <span class="st">"Condition2"</span> <span class="op">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
+<span><span class="va">output_path</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_report.html">generate_report</a></span><span class="op">(</span><span class="va">paths</span>,</span>
 <span>                out_path<span class="op">=</span><span class="va">output</span>,</span>
 <span>                out_file <span class="op">=</span> <span class="st">'vignettes_example.html'</span>,</span>
@@ -162,10 +164,12 @@ the functions below).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CostaLab/CrossTalkeR" class="external-link">CrossTalkeR</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Condition1'</span> <span class="op">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
-<span>           <span class="st">'Condition2'</span> <span class="op">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span><span class="op">)</span></span>
+<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Condition1"</span> <span class="op">=</span> <span class="st">"/path/to/condition1/LR-interactions.csv"</span>,</span>
+<span>  <span class="st">"Condition2"</span> <span class="op">=</span> <span class="st">"/path/to/condition2/LR-interactions.csv"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
+<span><span class="va">output_path</span> <span class="op">&lt;-</span> <span class="st">"/path/to/output/folder/"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analise_LR.html">analise_LR</a></span><span class="op">(</span><span class="va">paths</span>,</span>
 <span>                out_path<span class="op">=</span><span class="va">output</span>,</span>
 <span>                org <span class="op">=</span> <span class="st">"hsa"</span>, </span>

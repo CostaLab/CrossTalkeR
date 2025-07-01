@@ -413,36 +413,30 @@ plot_sankey <- function(lrobj_tbl,
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
     data$freq <- 1
-    tmp <- dplyr::slice_max(data,
-      order_by = abs(.data[[fil_col]]),
-      n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE
-    )
-    print(ggplot2::ggplot(tmp, aes(
-      y = .data$freq, axis1 = .data$source,
-      axis2 = stats::reorder(.data$gene_A, -.data[[score_col]]),
-      axis3 = stats::reorder(.data$gene_B, -.data[[score_col]]),
-      axis4 = .data$target
-    )) +
-      ggalluvial::geom_alluvium(aes(fill = .data[[score_col]], color = "b"),
-        width = 1 / 12,
-        discern = FALSE
-      ) +
-      ggalluvial::geom_stratum(width = 1 / 12) +
-      ggplot2::geom_label(
-        stat = ggalluvial::StatStratum,
-        ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
-        size = 4
-      ) +
-      ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
-      ggplot2::scale_fill_gradient2(
-        low = colorBlindness::Blue2DarkOrange18Steps[4],
-        mid = colorBlindness::Blue2DarkOrange18Steps[10],
-        high = colorBlindness::Blue2DarkOrange18Steps[14], midpoint = 0
-      ) +
-      ggplot2::scale_color_manual(values = c("black")) +
-      ggplot2::ggtitle(plt_name) +
-      ggplot2::theme(text = element_text(size = 8)) +
-      ggplot2::theme_minimal())
+    upsel <- dplyr::slice_max(data, order_by = data$LRScore,
+                            n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE)
+    lowsel <- dplyr::slice_min(data, order_by = data$LRScore,
+                            n = ifelse(dim(data)[1] > threshold, threshold, dim(data)[1]), with_ties = FALSE)
+    tmp = rbind(upsel,lowsel)
+    ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
+                                  axis2 = stats::reorder(.data$gene_A, -.data[[score_col]]),
+                                  axis3 = stats::reorder(.data$gene_B, -.data[[score_col]]),
+                                  axis4 = .data$target)) +
+            ggalluvial::geom_alluvium(aes(fill = .data[[score_col]], color = "b"),
+                                      width = 1 / 12,
+                                      discern = FALSE) +
+            ggalluvial::geom_stratum(width = 1 / 12) +
+            ggplot2::geom_label(stat = ggalluvial::StatStratum,
+                                ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
+                                size = 4) +
+            ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
+            ggplot2::scale_fill_gradient2(low = colorBlindness::Blue2DarkOrange18Steps[4],
+                                          mid = colorBlindness::Blue2DarkOrange18Steps[10],
+                                          high = colorBlindness::Blue2DarkOrange18Steps[14], midpoint = 0) +
+            ggplot2::scale_color_manual(values = c("black")) +
+            ggplot2::ggtitle(plt_name) +
+            ggplot2::theme(text = element_text(size = 8)) +
+            ggplot2::theme_minimal()
   } else {
     print(paste0("Gene->", target, "Not Found"))
   }

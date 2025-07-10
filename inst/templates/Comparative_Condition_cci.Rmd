@@ -75,8 +75,6 @@ for (i in 1:length(names(all_data@tables))) {
 
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
-This is a hotfix branch
-
 ```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
 path <- params$obj1
 thr <- params$thr

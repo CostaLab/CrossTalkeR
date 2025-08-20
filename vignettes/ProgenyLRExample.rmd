@@ -48,7 +48,7 @@ merged_df <- data.frame()
 
 for (source in source_cluster){
   for (target in target_cluster) {
-    comparisonLR_filtered <- comparison_LR[comparison_LR$source == source & comparison_LR$target == target, ]
+    comparisonLR_filtered <- EXP_x_CTR_table[EXP_x_CTR_table$source == source & EXP_x_CTR_table$target == target, ]
     
     comparisonLR_filtered$genepair <- paste(gsub("\\|L", "", as.character(comparisonLR_filtered$gene_A)),
                                             gsub("\\|R", "", as.character(comparisonLR_filtered$gene_B)),

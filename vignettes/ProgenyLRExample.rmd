@@ -209,7 +209,7 @@ plot_sankey(TGFb_filtered_interactions,
             ligand_cluster = "MSC",
             receptor_cluster = "Fibroblast",
             plt_name = "TGFb Signaling Related Interactions MSC to Fibroblast EXP vs CTR",
-            threshold = 50, tfflag = FALSE)
+            threshold = 10, tfflag = FALSE)
 ```
 
 <figure class="figure" style="display: table; margin: auto; height: 100%; width: 100%;">

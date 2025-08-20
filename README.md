@@ -68,7 +68,8 @@ vignette('CrossTalkeR-HumanMyfib')
 
 ## CrossTalkeR Python Package 🐍
 
-Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our [Read the Docs](https://pycrosstalker.readthedocs.io/en/stable/index.html)
+Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our [Read the Docs](https://pycrosstalker.readthedocs.io/en/stable/index.html) 
+Integration with the **scverse** ecosystem is underway.
 
 ## CrossTalkeR Docker image
 

@@ -89,7 +89,6 @@ library(stringr)
 library(ggplot2)
 library(colorBlindness)
 library(dplyr)
-library(EnhancedVolcano)
 ```
 
 ```{r, warning=FALSE,message=F, output=FALSE, eval = FALSE}
@@ -221,10 +220,13 @@ plot_cci(graph = data@graphs$EXP_x_CTR,
 The main difference from the previous CCI graph plots is that the edge weights can now be not only positive but also negative, as well as the Pagerank values of the nodes. Positive values mean that these interactions between cell types have a higher activity/importance in the EXP condition, while negative values indicate a lower activity/importannce in the EXP condition (higher in CTR). As we can see in the CCI plot above, there are equally positive and negative edge weights present. The edge weights between MSCs and Megakaryocytes are positive up in both directions in the Disease condition. Thus, we can conclude that the communication is stronger in the EXP example. In contrast, the edge weights between the MSC and Myeloid nodes have negative edge weights, meaning these communication are lower in the EXP condition. Further, the self communication edge of the MSC node has a strong negative weight and also the pagerank is very small (indicated by small node size). This indicates that MSCs are more important in the CCIs in the CTR condition.
 
 
-```{r vignete451, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
+```{r vignete451, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8, eval=FALSE}
+library(EnhancedVolcano)
+
 EnhancedVolcano(data@stats$EXP_x_CTR, lab=data@stats$EXP_x_CTR$columns_name,x='lodds',y='p',pCutoff=0.05)
 
 ```
+<img style="display: block; margin: auto; height: 100%; width: 100%;" src="TF_images/volcano.png"/>
 
 ```{r vignete452, results="hide", warning=FALSE,message=F, output=FALSE,fig.width=10,fig.height=8}
 plot_cci(graph = data@graphs$EXP_x_CTR_filtered,

@@ -46,7 +46,7 @@ install_github("CostaLab/LR2TF", build_vignettes = TRUE)
 
 ## Transcription Factor Activity Predictions Using decoupleR in Python
 
-For the transcription factor activity predictions we recommend using the decoupleR package in its python version. This provides a better performance, especially for larger data sets. To perform the predictions with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data is saved as a Seurat object (.Rds file), it can be converted to AnnData format using the sceasy package and the function we provide:
+For the transcription factor activity predictions we recommend using the decoupleR package in its python version. This provides a better performance, especially for larger data sets. To perform the predictions with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data is saved as a Seurat object (.Rds file), it can be converted to AnnData format using the sceasy package and the function we provide (**conversion is currently only supported for Seurat 4 objects**):
 
 ```{r, include = TRUE, eval = FALSE}
 library(LR2TF)
@@ -93,24 +93,25 @@ Now, that we have a transcription factor activity matrix, we can continue the an
 ```{r eval = FALSE}
 parameters <- list(
   "out_path" = "/path/to/save/results",
-  reg = "/path/to/filterd_regulon.csv",
+  "reg" = "/path/to/filterd_regulon.csv",
   "organism" = "human",
   "celltype" = "new_annotation", # name of the meta data field defining cell identities
   "condition" = "protocol", # name of the meta data field defining conditions
   "comparison_list" = list(c("PMF,MF2", "control")), # list of condition comparison to consider
   "logfc" = 0.5,
   "pval" = 0.05, # thresholds for logfc and pval used in differential transcription factor analysis
-  "num_cell_filter" = 0
-) # define the minimum number of cells per cluster to perform the analysis on
+  "num_cell_filter" = 0, # define the minimum number of cells per cluster to perform the analysis on
+  "test_type" = "t", # test type used in differential transcription factor analysis
+)
 ```
 
 After defining the necessary parameter the transcription factor activity can be performed by calling:
 
 ```{r, include = TRUE, eval = FALSE}
-results <- LR2TF::tf_activity_analysis(
-  seuratobject = seurat_object,
-  tf_activities = "/path/to/decoupler_results.csv",
-  arguments_list = parameters
+results <- IntraTalker_analysis(
+    seuratobject = seurat_object,
+    tf_activities = "/path/to/decoupler_results.csv",
+    arguments_list = parameters
 )
 ```
 

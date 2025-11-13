@@ -32,11 +32,10 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Enable Bioconductor repositories
+      - name: Enable EnhancedVolcano
         run: |
-          install.packages("BiocManager")
-          options(repos = BiocManager::repositories())
-          BiocManager::install("EnhancedVolcano", ask = FALSE)
+          install.packages("remotes")
+          remotes::install_github('kevinblighe/EnhancedVolcano')
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2

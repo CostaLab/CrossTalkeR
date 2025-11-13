@@ -15,6 +15,9 @@ suppressPackageStartupMessages({
 suppressPackageStartupMessages({
   require(ggplot2)
 })
+suppressPackageStartupMessages({
+  require(EnhancedVolcano)
+})
 ```
 
 **R version**: R version 4.5.2 (2025-10-31)

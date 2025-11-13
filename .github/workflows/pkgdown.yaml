@@ -36,13 +36,13 @@ jobs:
         run: |
           install.packages("BiocManager")
           options(repos = BiocManager::repositories())
+          BiocManager::install("EnhancedVolcano", ask = FALSE)
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::pkgdown, local::.
           needs: website
-          bioc: true
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

@@ -1248,7 +1248,6 @@ plot_Heatmap <- function(graph, weight) {
 #' @param pvalcutoff p-value threshold
 #' @param x x-axis column name
 #' @param y y-axis column name
-#' @import EnhancedVolcano
 #' @return R default plot
 #' @export
 plot_Volcano <- function(table, feature_name, pvalcutoff = 0.05, x = "lodds", y = "p") {

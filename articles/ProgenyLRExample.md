@@ -1,0 +1,232 @@
+# Ligand-Receptor Pathway Enrichment with Progeny - Bone Marrow Fibrosis in Human
+
+## Ligand-Receptor Pathway Enrichment with Progeny - Example
+
+The liana+ Python documentation includes an example of performing
+pathway enrichment on ligand-receptor interactions derived from tensor
+cell2cell analysis ([liana+
+Tutorial](https://liana-py.readthedocs.io/en/latest/notebooks/liana_c2c.html)).
+Here, we apply this downstream pathway enrichment approach to
+CrossTalkeR results using human bone marrow example data
+([Tutorial](https://costalab.github.io/CrossTalkeR/articles/HumanFibrosis.html)).
+
+### Filter CrossTalkeR Results (in R)
+
+We begin by loading the CrossTalkeR object and extracting the table of
+ligand-receptor interactions obtained from the comparison analysis of
+control and disease conditions.
+
+``` r
+library(CrossTalkeR)
+
+CrossTalkeR_results <- readRDS("LR_data_final.Rds")
+EXP_x_CTR_table <- as.data.frame(CrossTalkeR_results@tables$EXP_x_CTR)
+```
+
+To facilitate the use of liana+ functions, we reformat and filter the
+table, resulting in a structured dataset with ligand-receptor pairs in
+the first column and the corresponding LRScores for each cell pair in
+the other columns.
+
+``` r
+source_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
+target_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
+
+merged_df <- data.frame()
+
+for (source in source_cluster){
+  for (target in target_cluster) {
+    comparisonLR_filtered <- EXP_x_CTR_table[EXP_x_CTR_table$source == source & EXP_x_CTR_table$target == target, ]
+    
+    comparisonLR_filtered$genepair <- paste(gsub("\\|L", "", as.character(comparisonLR_filtered$gene_A)),
+                                            gsub("\\|R", "", as.character(comparisonLR_filtered$gene_B)),
+                                            sep = "@")
+    
+    comparisonLR_filtered <- data.frame(LRScore = comparisonLR_filtered$LRScore, row.names = comparisonLR_filtered$genepair)
+    colnames(comparisonLR_filtered) <- paste(source, target, sep = "_")
+    
+    if (nrow(merged_df) == 0) {
+      merged_df <- comparisonLR_filtered
+    } else {
+      merged_df <- merge(merged_df, comparisonLR_filtered, by = "row.names", all = TRUE)
+      rownames(merged_df) <- merged_df$Row.names
+      merged_df <- merged_df[ , -1]
+    }
+  }
+}
+
+write.csv(merged_df, paste("pairwise_LR_interactions.csv"))
+```
+
+Due to certain functionalities being unavailable in the R version of
+liana, the subsequent analyses are conducted in Python.
+
+### Enrichment Analysis with Progeny and decoupleR (in Python)
+
+We start with loading all necessary Python libraries.
+
+``` python
+import pandas as pd
+
+import liana as li
+import omnipath as op
+import decoupler as dc
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+To perform pathway enrichment analysis, we require a pathway database
+containing gene sets. For this purpose, we utilize the Progeny Pathway
+database, setting the top argument to 20,000 to load the complete
+dataset.
+
+``` python
+# Load Progeny Pathway Database
+progeny = dc.get_progeny(organism='human', top=20000)
+```
+
+Since the analysis considers ligand-receptor pairs rather than
+individual genes, we must first map these interactions to relevant
+pathways. To achieve this, we load the Consensus database from liana,
+which was also used for ligand-receptor interaction inference in this
+data. A dedicated function then assigns ligand-receptor pairs to their
+respective pathways.
+
+``` python
+# Load Ligand-Receptor Pairs from liana Consensus Database
+lr_pairs = li.resource.select_resource('consensus')
+
+# Assign Ligand-Receptor Pairs to Progeny Pathways
+lr_progeny = li.rs.generate_lr_geneset(lr_pairs, progeny, lr_sep="@")
+```
+
+Next, we incorporate the ligand-receptor interactions of interest,
+extracted from the CrossTalkeR results, and conduct the enrichment
+analysis using the decoupler ULM method along with the ligand-receptor
+pathway mapping. This analysis yields two data frames: one containing
+the enrichment estimation values and another reporting the corresponding
+p-values, indicating statistical significance. Since we consider
+multiple cell pairs, we need to iterate over the coloumns of the
+interactions table.
+
+``` python
+# Load Ligand-Receptor Interactions for Enrichment Analysis
+lr_interactions = pd.read_csv("pairwise_LR_interactions.csv", index_col=0)
+
+# Empty Lists for Enrichment Results
+estimate_list = []
+pvals_list = []
+
+for col in lr_interactions.columns:
+    
+    filtered_df = pd.DataFrame(lr_interactions[lr_interactions[col] != 0][col])
+    
+    # Run Enrichment Analysis with decoupleR ULM Method
+    estimate, pvals = dc.run_ulm(filtered_df.T, lr_progeny, source="source", target="interaction", use_raw=False)
+    
+    estimate_list.append(estimate)
+    pvals_list.append(pvals)
+
+# Merge Enrichment Results and Replace NaN Values
+merged_estimate = pd.concat(estimate_list, axis=0)
+merged_estimate.fillna(0, inplace=True)
+merged_pvals = pd.concat(pvals_list, axis=0)
+```
+
+### Visualize Results (in Python)
+
+To visualize the results, we generate a heatmap using seaborn. To
+highlight pathways with significant enrichment estimations, we first
+create an annotation data frame, which is then incorporated into the
+heatmap visualization.
+
+``` python
+# Mapping to Vizualize P-Value Significance Levels
+def p_value_to_asterisks(p):
+    if p < 0.001:
+        return '***'
+    elif p < 0.01:
+        return '**'
+    elif p < 0.05:
+        return '*'
+    else:
+        return ' '
+pval_mapping = merged_pvals.applymap(p_value_to_asterisks)
+
+# Removing rows with only non-significnt enrichment values
+is_significant_enriched = pval_mapping.apply(lambda row: any('*' in str(val) for val in row), axis=1)
+filtered_estimate = merged_estimate[is_significant_enriched]
+filtered_pval_mapping = pval_mapping[is_significant_enriched]
+
+
+# Vizualize Enrichment Results with Seaborn Clustermap
+sns.clustermap(filtered_estimate, 
+               annot=filtered_pval_mapping,
+               fmt='',
+               row_cluster=False,
+               figsize=(7, 2),
+               cmap="vlag",
+               cbar_pos=(1, .2, .03, .4),
+               vmin=-3.5,
+               vmax=3.5)
+```
+
+![](Progeny_images/all_celltypes_enrichment.png)
+
+  
+  
+
+The heatmap highlights pathway-specific enrichment of ligand–receptor
+interactions across cell–cell communication pairs. Notably, we observe a
+strong positive enrichment for **TGFβ signaling** in **MSC-to-MSC**
+interactions and for **EGFR signaling** from **Fibroblasts to
+Megakaryocytes**. In contrast, several pathways show negative enrichment
+patterns, such as **VEGF signaling** in **MSC-to-MSC** communication.
+
+### Extraction and Visualization of TGFb-Related Ligand-Receptor Interactions
+
+To further dissect which interaction in our analysis relate to the TGFb
+pathway, we can extract the relevant ligand-receptor pairs ftom the
+previous assignment with the progeny database:
+
+``` python
+# Extracting all TGFb-related Ligand-Receptor Interactions
+TGFb_interactions = lr_progeny[lr_progeny['source'] == 'TGFb']
+
+# Split the "interaction" column by "@"
+split_interactions = TGFb_interactions['interaction'].str.split('@', expand=True)
+
+# Rename the columns to "ligand" and "receptor"
+split_interactions.rename(columns={0: 'ligand', 1: 'receptor'}, inplace=True)
+
+# Save the result as a CSV file
+split_interactions.to_csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv", index=False)
+```
+
+With the saved ligand-receptor pairs, we can filter the differential
+interactions table from CrossTalkeR and visualize the TGFb-related
+interactions with a sankey plot:
+
+``` r
+# Load CSV file with TGFb-related interactions from Progeny
+TGFb_interactions <- read.csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv")
+
+# Add suffixes to ligand and receptor columns
+TGFb_interactions$ligand <- paste0(TGFb_interactions$ligand, "|L")
+TGFb_interactions$receptor <- paste0(TGFb_interactions$receptor, "|R")
+
+# Filter the differential EXP_x_CTR table for TGFb-related interactions
+TGFb_filtered_interactions <- EXP_x_CTR_table[EXP_x_CTR_table$gene_A %in% TGFb_interactions$ligand & 
+                                             EXP_x_CTR_table$gene_B %in% TGFb_interactions$receptor, ]
+
+#Plot the filtered interactions with CrossTalkeR sankey plot function
+plot_sankey(TGFb_filtered_interactions,
+            target = NULL,
+            ligand_cluster = "MSC",
+            receptor_cluster = "Fibroblast",
+            plt_name = "TGFb Signaling Related Interactions MSC to Fibroblast EXP vs CTR",
+            threshold = 10, tfflag = FALSE)
+```
+
+![](Progeny_images/MSC_MSC_TGFb_Interactions.png)

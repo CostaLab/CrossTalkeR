@@ -107,10 +107,10 @@ then analyzed using CrossTalkeR (<a href="https://github.com/CostaLab/CrossTalke
 <p>The package can be installed directly from github:  </p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"CostaLab/LR2TF"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"CostaLab/LR2TF"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"CostaLab/LR2TF"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"CostaLab/LR2TF"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p> </p>
 </div>
 <div class="section level3">
@@ -122,7 +122,9 @@ the decoupleR package in its python version. This provides a better
 performance, especially for larger data sets. To perform the predictions
 with decoupleR, we need an AnnData (.h5ad) file. If the scRNA-seq data
 is saved as a Seurat object (.Rds file), it can be converted to AnnData
-format using the sceasy package and the function we provide:</p>
+format using the sceasy package and the function we provide
+(<strong>conversion is currently only supported for Seurat 4
+objects</strong>):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">LR2TF</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
@@ -173,22 +175,23 @@ the following parameters in form of a list:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"out_path"</span> <span class="op">=</span> <span class="st">"/path/to/save/results"</span>,</span>
-<span>  reg <span class="op">=</span> <span class="st">"/path/to/filterd_regulon.csv"</span>,</span>
+<span>  <span class="st">"reg"</span> <span class="op">=</span> <span class="st">"/path/to/filterd_regulon.csv"</span>,</span>
 <span>  <span class="st">"organism"</span> <span class="op">=</span> <span class="st">"human"</span>,</span>
 <span>  <span class="st">"celltype"</span> <span class="op">=</span> <span class="st">"new_annotation"</span>, <span class="co"># name of the meta data field defining cell identities</span></span>
 <span>  <span class="st">"condition"</span> <span class="op">=</span> <span class="st">"protocol"</span>, <span class="co"># name of the meta data field defining conditions</span></span>
 <span>  <span class="st">"comparison_list"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PMF,MF2"</span>, <span class="st">"control"</span><span class="op">)</span><span class="op">)</span>, <span class="co"># list of condition comparison to consider</span></span>
 <span>  <span class="st">"logfc"</span> <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  <span class="st">"pval"</span> <span class="op">=</span> <span class="fl">0.05</span>, <span class="co"># thresholds for logfc and pval used in differential transcription factor analysis</span></span>
-<span>  <span class="st">"num_cell_filter"</span> <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span> <span class="co"># define the minimum number of cells per cluster to perform the analysis on</span></span></code></pre></div>
+<span>  <span class="st">"num_cell_filter"</span> <span class="op">=</span> <span class="fl">0</span>, <span class="co"># define the minimum number of cells per cluster to perform the analysis on</span></span>
+<span>  <span class="st">"test_type"</span> <span class="op">=</span> <span class="st">"t"</span>, <span class="co"># test type used in differential transcription factor analysis</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>After defining the necessary parameter the transcription factor
 activity can be performed by calling:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">LR2TF</span><span class="fu">::</span><span class="fu">tf_activity_analysis</span><span class="op">(</span></span>
-<span>  seuratobject <span class="op">=</span> <span class="va">seurat_object</span>,</span>
-<span>  tf_activities <span class="op">=</span> <span class="st">"/path/to/decoupler_results.csv"</span>,</span>
-<span>  arguments_list <span class="op">=</span> <span class="va">parameters</span></span>
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">IntraTalker_analysis</span><span class="op">(</span></span>
+<span>    seuratobject <span class="op">=</span> <span class="va">seurat_object</span>,</span>
+<span>    tf_activities <span class="op">=</span> <span class="st">"/path/to/decoupler_results.csv"</span>,</span>
+<span>    arguments_list <span class="op">=</span> <span class="va">parameters</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The “results” object contains the results of the performed analyses,
 consisting of multiple tables inside the object:</p>
@@ -462,7 +465,7 @@ it than cancer. Front Cell Dev Biol. 2024 Mar 6;12:1342872. DOI:
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

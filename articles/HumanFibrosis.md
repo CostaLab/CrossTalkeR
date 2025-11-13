@@ -1,0 +1,523 @@
+# CrossTalkeR Example - Human Myelofibrosis
+
+## Cell-Cell Communication Analysis of Human Myelofibrosis scRNA-seq Data Using CrossTalkeR
+
+Here, we demonstrate the usage of CrossTalkeR on the case study
+Myelofibrosis scRNA-seq data set from the paper. The predicted
+ligand-receptor interactions used in this tutorial are provided within
+this package. These differ sightly from the results presented in the
+paper, since they were recomputed using the cellphoneDB Method with the
+liana package and the consensus interaction database.
+
+The scRNA-seq data contains two conditions: control (CTR_LR.csv) and
+disease condition (EXP_LR.csv). We first show how to run liana to
+retrieve ligand and receptor activities, then how to execute CrossTalkeR
+and finally go over some of the results, that are also provided inside
+the resulting CrossTalkeR report.
+
+### Run liana for Ligand-Receptor Interaction Prediction in R
+
+For the prediction of ligand-receptor interactions, we are using the
+[liana](https://saezlab.github.io/liana/articles/liana_tutorial.html)
+framework for R. Here we show the usage of liana on our example data and
+we are using the CellphoneDB method and the Consensus DB provided with
+liana.
+
+First of all, we are laoding all necessary libraries :
+
+``` r
+library(Seurat)
+library(dplyr)
+library(liana)
+```
+
+We assume here that the necessary libraries are already installed.
+
+Then we can continue to load the Seurat object of our example. The
+object is provided in the package as accessible object:
+
+``` r
+seurat_object <- readRDS("/path/to/Seurat/object.Rds")
+```
+
+Then we can split the object by sample condition (here meta data column
+“protocol”) and run liana for each of the sub-objects, to get condition
+specific ligand-receptor interactions. We also filter and reformat the
+liana results in the same step, so that the resulting tables can
+directly be used as input for the CrossTalkeR analysis:
+
+``` r
+outpath <- "/path/to/save/results/"
+pval_threshold <- 0.05
+
+seurat_object_list <- SplitObject(seurat_object, split.by = "protocol")
+for (condition in names(seurat_object_list)) {
+  sub_object <- seurat_object_list[[condition]]
+
+  liana_results <- liana_wrap(sub_object,
+    method = "cellphonedb",
+    resource = c("Consensus"),
+    expr_prop = 0.1
+  )
+
+  liana_results <- liana_results %>%
+    filter(pvalue < pval_threshold) %>%
+    select(source, target, ligand, receptor.complex, lr.mean) %>%
+    rename(gene_A = ligand, gene_B = receptor.complex, MeanLR = lr.mean)
+  liana_results$type_gene_A = 'Ligand'
+  liana_results$type_gene_B = 'Receptor'
+
+  write.csv(liana_results, paste0(outpath, condition, "_LR.csv"))
+}
+```
+
+We have a more general example on how we recommend to run liana in R
+[here](https://costalab.github.io/CrossTalkeR/articles/run_liana.html).
+
+### Running CrossTalkeR
+
+First, we need to import the CrossTalkeR package and define a named list
+of either the paths to the Ligand-Receptor interaction tables, or
+directly dataframe objects for each condition of interest. Please note
+that it is possible to run CrossTalkeR with more than two conditions.
+Here we load the files from within the package. We can further define a
+path where we like to save our results (output) and run CrossTalkeR with
+the generate_report() function:
+
+``` r
+library(CrossTalkeR)
+library(igraph)
+library(stringr)
+
+data(CTR)
+data(EXP)
+paths <- list("CTR" = CTR,
+              "EXP" = EXP)
+
+output <- system.file("extdata", package = "CrossTalkeR")
+ctkroutput <- generate_report(paths,
+                              out_path = paste0(output, "/"),
+                              out_file = "vignettes_example.html",
+                              output_fmt = "html_document",
+                              report = FALSE,
+                              filtered_net = TRUE)
+```
+
+Besides passing the paths to the interaction tables and the output
+folder, we here also define: out_file - A suffix for the result reports
+output_fmt - The file type of the result reports report - A boolean
+value if the reports should be created at all
+
+As result of the successful execution, we receive three seurat objects
+(LR_data.Rds, LR_data_step2.Rds and LR_data_final.Rds), as well as two
+html-reports(SingleCondition.html and ComparativeCondition.html). The
+LR_data_final.Rds contains all results produced by CrossTalkeR and the
+two html-reports contain the visualization of the results inside the R
+object. It is possible to load the results of the CrossTalkeR analysis
+from the “LR_data_final.Rds” R-object and produce the plots separately.
+In the following we are going to take a look at different results within
+the two reports, step by step.
+
+### Single Condition Report
+
+The first report contains the results for each analysed condition
+considered separately. In our case in each section is a plot for the CTR
+condition (CTR) and the disease condition (EXP). There are two main
+sections in the report. The first one only deals with
+cell-cell-interactions and the second with cell-gene-interactions, which
+here means an analysis at the ligand and receptor gene level.
+
+#### Cell-Cell-Interaction Analysis Results
+
+The cell-cell-interaction (CCI) graph plots focus on the interactions
+between the different cell types within the data. We focus on three
+measures inside this plot:
+
+1.  Percentage of interactions indicated by the opacity of the arrows
+2.  Edge weight (sum of single L-R interaction scores between cell type
+    pairs) indicated by the edge color
+3.  Pagerank (Node importance) indicated by the node size
+
+After loading the result data from the “LR_data_final.Rds”, we can plot
+the cell-cell interactions with the plot_cci() function. Here we show a
+plot for each analysed condition:
+
+``` r
+data(ctkroutput)
+data <- ctkroutput 
+p1 <- plot_cci(graph = data@graphs$CTR,
+        colors = data@colors,
+        plt_name = 'Control',
+        coords = data@coords[V(data@graphs$CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12,
+        pg = data@rankings[["CTR"]]$Pagerank)
+
+p2 <- plot_cci(graph = data@graphs$EXP,
+        colors = data@colors,
+        plt_name = 'Disease',
+        coords = data@coords[V(data@graphs$EXP)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12,
+        pg = data@rankings[["EXP"]]$Pagerank)
+
+print(p1+p2)
+```
+
+![](HumanFibrosis_files/figure-html/vignete2-1.png)![](HumanFibrosis_files/figure-html/vignete2-2.png)
+
+In the CTR plot, we can see that a high proportion of interactions
+involve MSCs communicating with themselves, as well as MSCs and Myeloid
+cells interacting with each other. These interactions also have a higher
+weight, as indicated by the edge color. The most important nodes
+according to Pagerank are the MSC, Myeloid, and Megakaryocyte nodes.
+When analyzing the plot of the EXP condition, we again observe a high
+proportion of interactions involving self-communicating MSCs, and one of
+the most significant nodes by pagerank remains the MSC node. Here, the
+MSCs are predicted to communicate more with Megakaryocytes and
+Fibroblasts than with Myeloid cells. To effectively compare the two
+conditions, we recommend utilizing the comparative report results.
+
+#### Analysis on the Gene-Cell Interaction Level
+
+We provide several different possibilities to analyse the
+ligand-receptor interactions on the gene level. In CrossTalkeR,
+topological network measures are calculated for each node(gene) in the
+build networks. These measures include Influencer (depending on outgoing
+edges), Listener(depending on incoming edges), Mediator (depending on
+outgoing and incoming edges), and Pagerank (overall importance)
+rankings. The ligand and receptors can be ranked by these measures and
+we can identify possibly relevant genes by considering the top genes of
+the rankings. In the report we provide an interactive table with all the
+rankings for each gene in the network. Here is an example for the top 10
+genes in the Pagerank ranking for both preset conditions in form of
+Barplots:
+
+``` r
+rankings_table <- data@rankings$CTR_ggi %>%
+  arrange(Pagerank)
+rankings_table <- tail(rankings_table, n=10)
+signal <- ifelse(rankings_table$Pagerank < 0, 'negative', 'positive')
+p1 <- ggplot(rankings_table, aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
+        geom_bar(stat = "identity") +
+        scale_fill_manual(values = c(Blue2DarkOrange18Steps[14])) +
+        theme_minimal() +
+        ggtitle("Top Listener in Control Condition")
+
+
+rankings_table <- data@rankings$EXP_ggi %>%
+  arrange(Pagerank)
+rankings_table <- tail(rankings_table, n=10)
+signal <- ifelse(rankings_table$Pagerank < 0, 'negative', 'positive')
+p2 <- ggplot(rankings_table, aes(x = Pagerank, y = reorder(nodes, Pagerank), fill = signal)) +
+        scale_fill_manual(values = c(Blue2DarkOrange18Steps[14])) +
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        ggtitle("Top Listener in Disease Condition")
+print(p1+p2)
+```
+
+![](HumanFibrosis_files/figure-html/vignete3-1.png)
+
+It is possible to perform further analysis on the gene-gene-level
+regarding the other topological measures, but we focus on the result of
+these more in the condition comparison results described in the next
+section.
+
+### Compared Condition Results
+
+CrossTalkeR not only analyzes the conditions individually but also
+calculates the differences in the cell-cell interactions between the
+conditions. The results of these analyses are presented in the
+comparative report. In our example we compare the EXP against the CTR
+condition.
+
+#### Cell-Cell-Interaction analysis results
+
+As before for the single condition results, the first part of the
+results deal with cell-cell interactions. Here we show again the CCI
+graph plot, but now for the compared conditions:
+
+``` r
+plot_cci(graph = data@graphs$EXP_x_CTR,
+        colors = data@colors,
+        plt_name = 'Disease vs Control',
+        coords = data@coords[V(data@graphs$EXP_x_CTR)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12, pg = data@rankings[["EXP_x_CTR"]]$Pagerank)
+```
+
+![](HumanFibrosis_files/figure-html/vignete4-1.png) The main difference
+from the previous CCI graph plots is that the edge weights can now be
+not only positive but also negative, as well as the Pagerank values of
+the nodes. Positive values mean that these interactions between cell
+types have a higher activity/importance in the EXP condition, while
+negative values indicate a lower activity/importannce in the EXP
+condition (higher in CTR). As we can see in the CCI plot above, there
+are equally positive and negative edge weights present. The edge weights
+between MSCs and Megakaryocytes are positive up in both directions in
+the Disease condition. Thus, we can conclude that the communication is
+stronger in the EXP example. In contrast, the edge weights between the
+MSC and Myeloid nodes have negative edge weights, meaning these
+communication are lower in the EXP condition. Further, the self
+communication edge of the MSC node has a strong negative weight and also
+the pagerank is very small (indicated by small node size). This
+indicates that MSCs are more important in the CCIs in the CTR condition.
+
+``` r
+EnhancedVolcano(data@stats$EXP_x_CTR, lab=data@stats$EXP_x_CTR$columns_name,x='lodds',y='p',pCutoff=0.05)
+```
+
+![](HumanFibrosis_files/figure-html/vignete451-1.png)
+
+``` r
+plot_cci(graph = data@graphs$EXP_x_CTR_filtered,
+        colors = data@colors,
+        plt_name = 'Disease vs Control Fisher Test Filtered',
+        coords = data@coords[V(data@graphs$EXP_x_CTR_filtered)$name,],
+        emax = NULL,
+        leg = FALSE,
+        low = 0,
+        high = 0,
+        ignore_alpha = FALSE,
+        log = FALSE,
+        efactor = 8,
+        vfactor = 12, pg = data@rankings[["EXP_x_CTR_filtered"]]$Pagerank)
+```
+
+![](HumanFibrosis_files/figure-html/vignete452-1.png) CrossTalkeR offers
+a refined CCI graph by employing Fisher’s exact test to filter the
+network based on interaction proportions. In this small example, the
+interactions with Fibroblasts and Neural cells are removed from the
+network applying the tests results. The before described interactions
+between MSCs, Megakaryocytes and Myeloid cells are still retained,
+further indicating the importance in the communication. Since this
+example data is small, we going to continue using the unfiltered network
+in the following steps. The filtered CCI graph is mostly helpful for
+large communication networks.
+
+Since we have created a CCI network we can also analyze it based on
+topological properties to identify possible biologically relevant
+processes. For this purpose, the same topological measures can be used
+that are present in the single condition results for gene-cell
+interactions analysis (Influencer, Listener, Mediator, Pagerank). As
+before, we can look at the rankings individually in the form of bar
+plots. Here is an example for the Pagerank of cell types in the network:
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR", "Pagerank", type = NULL, filter_sign = NULL)
+```
+
+![](HumanFibrosis_files/figure-html/vignete5-1.png)
+
+In our comparison, the Megakaryocytes have the highest pagerank, which
+suggest a high importance in our network for the EXP condition. In the
+negative direction, Myeloid cells has the lowest Pagerank. This suggest
+a higher importance in the CTR condition. By considering now also the
+other topological measures, we can assign/find other communication
+properties of the cell types:
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR", "Influencer", type = NULL, filter_sign = NULL)
+```
+
+![](HumanFibrosis_files/figure-html/vignete7_Influencer-1.png)
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR", "Listener", type = NULL, filter_sign = NULL)
+```
+
+![](HumanFibrosis_files/figure-html/vignete7_Influencer-2.png)
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR", "Mediator", type = NULL, filter_sign = NULL)
+```
+
+![](HumanFibrosis_files/figure-html/vignete7_Influencer-3.png)
+
+Including the Influencer, Listener and Mediator barplots reveals that
+Megakaryocytes have the highest PageRank, Influencer, and Listener
+scores, indicating they engage in the most significant interactions in
+the EXP condition. However, their Mediator score is negative, suggesting
+a stronger mediating role in the CTR condition.
+
+In contrast, Myeloid cells show high negative scores across most metrics
+except for the Influencer score, emphasizing their importance in the CTR
+condition. These findings highlight the differing roles of these cell
+types in EXP versus normal states.
+
+#### Cell-Gene-Interaction Analysis Results
+
+The second part of the report deals again with the interactions on the
+gene level. Here, the procedure is similar to the one described in the
+last section for the cell-cell interactions and the analysis performed
+for the single conditions. First of all, we can look at the results of
+the topological rankings in the form of bar plots, again using the
+example of the pagerank:
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Pagerank", type = NULL, filter_sign = NULL, mode = "cgi")
+```
+
+![](HumanFibrosis_files/figure-html/vignete9-1.png)
+
+The plot highlights the ligand and receptor genes that play significant
+roles in different conditions. Notably, the top genes in both positive
+and negative directions are predominantly receptor genes. Specifically,
+the majority of positively scored genes are receptor genes from
+Megakaryocytes, while the top negatively scored genes are associated
+with Myeloid cells.
+
+Among the key receptors, ITGB1 is upregulated in Megakaryocytes, while
+ITGA1 is downregulated in MSCs. Additionally, the score of CXCR4 is also
+elevated in Megakaryocytes. For further insights, we encourage examining
+the other rankings. Given that we are focusing on pairwise interactions,
+our analysis will concentrate on the Influencer and Listener rankings:
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Influencer", type = "L", filter_sign = NULL, mode = "cgi")
+```
+
+![](HumanFibrosis_files/figure-html/vignete9_other-1.png)
+
+``` r
+plot_bar_rankings(data, "EXP_x_CTR_ggi", "Listener", type = "R", filter_sign = NULL, mode = "cgi")
+```
+
+![](HumanFibrosis_files/figure-html/vignete9_other-2.png)
+
+The top Influencer in EXP condition identified is TGFB1 in
+Megakaryocytes. Also COL1A1 and COL1A2 from MSCs rank high on the
+positive side. CXCL12 from MSCs as example has a negative Influencer
+ranking. In the Listener category, integrin receptors dominate, but
+there are also receptors as CXCR4 and LRP1 ranking high/low.
+
+## Follow-up Analysis
+
+Since we got a first impression of the data with the previous results,
+we can further deepen the analysis. For example, we had TGFB1 in
+Megakaryocytes, ITGB1 in Megakaryocytes, Fibroblasts and MSCs and CXCR4
+in Megakaryocytes and Myeloid cells as interesting genes. With
+CrossTalkeR, we can look even more closely at the interactions involving
+these genes using Sankey plots. There are two ways to do this. First, we
+can regenerate the report again, this time passing a list of genes of
+interest:
+
+``` r
+genes_of_interest <- c('TGFB1|L',
+                       'ITGB1|R',
+                       'CXCR4|R')
+
+data <- make_report(out_path = output_path,
+                    genes = genes_of_interest,
+                    out_file = 'vignettes_example.html',
+                    output_fmt = "html_document",
+                    report = TRUE,
+                    org = "hsa")
+```
+
+The second option is to plot only the Sankey plots for the genes of
+interests, without redoing the report:
+
+``` r
+plot_sankey(data@tables$EXP_x_CTR,
+            target = "TGFB1|L",
+            ligand_cluster = NULL,
+            receptor_cluster = NULL,
+            plt_name = "TGFB1 ligand gene interactions EXP vs CTR",
+            threshold = 50, tfflag = FALSE)
+```
+
+![](HumanFibrosis_files/figure-html/unnamed-chunk-7-1.png)
+
+In the Sankey plot, not all interactions involving the TGFB1 ligand gene
+are shown, but only those with a high score. The number of actual
+interactions can be controlled with the threshold parameter. In the
+example above 50 interactions are selected. Since we have only entered
+one target gene without any further information, we can now also see
+interactions originating from different cell types, here Fibroblasts,
+Megakaryocytes and MSCs. Furthermore, we now have a list of receptors
+with associated cell types with which the TGFB1 ligand can possibly
+interact. The list also includes the receptor ITGB1 in Megakaryocytes,
+which was also a gene of interest. The interaction between TGFB1 and
+ITGB1 has a positive score, which means it is enriched in the EXP
+condition.
+
+The third gene of interest was the receptor gene CXCR4 with a high
+importance in Megakaryocytes in the EXP condition and in Myeloid cells
+in the CTR condition. If we want to focus only on CXCR4 in
+Megakaryocytes and Myeloid cells, we can define a receptor_cluster value
+when running the Sankey plot function. Also, the number of interactions
+included is reduced by setting the threshold parameter to 15.
+
+``` r
+plot_sankey(data@tables$EXP_x_CTR,
+            target = "CXCR4|R",
+            ligand_cluster = NULL,
+            receptor_cluster = c("Megakaryocyte", "Myeloid"),
+            plt_name = "Megakaryocyte and  Myeloid CXCR4 receptor gene interaction EXP vs CTR",
+            threshold = 15, tfflag = FALSE)
+```
+
+![](HumanFibrosis_files/figure-html/unnamed-chunk-8-1.png)
+
+The Sankey plot confirms that the LR Score indicates higher interaction
+with CXCR4 in Megakaryocytes under EXP condition and in Myeloid cells
+under CTR condition. Additionally, it highlights previously occuring
+ligand and receptors, including TGFB ligand from Megakaryocytes to CXCR4
+in Megakaryocytes and CXCL12 from MSCs to CXCR4 in both Megakaryocytes
+and Myeloid cells.
+
+Another interesting target described in by [Leimkühler et.
+al. 2021](https://www.sciencedirect.com/science/article/pii/S1934590920305427?via%3Dihub)
+is the ligand S100A8. The study also shows that when S100A8 is targeted
+the MPN phenotype is ameliorated
+
+``` r
+plot_sankey(data@tables$EXP_x_CTR,
+            target = "S100A8|L",
+            ligand_cluster = "Myeloid",
+            receptor_cluster = NULL,
+            plt_name = "Myeloid S100A8 receptor gene interaction EXP vs CTR",
+            threshold = 15, tfflag = FALSE)
+```
+
+![](HumanFibrosis_files/figure-html/unnamed-chunk-9-1.png)
+
+## Report Samples
+
+[Single Condition
+Report](https://github.com/CostaLab/CrossTalkeR/blob/master/inst/extdata/Single_vignettes_example.html)
+
+[Comparative Condition
+Report](https://github.com/CostaLab/CrossTalkeR/blob/master/inst/extdata/Comparative_vignettes_example.html)
+
+## Further Tutorials
+
+If you want to learn more about how to infer ligand and receptor
+interactions with liana and how to use it with CrossTalkeR, check out
+this tutorial: [Run
+liana](https://costalab.github.io/CrossTalkeR/articles/run_liana.html).
+
+  
+  
+  
+  

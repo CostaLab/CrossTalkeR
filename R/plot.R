@@ -413,11 +413,16 @@ plot_sankey <- function(lrobj_tbl,
   names(colp) <- c("FALSE", "TRUE")
   if (dim(data)[1] >= 1) {
     data$freq <- 1
-    upsel <- dplyr::slice_max(data, order_by = data$LRScore,
+    if(threshold >= dim(data)[1] | threshold == 0){
+      tmp <- data
+    } else {
+      upsel <- dplyr::slice_max(data, order_by = data$LRScore,
                             n = ifelse(dim(data)[1] > threshold, ceiling(threshold/2), dim(data)[1]), with_ties = FALSE)
-    lowsel <- dplyr::slice_min(data, order_by = data$LRScore,
+      lowsel <- dplyr::slice_min(data, order_by = data$LRScore,
                             n = ifelse(dim(data)[1] > threshold, ceiling(threshold/2), dim(data)[1]), with_ties = FALSE)
-    tmp = rbind(upsel,lowsel)
+      tmp = rbind(upsel,lowsel)
+    }
+    
     ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
                                   axis2 = stats::reorder(.data$gene_A, -.data[[score_col]]),
                                   axis3 = stats::reorder(.data$gene_B, -.data[[score_col]]),

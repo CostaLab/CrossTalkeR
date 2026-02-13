@@ -179,6 +179,10 @@ analise_LR <- function(lrpaths,
     data <- fisher_test_cci(data, "LRScore", out_path = out_path, comparison)
   }
 
+  if (length(lrpaths) > 1) {
+    data <- mannwitu_test_cci(data, "LRScore", out_path = out_path, comparison)
+  }
+
   if (filtered_net) {
     data <- filtered_graphs(data, out_path, p_val)
   }

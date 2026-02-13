@@ -370,10 +370,12 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
       ctr_name <- pair[2]
       exp_name <- pair[1]
       c <- data@tables[[ctr_name]] %>%
+        filter(type_gene_A == "Ligand") %>%
         group_by(cellpair) %>%
         select(c(source, target, measure)) %>%
         summarise(measure = n())
       e <- data@tables[[exp_name]] %>%
+        filter(type_gene_A == "Ligand") %>%
         dplyr::group_by(cellpair) %>%
         dplyr::select(c(.data$source, .data$target, measure)) %>%
         dplyr::summarise(measure = n())
@@ -397,12 +399,14 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
   } else {
     if (length(data@tables) >= 2) {
       c <- data@tables[[1]] %>%
+        filter(type_gene_A == "Ligand") %>%
         group_by(cellpair) %>%
         select(c(source, target, measure)) %>%
         summarise(measure = n())
       for (i in 2:length(names(data@tables))) {
         if (!str_detect(names(data@tables)[i], '_x_')) {
           e <- data@tables[[i]] %>%
+            filter(type_gene_A == "Ligand") %>%
             dplyr::group_by(cellpair) %>%
             dplyr::select(c(.data$source, .data$target, measure)) %>%
             dplyr::summarise(measure = n())
@@ -438,54 +442,117 @@ fisher_test_cci <- function(data, measure, out_path, comparison = NULL) {
 #'@return tibble
 #'@noRd
 mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
-  lcellpair <- lapply(names(data@tables),function(x){
-        data@tables[[x]] |>
-        select(cellpair) |>
-        pull(unique(cellpair))
+  lcellpair <- lapply(names(data@tables), function(x) {
+    data@tables[[x]] |>
+      select(cellpair) |>
+      pull(unique(cellpair))
   })
   if (!is.null(comparison)) {
     for (pair in comparison) {
+      print(pair)
       ctr_name <- pair[2]
       exp_name <- pair[1]
-      res<-lapply(unique(unlist(lcellpair)), function(x){
-                  c <- data@tables[[ctr_name]] |>
-                      filter(cellpair == x) |>
-                      select(allpair,measure)
-                  e <- data@tables[[exp_name]] |>
-                      filter(cellpair == x) |>
-                      select(allpair,measure)
-                  joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
-                  joined[is.na(joined)] <- 0 
-                  joined<-joined %>%
-                      reshape2::melt() |>
-                      wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
-                      mutate(cellpair=x)
-                      return(joined)
-            })
-       data@stats[[paste0(exp_name, '_x_', ctr_name,":MannU")]] <- res 
+      print(paste0("Comparing ", exp_name, " vs ", ctr_name))
+      res <- lapply(unique(unlist(lcellpair)), function(x) {
+        print(x)
+        c <- data@tables[[ctr_name]] |>
+          filter(cellpair == x) |>
+          filter(type_gene_A == "Ligand") |>
+          select(allpair, measure)
+        e <- data@tables[[exp_name]] |>
+          filter(cellpair == x) |>
+          filter(type_gene_A == "Ligand") |>
+          select(allpair, measure)
+        if (nrow(c) == 0 || nrow(e) == 0) {
+          return(
+            tibble(
+              cellpair = x,
+              p = NA_real_,
+              statistic = NA_real_,
+              n_c = nrow(c),
+              n_e = nrow(e),
+              logFC = NA_real_)
+          )
+        }
+        joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair')
+        joined[is.na(joined)] <- 0
+        x_vec <- joined[[paste0(measure, ".x")]]
+        y_vec <- joined[[paste0(measure, ".y")]]
+        joined <- joined %>%
+          reshape2::melt() |>
+          wilcox_test(value ~ variable, paired = FALSE, exact = TRUE) |>
+          mutate(cellpair=x)
+        eps <- 1e-6
+        mean_c <- mean(x_vec, na.rm = TRUE)
+        mean_e <- mean(y_vec, na.rm = TRUE)
+        if (mean_c > 0) {
+          logFC <- log2((mean_e + eps) / (mean_c + eps))
+        } else {
+          logFC <- NA_real_
+        }
+        joined$logFC <- logFC
+        return(joined)
+      })
+      res_df <- dplyr::bind_rows(res)
+      res_df <- res_df |>
+          mutate(p_adj = p.adjust(p, method = "BH"))
+      res_df$n_c <- NULL
+      res_df$n_e <- NULL
+      res_df <- na.omit(res_df)
+      data@stats[[paste0(exp_name, '_x_', ctr_name, ":MannU")]] <- res_df
     }
     return(data)
   } else {
     if (length(data@tables) >= 2) {
-      c <- data@tables[[1]] %>%
-        group_by(cellpair) %>%
-        select(c(source, target, measure)) %>%
-        summarise(measure = n())
       for (i in 2:length(names(data@tables))) {
-         res<-lapply(unique(unlist(lcellpair)), function(x){
-                      e <- data@tables[[2]] |>
-                          filter(cellpair == x) |>
-                          select(allpair,measure)
-                      joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair', keep = 'all')
-                      joined[is.na(joined)] <- 0 
-                      joined<-joined %>%
-                          reshape2::melt() |>
-                          wilcox_test(value ~ variable,paired=FALSE,exact = TRUE) |>
-                          mutate(cellpair=x)
-                          return(joined)
-                })
-          data@stats[[paste0(names(data@tables)[i], '_x_', names(data@tables)[1],":MannU")]] <- res
+        res <- lapply(unique(unlist(lcellpair)), function(x){
+          c <- data@tables[[1]] |>
+            filter(cellpair == x) |>
+            filter(type_gene_A == "Ligand") |>
+            select(allpair, measure)
+          e <- data@tables[[i]] |>
+            filter(cellpair == x) |>
+            filter(type_gene_A == "Ligand") |>
+            select(allpair, measure)
+          if (nrow(c) == 0 || nrow(e) == 0) {
+            return(
+              tibble(
+                cellpair = x,
+                p = NA_real_,
+                statistic = NA_real_,
+                n_c = nrow(c),
+                n_e = nrow(e),
+                logFC = NA_real_)
+            )
+          }
+          joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair')
+          joined[is.na(joined)] <- 0
+          x_vec <- joined[[paste0(measure, ".x")]]
+          y_vec <- joined[[paste0(measure, ".y")]]
+          joined <- joined %>%
+            reshape2::melt() |>
+            wilcox_test(value ~ variable, paired = FALSE, exact = TRUE) |>
+            mutate(cellpair=x)
+          eps <- 1e-6
+          mean_c <- mean(x_vec, na.rm = TRUE)
+          mean_e <- mean(y_vec, na.rm = TRUE)
+          if (mean_c > 0) {
+            logFC <- log2((mean_e + eps) / (mean_c + eps))
+          } else {
+            logFC <- NA_real_
+          }
+          joined$logFC <- logFC
+          return(joined)
+        })
+        res_df <- dplyr::bind_rows(res)
+        res_df <- res_df |>
+          mutate(p_adj = p.adjust(p, method = "BH"))
+        res_df$n_c <- NULL
+        res_df$n_e <- NULL
+        res_df <- na.omit(res_df)
+        data@stats[[paste0(names(data@tables)[i], '_x_', names(data@tables)[1],":MannU")]] <- res_df
       }
+      saveRDS(data, file.path(out_path, "LR_data_final.Rds"))
       return(data)
     }
   }

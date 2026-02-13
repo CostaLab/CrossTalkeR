@@ -469,7 +469,7 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
               statistic = NA_real_,
               n_c = nrow(c),
               n_e = nrow(e),
-              logFC = NA_real_)
+              lodds = NA_real_)
           )
         }
         joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair')
@@ -484,11 +484,11 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
         mean_c <- mean(x_vec, na.rm = TRUE)
         mean_e <- mean(y_vec, na.rm = TRUE)
         if (mean_c > 0) {
-          logFC <- log2((mean_e + eps) / (mean_c + eps))
+          lodds <- log2((mean_e + eps) / (mean_c + eps))
         } else {
-          logFC <- NA_real_
+          lodds <- NA_real_
         }
-        joined$logFC <- logFC
+        joined$lodds <- lodds
         return(joined)
       })
       res_df <- dplyr::bind_rows(res)
@@ -520,7 +520,7 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
                 statistic = NA_real_,
                 n_c = nrow(c),
                 n_e = nrow(e),
-                logFC = NA_real_)
+                lodds = NA_real_)
             )
           }
           joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair')
@@ -535,11 +535,11 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
           mean_c <- mean(x_vec, na.rm = TRUE)
           mean_e <- mean(y_vec, na.rm = TRUE)
           if (mean_c > 0) {
-            logFC <- log2((mean_e + eps) / (mean_c + eps))
+            lodds <- log2((mean_e + eps) / (mean_c + eps))
           } else {
-            logFC <- NA_real_
+            lodds <- NA_real_
           }
-          joined$logFC <- logFC
+          joined$lodds <- lodds
           return(joined)
         })
         res_df <- dplyr::bind_rows(res)

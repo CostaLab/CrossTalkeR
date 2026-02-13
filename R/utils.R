@@ -452,9 +452,7 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
       print(pair)
       ctr_name <- pair[2]
       exp_name <- pair[1]
-      print(paste0("Comparing ", exp_name, " vs ", ctr_name))
       res <- lapply(unique(unlist(lcellpair)), function(x) {
-        print(x)
         c <- data@tables[[ctr_name]] |>
           filter(cellpair == x) |>
           filter(type_gene_A == "Ligand") |>

@@ -79,7 +79,7 @@ generate_report <- function(lrpaths,
     filtered_net,
     score_col,
     fil_stat,
-    p_val,
+    p_val
   )
   if (report) {
     make_report(

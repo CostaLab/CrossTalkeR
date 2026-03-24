@@ -587,20 +587,35 @@ add_node_type <- function(df) {
 #'@import tibble dplyr rstatix
 #'@return tibble
 #'@noRd
-filtered_graphs <- function(data, out_path, p_val = 0.05) {
+filtered_graphs <- function(data, out_path, fil_stat = "Fisher", p_val = 0.05) {
   for (name in names(data@graphs)) {
     if (str_detect(name, '_x_', negate = FALSE)) {
+      
+      stats_key <- if (fil_stat == "MannU") {
+        paste0(name, ":MannU")
+      } else {
+        name
+      }
+
+      if (!stats_key %in% names(data@stats)) {
+        warning(sprintf("Stats '%s' not found. Skipping graph '%s'.", stats_key, name))
+        next
+      }
+      
       h <- head_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       f <- tail_of(data@graphs[[name]], E(data@graphs[[name]]))$name
       curr_net <- subgraph.edges(data@graphs[[name]],
                                  E(data@graphs[[name]])[
-                                   match(data@stats[[name]]$columns_name[data@stats[[name]]$p <= p_val],
+                                   match(data@stats[[stats_key]]$columns_name[data@stats[[stats_key]]$p <= p_val],
                                          paste(h, f, sep = '@'),
                                          nomatch = F)])
-      data@graphs[[paste0(name, "_filtered")]] <- curr_net
+      if(ecount(curr_net) == 0) {
+        warning(sprintf("Filtered graph '%s' is empty and will not be saved.", name))
+      } else {
+        data@graphs[[paste0(name, "_filtered")]] <- curr_net
+      }
     }
   }
   saveRDS(data, file.path(out_path, "LR_data_final.Rds"))
   return(data)
 }
-

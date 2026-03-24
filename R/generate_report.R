@@ -18,6 +18,7 @@
 #' @param comparison condition pairs to be used for differential analysis
 #' @param filtered_net if TRUE, filter the CCI network based on p-value
 #' @param score_col column name for the score used in the analysis, default is "LRScore"
+#' @param fil_stat statistical test to use for filtering the network, default is "Fisher"
 #' @param p_val p-value threshold for filtering the network, default is 0.05
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
@@ -60,6 +61,7 @@ generate_report <- function(lrpaths,
                             comparison = NULL,
                             filtered_net = F,
                             score_col = "LRScore",
+                            fil_stat = "Fisher",
                             p_val = 0.05) {
   data <- analise_LR(
     lrpaths,
@@ -76,7 +78,8 @@ generate_report <- function(lrpaths,
     comparison,
     filtered_net,
     score_col,
-    p_val
+    fil_stat,
+    p_val,
   )
   if (report) {
     make_report(
@@ -119,6 +122,7 @@ generate_report <- function(lrpaths,
 #' @param comparison condition pairs to be used for differential analysis
 #' @param filtered_net if TRUE, filter the CCI network based on p-value
 #' @param score_col column name for the score used in the analysis, default is "LRScore"
+#' @param fil_stat statistical test to use for filtering the network, default is "Fisher"
 #' @param p_val p-value threshold for filtering the network, default is 0.05
 #' @import org.Mm.eg.db
 #' @import org.Hs.eg.db
@@ -160,6 +164,7 @@ analise_LR <- function(lrpaths,
                        comparison = NULL,
                        filtered_net = F,
                        score_col = "LRScore",
+                       fil_stat = "Fisher",
                        p_val = 0.05) {
   data <- read_lr_single_condition(lrpaths,
     sel_columns,
@@ -184,7 +189,7 @@ analise_LR <- function(lrpaths,
   }
 
   if (filtered_net) {
-    data <- filtered_graphs(data, out_path, p_val)
+    data <- filtered_graphs(data, out_path, fil_stat = fil_stat, p_val = p_val)
   }
 
   message("Calculating CCI Ranking")

@@ -138,9 +138,19 @@ if (str_detect(paste(unlist(names(all_data@graphs)), collapse = ""), '_filtered'
 path <- params$obj1
 thr <- params$thr
 all_data <- readRDS(path)
-entries <- names(all_data@stats)[grep("_x_",names(all_data@stats))]
-for(i in entries){
-      print(plot_Volcano(all_data@stats[[i]],"columns_name"))
+
+all_stats_names <- names(all_data@stats)
+base_entries <- all_stats_names[grep("_x_", all_stats_names) & 
+                               !grepl(":MannU$", all_stats_names)]
+
+for (i in base_entries) {
+  
+  print(plot_Volcano(all_data@stats[[i]], "columns_name"))
+  
+  mann_key <- paste0(i, ":MannU")
+  if (mann_key %in% all_stats_names) {
+    print(plot_Volcano(all_data@stats[[mann_key]], "columns_name"))
+  }
 }
 
 ```

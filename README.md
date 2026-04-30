@@ -68,13 +68,11 @@ vignette('CrossTalkeR-HumanMyfib')
 
 ## CrossTalkeR Python Package 🐍
 
-Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our [Read the Docs](https://pycrosstalker.readthedocs.io/en/stable/index.html) 
-Integration with the **scverse** ecosystem is underway.
-
+Our package is now available in Python — bring differential cell-cell communication analysis to your Python environment! You can find more information in our [Read the Docs](https://pycrosstalker.readthedocs.io). Also part of the scverse ecosystem.
 ## CrossTalkeR Docker image
 
 We provide access to a Docker image, available at: https://gitlab.com/sysbiobig/ismb-eccb-2025-tutorial-vt3/container_registry.
-The Docker image comes preconfigured with all necessary libraries, tools, and software required to follow the hands-on exercises.
+The Docker image comes preconfigured with all the necessary libraries, tools, and software required to follow the hands-on exercises.
 
 ## 🔥 CrossTalkeR Realease v2.0 - New Features 🔥
 

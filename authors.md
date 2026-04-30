@@ -24,13 +24,13 @@ Source:
 [`DESCRIPTION`](https://github.com/CostaLab/CrossTalkeR/blob/master/DESCRIPTION)
 
 Kloeker V, Nagai J, Leimkühler N, Schaub M, Schneider R, Gesteira I
-(2025). *CrossTalkeR: Single Cell Ligand Receptor Downstream analysis*.
+(2026). *CrossTalkeR: Single Cell Ligand Receptor Downstream analysis*.
 R package version 2.0.0, <https://github.com/CostaLab/CrossTalkeR>.
 
     @Manual{,
       title = {CrossTalkeR: Single Cell Ligand Receptor Downstream analysis},
       author = {Vanessa Kloeker and James Shiniti Nagai and Nils Leimkühler and Michael T. Schaub and Rebekka Schneider and Ivan Costa Gesteira},
-      year = {2025},
+      year = {2026},
       note = {R package version 2.0.0},
       url = {https://github.com/CostaLab/CrossTalkeR},
     }

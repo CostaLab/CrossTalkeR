@@ -18,6 +18,7 @@ analyzed using CrossTalkeR (<https://github.com/CostaLab/CrossTalkeR/>)
 The package can be installed directly from github:  
 
 ``` r
+
 library(devtools)
 install_github("CostaLab/LR2TF")
 
@@ -38,6 +39,7 @@ format using the sceasy package and the function we provide
 (**conversion is currently only supported for Seurat 4 objects**):
 
 ``` r
+
 library(LR2TF)
 library(Seurat)
 
@@ -62,6 +64,7 @@ factor and target gene interaction is in different resources. We
 recommend using the confidence levels A and B.
 
 ``` r
+
 regulon <- read.csv(system.file("regulons", "human_dorothea_reg.csv", package = "LR2TF"), row.names = 1)
 filtered_regulon <- regulon[regulon$confidence %in% c("A", "B"), ]
 write.csv("/path/to/save/filterd_regulon.csv")
@@ -93,6 +96,7 @@ our test data for this example. First of all, it is necessary to define
 the following parameters in form of a list:
 
 ``` r
+
 parameters <- list(
   "out_path" = "/path/to/save/results",
   "reg" = "/path/to/filterd_regulon.csv",
@@ -111,6 +115,7 @@ After defining the necessary parameter the transcription factor activity
 can be performed by calling:
 
 ``` r
+
 results <- IntraTalker_analysis(
     seuratobject = seurat_object,
     tf_activities = "/path/to/decoupler_results.csv",
@@ -191,6 +196,7 @@ are provided within the CrossTalkeR package. Note that these results
 include receptor complexes.)
 
 ``` r
+
 # First possibility: Read the csv files with LR interaction results and then combine them with the TF interaction results
 table_ctr <- read.csv("/path/to/control_lr_results.csv", row.names = 1)
 table_exp <- read.csv("/path/to/PMF,MF2_lr_results.csv", row.names = 1)
@@ -210,6 +216,7 @@ Now that there is one input table for each condition of interest, these
 can be used to run CrossTalkeR:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -246,6 +253,7 @@ genes to the current with added TFs. A barplot with the top up and down
 PageRank scored genes can be generated like this:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -272,6 +280,7 @@ also examine the top genes from other rankings. For this purpose, the
 previously used method call can be adjusted:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -302,6 +311,7 @@ top listener barplot. We begin by generating a standard LR Sankey plot
 to visualize the intercellular interactions involving TGFB1:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -323,6 +333,7 @@ Now, we are introducing a new graph sankey plot, that shows the upstream
 signaling of TGFB1 in megakaryocytes:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -363,6 +374,7 @@ incoming signals and the cell types from which they originate, targeting
 ITGB1 in megakaryocytes:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)

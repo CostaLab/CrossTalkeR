@@ -12,6 +12,7 @@ provide are the paths to the ligand-receptor interaction analysis
 results and a path to save the results to:
 
 ``` r
+
 library(CrossTalkeR)
 
 paths <- c(
@@ -33,6 +34,7 @@ In case the **tables are already obtained inside your R session**, one
 can use the following approach(This also apply for the functions below).
 
 ``` r
+
 obj1 <- "a condition1 data frame object"
 obj2 <- "a condition2 data frame object"
 
@@ -55,6 +57,7 @@ To just **perform the analysis** part of CrossTalker, **without
 generating the report**:
 
 ``` r
+
 library(CrossTalkeR)
 
 paths <- c(
@@ -76,6 +79,7 @@ CrossTalkeR objects**. In this case the out_path should point to the
 folder with the ‘LR_data_final.Rds’ file.
 
 ``` r
+
 library(CrossTalkeR)
 
 output <- "/path/to/output/folder/"

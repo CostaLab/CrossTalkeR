@@ -17,6 +17,7 @@ ligand-receptor interactions obtained from the comparison analysis of
 control and disease conditions.
 
 ``` r
+
 library(CrossTalkeR)
 
 CrossTalkeR_results <- readRDS("LR_data_final.Rds")
@@ -29,6 +30,7 @@ the first column and the corresponding LRScores for each cell pair in
 the other columns.
 
 ``` r
+
 source_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
 target_cluster <- c("MSC", "Megakaryocyte", "Fibroblast", "Myeloid")
 
@@ -209,6 +211,7 @@ interactions table from CrossTalkeR and visualize the TGFb-related
 interactions with a sankey plot:
 
 ``` r
+
 # Load CSV file with TGFb-related interactions from Progeny
 TGFb_interactions <- read.csv("/home/vanessa/Projekte/Documentation_Scripts/Human_BM_complete_vignette_code/TGFb_interactions.csv")
 

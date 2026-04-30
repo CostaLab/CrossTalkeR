@@ -30,6 +30,7 @@ package, which allows us to convert Seurat objects directly to AnnData
 objects.
 
 ``` r
+
 # Loading the necessary libraries
 library(Seurat)
 library(MuDataSeurat)
@@ -125,6 +126,7 @@ upstream receptors and downstream ligands we use the IntraTalker
 package. First we generate the intracellular communication tables based:
 
 ``` r
+
 library(Seurat)
 library(tibble)
 library(dplyr)
@@ -156,6 +158,7 @@ In the next step, we combine the ligand-receptor and intracellular
 communication predictions to generate the input for CrossTalkeR:
 
 ``` r
+
 ischemic_LR <- read.csv("/out/path/ischemic_lr_ready.csv", header = TRUE, row.names = 1)
 myogenic_LR <- read.csv("/out/path/myogenic_lr_ready.csv", header = TRUE, row.names = 1)
 
@@ -176,6 +179,7 @@ now the input data for CrossTalkeR is ready and we can run the analysis.
 The last step is to run CrossTalkeR:
 
 ``` r
+
 paths <- list('myogenic' = myogenic_combined,              
               'ischemic' = ischemic_combined)
 
@@ -203,6 +207,7 @@ analysis of CrossTalkeR and therefore take a look at our CCI network
 plot:
 
 ``` r
+
 plot_cci(graph = data@graphs$ischemic_x_myogenic,
         colors = data@colors,
         plt_name = "ischemic vs myogenic",
@@ -233,6 +238,7 @@ exact test to filter the network based on interaction proportions. We
 can plot the resulting statistics in a Violon Plot:
 
 ``` r
+
 EnhancedVolcano(data@stats$ischemic_x_myogenic,
                 lab = data@stats$ischemic_x_myogenic$columns_name,
                 x = "lodds",
@@ -252,6 +258,7 @@ interacting cell pairs with a p-value greater than 0.05 as an example,
 and replot the CCI network:
 
 ``` r
+
 plot_cci(graph = data@graphs$ischemic_x_myogenic_filtered,
         colors = data@colors,
         plt_name = "ischemic vs myogenic filtered",
@@ -276,6 +283,7 @@ The Pagerank of the nodes remains largely unchanged.
 We can also examine the filtered CCI network with the help of a heatmap:
 
 ``` r
+
 entries <- names(data@graphs)[grep("_x_",names(data@graphs))]
 entries <- entries[grep("filtered",entries)]
 for(i in entries){
@@ -298,6 +306,7 @@ heatmap to reorder the nodes in the CCI plot. Here we are sorting the
 nodes by the order of the sending clusters in the heatmap.
 
 ``` r
+
 # Extracting the cell cluster order from the Heatmap
 row_order <- row_order(p1)
 ordered_row_names <- rownames(p1@ht_list[[1]]@matrix)[row_order]
@@ -335,6 +344,7 @@ To confirm the top cell types identified by Pagerank, we can examine
 their Pagerank scores in more detail using a bar plot:
 
 ``` r
+
 plot_bar_rankings(data, "ischemic_x_myogenic_filtered", "Pagerank", type = NULL, filter_sign = NULL)
 ```
 
@@ -344,6 +354,7 @@ We can further take a look at the Influencer and Listener ranking to
 observe which cell types are more sending or more receiving:
 
 ``` r
+
 plot_bar_rankings(data, "ischemic_x_myogenic_filtered", "Influencer", type = NULL, filter_sign = NULL)
 plot_bar_rankings(data, "ischemic_x_myogenic_filtered", "Listener", type = NULL, filter_sign = NULL)
 ```
@@ -375,6 +386,7 @@ specific cell type that are important in the network’s signaling. For
 now, we will focus exclusively on ligand-receptor (LR) interactions.
 
 ``` r
+
 plot_bar_rankings(data, "ischemic_x_myogenic_ggi", "Pagerank", type = "LR", filter_sign = NULL, mode = "cgi")
 ```
 
@@ -395,6 +407,7 @@ examine the ligands with the top Influencer scores and the receptors
 with the top Listener scores:
 
 ``` r
+
 plot_bar_rankings(data, "ischemic_x_myogenic_ggi", "Influencer", type = "L", filter_sign = NULL, mode = "cgi")
 plot_bar_rankings(data, "ischemic_x_myogenic_ggi", "Listener", type = "R", filter_sign = NULL, mode = "cgi")
 ```
@@ -422,6 +435,7 @@ We begin with the Sankey plots showing signaling between the Fib2 and
 SPP1_Macrophages clusters (in both directions):
 
 ``` r
+
 plot_sankey(data@tables$ischemic_x_myogenic,
     target = NULL,
     ligand_cluster = "Fib2_Myofib",
@@ -437,6 +451,7 @@ plot_sankey(data@tables$ischemic_x_myogenic,
  
 
 ``` r
+
 plot_sankey(data@tables$ischemic_x_myogenic,
     target = NULL,
     ligand_cluster = "SPP1_Macrophages",
@@ -455,6 +470,7 @@ Additionally, a Sankey plot was created for a subset of cell types,
 displaying only interactions involving the TGFB1 ligand:
 
 ``` r
+
 subset <- c("LYVE_FOLR_Macrophages",
 "LYVE_PLTP_Macrophages",
 "CCL18_Macrophages",

@@ -12,6 +12,7 @@ Seurat object as input, using CellphoneDB as method and the Consensus
 database:
 
 ``` r
+
 library(Seurat)
 library(dplyr)
 library(liana)

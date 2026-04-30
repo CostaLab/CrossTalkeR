@@ -3,6 +3,7 @@
 ## Version Info
 
 ``` r
+
 suppressPackageStartupMessages({
   require(CrossTalkeR)
 })
@@ -20,7 +21,7 @@ suppressPackageStartupMessages({
 })
 ```
 
-**R version**: R version 4.5.2 (2025-10-31)
+**R version**: R version 4.6.0 (2026-04-24)
 
 **Package version**: 2.0.0
 
@@ -30,6 +31,7 @@ In our vignette we provide examples on how to analyse cell interactions
 from a human myelofibrosis single cell RNA-seq dataset.
 
 ``` r
+
 data(CTR)
 data(EXP)
 paths <- list('CTR'=CTR,
@@ -51,6 +53,7 @@ data <- generate_report(paths,
 ### CCI
 
 ``` r
+
 plot_cci(
   graph = data@graphs$CTR,
   colors = data@colors,
@@ -70,6 +73,7 @@ plot_cci(
 ### Sankey plot
 
 ``` r
+
 plot_sankey(
   lrobj_tbl = data@tables$EXP_x_CTR,
   target = c("TGFB1|L"),

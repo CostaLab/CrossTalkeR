@@ -26,6 +26,7 @@ liana.
 First of all, we are laoding all necessary libraries :
 
 ``` r
+
 library(Seurat)
 library(dplyr)
 library(liana)
@@ -37,6 +38,7 @@ Then we can continue to load the Seurat object of our example. The
 object is provided in the package as accessible object:
 
 ``` r
+
 seurat_object <- readRDS("/path/to/Seurat/object.Rds")
 ```
 
@@ -47,6 +49,7 @@ liana results in the same step, so that the resulting tables can
 directly be used as input for the CrossTalkeR analysis:
 
 ``` r
+
 outpath <- "/path/to/save/results/"
 pval_threshold <- 0.05
 
@@ -85,6 +88,7 @@ path where we like to save our results (output) and run CrossTalkeR with
 the generate_report() function:
 
 ``` r
+
 library(CrossTalkeR)
 library(igraph)
 library(stringr)
@@ -143,6 +147,7 @@ the cell-cell interactions with the plot_cci() function. Here we show a
 plot for each analysed condition:
 
 ``` r
+
 data(ctkroutput)
 data <- ctkroutput 
 p1 <- plot_cci(graph = data@graphs$CTR,
@@ -206,6 +211,7 @@ genes in the Pagerank ranking for both preset conditions in form of
 Barplots:
 
 ``` r
+
 rankings_table <- data@rankings$CTR_ggi %>%
   arrange(Pagerank)
 rankings_table <- tail(rankings_table, n=10)
@@ -251,6 +257,7 @@ results deal with cell-cell interactions. Here we show again the CCI
 graph plot, but now for the compared conditions:
 
 ``` r
+
 plot_cci(graph = data@graphs$EXP_x_CTR,
         colors = data@colors,
         plt_name = 'Disease vs Control',
@@ -283,12 +290,14 @@ the pagerank is very small (indicated by small node size). This
 indicates that MSCs are more important in the CCIs in the CTR condition.
 
 ``` r
+
 EnhancedVolcano(data@stats$EXP_x_CTR, lab=data@stats$EXP_x_CTR$columns_name,x='lodds',y='p',pCutoff=0.05)
 ```
 
 ![](HumanFibrosis_files/figure-html/vignete451-1.png)
 
 ``` r
+
 plot_cci(graph = data@graphs$EXP_x_CTR_filtered,
         colors = data@colors,
         plt_name = 'Disease vs Control Fisher Test Filtered',
@@ -323,6 +332,7 @@ before, we can look at the rankings individually in the form of bar
 plots. Here is an example for the Pagerank of cell types in the network:
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR", "Pagerank", type = NULL, filter_sign = NULL)
 ```
 
@@ -336,18 +346,21 @@ other topological measures, we can assign/find other communication
 properties of the cell types:
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR", "Influencer", type = NULL, filter_sign = NULL)
 ```
 
 ![](HumanFibrosis_files/figure-html/vignete7_Influencer-1.png)
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR", "Listener", type = NULL, filter_sign = NULL)
 ```
 
 ![](HumanFibrosis_files/figure-html/vignete7_Influencer-2.png)
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR", "Mediator", type = NULL, filter_sign = NULL)
 ```
 
@@ -374,6 +387,7 @@ the topological rankings in the form of bar plots, again using the
 example of the pagerank:
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR_ggi", "Pagerank", type = NULL, filter_sign = NULL, mode = "cgi")
 ```
 
@@ -393,12 +407,14 @@ the other rankings. Given that we are focusing on pairwise interactions,
 our analysis will concentrate on the Influencer and Listener rankings:
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR_ggi", "Influencer", type = "L", filter_sign = NULL, mode = "cgi")
 ```
 
 ![](HumanFibrosis_files/figure-html/vignete9_other-1.png)
 
 ``` r
+
 plot_bar_rankings(data, "EXP_x_CTR_ggi", "Listener", type = "R", filter_sign = NULL, mode = "cgi")
 ```
 
@@ -422,6 +438,7 @@ can regenerate the report again, this time passing a list of genes of
 interest:
 
 ``` r
+
 genes_of_interest <- c('TGFB1|L',
                        'ITGB1|R',
                        'CXCR4|R')
@@ -438,6 +455,7 @@ The second option is to plot only the Sankey plots for the genes of
 interests, without redoing the report:
 
 ``` r
+
 plot_sankey(data@tables$EXP_x_CTR,
             target = "TGFB1|L",
             ligand_cluster = NULL,
@@ -469,6 +487,7 @@ when running the Sankey plot function. Also, the number of interactions
 included is reduced by setting the threshold parameter to 15.
 
 ``` r
+
 plot_sankey(data@tables$EXP_x_CTR,
             target = "CXCR4|R",
             ligand_cluster = NULL,
@@ -492,6 +511,7 @@ is the ligand S100A8. The study also shows that when S100A8 is targeted
 the MPN phenotype is ameliorated
 
 ``` r
+
 plot_sankey(data@tables$EXP_x_CTR,
             target = "S100A8|L",
             ligand_cluster = "Myeloid",

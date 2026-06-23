@@ -177,17 +177,20 @@ analise_LR <- function(lrpaths,
   if (length(lrpaths) > 1) {
     data <- create_diff_table(data, out_path, comparison, score_col)
   }
-  # Generating the single condition report
+
   lrobj_path1 <- file.path(out_path, "LR_data_final.Rds")
 
+  message("Run Fisher Statistics")
   if (length(lrpaths) > 1) {
     data <- fisher_test_cci(data, "LRScore", out_path = out_path, comparison)
   }
 
+  message("Run MannU Statistics")
   if (length(lrpaths) > 1) {
     data <- mannwitu_test_cci(data, "LRScore", out_path = out_path, comparison)
   }
 
+  message("Filtering the differential CCI network")
   if (filtered_net) {
     data <- filtered_graphs(data, out_path, fil_stat = fil_stat, p_val = p_val)
   }

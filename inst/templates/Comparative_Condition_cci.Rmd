@@ -75,7 +75,7 @@ for (i in 1:length(names(all_data@tables))) {
 
 *Here, the cell-cell interaction is provided for each phenotype comparison between phenotypes.*
 
-```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'all'}
+```{r fig.align='center', fig.height=8,fig.width=8,message=FALSE, warning=FALSE, echo=FALSE,fig.keep = 'last'}
 path <- params$obj1
 thr <- params$thr
 all_data <- readRDS(path)

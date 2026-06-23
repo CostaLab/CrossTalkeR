@@ -449,10 +449,10 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
   })
   if (!is.null(comparison)) {
     for (pair in comparison) {
-      print(pair)
       ctr_name <- pair[2]
       exp_name <- pair[1]
       res <- lapply(unique(unlist(lcellpair)), function(x) {
+
         c <- data@tables[[ctr_name]] |>
           filter(cellpair == x) |>
           filter(type_gene_A == "Ligand") |>
@@ -474,12 +474,28 @@ mannwitu_test_cci <- function(data, measure, out_path, comparison = NULL) {
         }
         joined <- merge(c, e, by.x = 'allpair', by.y = 'allpair')
         joined[is.na(joined)] <- 0
+        print(dim(joined))
         x_vec <- joined[[paste0(measure, ".x")]]
         y_vec <- joined[[paste0(measure, ".y")]]
-        joined <- joined %>%
-          reshape2::melt() |>
-          wilcox_test(value ~ variable, paired = FALSE, exact = TRUE) |>
-          mutate(cellpair=x)
+        # joined <- joined %>%
+        #   reshape2::melt() |>
+        #   wilcox_test(value ~ variable, paired = FALSE, exact = TRUE) |>
+        #   mutate(cellpair=x)
+
+        wt <- wilcox.test(
+          x = x_vec,
+          y = y_vec,
+          paired = FALSE,
+          alternative = "two.sided"
+          #exact = TRUE
+        )
+
+        joined <- tibble(
+          statistic = unname(wt$statistic),
+          p = wt$p.value,
+          cellpair = x
+        )
+
         eps <- 1e-6
         mean_c <- mean(x_vec, na.rm = TRUE)
         mean_e <- mean(y_vec, na.rm = TRUE)

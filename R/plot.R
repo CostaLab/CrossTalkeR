@@ -88,7 +88,7 @@ plot_cci <- function(graph,
                          col_pallet = NULL,
                          standard_node_size = 20,
                          pg_node_size_low = 10,
-                         pg_node_size_high = 60,
+                         pg_node_size_high = 40,
                          arrow_size = 0.4,
                          arrow_width = 0.8,
                          node_label_position = 1.2,
@@ -133,10 +133,14 @@ plot_cci <- function(graph,
     coords_scale <- coords
   }
   # It will make the loops in a correct angle
-  loop_angle <- ifelse(coords_scale[igraph::V(graph)$name, 1] > 0,
-    -atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1]),
-    pi - atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1])
-  )
+  # loop_angle <- ifelse(coords_scale[igraph::V(graph)$name, 1] > 0,
+  #   -atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1]),
+  #   pi - atan(coords_scale[igraph::V(graph)$name, 2] / coords_scale[igraph::V(graph)$name, 1])
+  # )
+  loop_angle <- atan2(
+  coords_scale[igraph::V(graph)$name, 2],
+  coords_scale[igraph::V(graph)$name, 1]
+  ) + pi
   # Setting node colors
   igraph::V(graph)$color <- colors[igraph::V(graph)$name]
   ## Color scheme

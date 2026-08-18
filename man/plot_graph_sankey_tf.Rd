@@ -11,8 +11,7 @@ plot_graph_sankey_tf(
   cluster = NULL,
   target_type = NULL,
   plt_name = NULL,
-  threshold = 50,
-  save_path = NULL
+  threshold = 50
 )
 }
 \arguments{
@@ -29,11 +28,11 @@ plot_graph_sankey_tf(
 \item{plt_name}{plot title}
 
 \item{threshold}{top_n n value}
-
-\item{save_path}{path to save the plot}
 }
 \value{
-R default plot
+A ggraph/ggplot object; print it to display, or pass it to
+ggplot2::ggsave() to save. In the not-found / no-target cases a
+diagnostic message is printed and the message string is returned invisibly.
 }
 \description{
 This function creates a sankey plot for a selected gene including transcription factor interactions.

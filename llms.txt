@@ -194,6 +194,9 @@ Communication from Single-cell RNA Data
 - [`plot_graph_sankey_tf()`](plot_graph_sankey_tf.md) : This function
   creates a sankey plot for a selected gene including transcription
   factor interactions.
+- [`plot_graph_sankey_tf_custom()`](plot_graph_sankey_tf_custom.md) :
+  Plot an intracellular Receptor -\> TF -\> Ligand sankey from
+  pre-scored lists
 - [`plot_pca()`](plot_pca.md) : This function is a proxy to the PCA plot
 - [`plot_pca_LR_comparative()`](plot_pca_LR_comparative.md) : This
   function is a proxy to the PCA plot in comparative conditions

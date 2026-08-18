@@ -13,7 +13,9 @@ plot_sankey(
   threshold = 50,
   tfflag = TRUE,
   score_col = "LRScore",
-  fil_col = "LRScore"
+  fil_col = "LRScore",
+  low_color = "#084dbd",
+  high_color = "#bb001c"
 )
 }
 \arguments{

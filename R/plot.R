@@ -367,7 +367,9 @@ plot_sankey <- function(lrobj_tbl,
                         threshold = 50,
                         tfflag = TRUE,
                         score_col = "LRScore",
-                        fil_col = "LRScore") {
+                        fil_col = "LRScore",
+                        low_color = "#084dbd",
+                        high_color = "#bb001c") {
   lrobj_tbl <- lrobj_tbl %>%
     filter(type_gene_A == "Ligand" & type_gene_B == "Receptor")
   if (!is.null(target)) {
@@ -422,7 +424,7 @@ plot_sankey <- function(lrobj_tbl,
                             n = ifelse(dim(data)[1] > threshold, ceiling(threshold/2), dim(data)[1]), with_ties = FALSE)
       tmp = rbind(upsel,lowsel)
     }
-    
+
     ggplot2::ggplot(tmp, aes(y = .data$freq, axis1 = .data$source,
                                   axis2 = stats::reorder(.data$gene_A, -.data[[score_col]]),
                                   axis3 = stats::reorder(.data$gene_B, -.data[[score_col]]),
@@ -435,9 +437,9 @@ plot_sankey <- function(lrobj_tbl,
                                 ggplot2::aes(label = ggplot2::after_stat(.data$stratum)),
                                 size = 4) +
             ggplot2::scale_x_discrete(limits = tmp_cols, expand = c(.05, .05)) +
-            ggplot2::scale_fill_gradient2(low = colorBlindness::Blue2DarkOrange18Steps[4],
-                                          mid = colorBlindness::Blue2DarkOrange18Steps[10],
-                                          high = colorBlindness::Blue2DarkOrange18Steps[14], midpoint = 0) +
+            ggplot2::scale_fill_gradient2(low = low_color,
+                                          mid = "#e6e6e6",
+                                          high = high_color, midpoint = 0) +
             ggplot2::scale_color_manual(values = c("black")) +
             ggplot2::ggtitle(plt_name) +
             ggplot2::theme(text = element_text(size = 8)) +
@@ -482,14 +484,15 @@ set_coords <- function(df, type) {
 #' @param target_type type of target
 #' @param plt_name plot title
 #' @param threshold top_n n value
-#' @param save_path path to save the plot
 #' @import ggplot2
 #' @import dplyr
 #' @import colorBlindness
 #' @import ggalluvial
 #' @importFrom tidyr %>%
 #' @importFrom stats reorder
-#' @return R default plot
+#' @return A ggraph/ggplot object; print it to display, or pass it to
+#'   ggplot2::ggsave() to save. In the not-found / no-target cases a
+#'   diagnostic message is printed and the message string is returned invisibly.
 #' @export
 #' @examples
 #' paths <- c(
@@ -519,8 +522,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
                                  cluster = NULL,
                                  target_type = NULL,
                                  plt_name = NULL,
-                                 threshold = 50,
-                                 save_path = NULL) {
+                                 threshold = 50) {
   if (!is.null(target)) {
     if (target_type == "TF") {
       data <- lrobj_tbl %>%
@@ -687,7 +689,7 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
       }
 
 
-      print(ggraph(graph1, layout = mat_coords) +
+      ggraph(graph1, layout = mat_coords) +
         geom_edge_fan(aes(colour = Pagerank_Score), width = 2, arrow = arrow(angle = 30, length = unit(4, "mm"))) +
         geom_node_point(aes(size = size)) +
         geom_node_point(aes(color = Gene_Type, size = size), show.legend = FALSE) +
@@ -704,13 +706,207 @@ plot_graph_sankey_tf <- function(lrobj_tbl,
         annotate(geom = "text", x = 15, y = max(res_df$y) + 5, label = "Transcription Factor", size = 5, fontface = "bold") +
         annotate(geom = "text", x = 25, y = max(res_df$y) + 5, label = "Ligand", size = 5, fontface = "bold") +
         theme(plot.margin = unit(rep(30, 4), "points")) +
-        ggtitle(plt_name))
+        ggtitle(plt_name)
     } else {
       print(paste0("Target gene ", target, " not found in selected cluster ", cluster, "!"))
     }
   } else {
     print("Please provide an target gene to filter the interactions!")
   }
+}
+
+#' Plot an intracellular Receptor -> TF -> Ligand sankey from pre-scored lists
+#'
+#' Alternative to [plot_graph_sankey_tf()] for the case where the
+#' receptor -> transcription-factor and transcription-factor -> ligand edges
+#' have already been individually filtered, ranked and scored. It takes the two
+#' edge tables exactly as supplied and only lays out and renders the graph.
+#'
+#' @param gene_list1 data.frame of receptor -> TF edges. Must contain `gene_A`
+#'   (receptor), `gene_B` (TF), the column named by `score_name`, and `AvgTFScore`.
+#' @param gene_list2 data.frame of TF -> ligand edges. Must contain `gene_A`
+#'   (TF), `gene_B` (ligand), the column named by `score_name`, and `AvgTFScore`.
+#' @param cluster cluster name; used to build the `cluster/gene` keys that are
+#'   looked up in `pagerank_table`.
+#' @param pagerank_table data.frame with columns `nodes` (formatted as
+#'   `cluster/gene`) and `Pagerank`, indexable by rowname.
+#' @param score_name column in the gene lists used to colour the edges.
+#'   Default "LRScore".
+#' @param min_max_val symmetric limit for the diverging edge colour scale; edges
+#'   are clipped to `[-min_max_val, min_max_val]` so colours are comparable
+#'   across plots. Default 1.
+#' @param legend_name title of the edge-colour legend. Default "Intracellular Scoring".
+#' @param title plot title. Default "Intra".
+#' @param size_node node-sizing mode: `"fixed_size"` (all non-TF nodes equal),
+#'   `"score_size"` (TF nodes scaled by `abs(AvgTFScore)`, others fixed) or any
+#'   other value (raw pagerank). Default "fixed_size".
+#' @param colors five-stop colour vector for the edge gradient (low -> mid -> high).
+#' @import ggplot2
+#' @import ggraph
+#' @import igraph
+#' @import dplyr
+#' @importFrom tidyr %>%
+#' @importFrom scales rescale number_format
+#' @importFrom stats quantile setNames
+#' @return A `ggraph`/`ggplot` object. Print it to display, or pass it to
+#'   [ggplot2::ggsave()] to save with any device.
+#' @export
+#' @examples
+#' \dontrun{
+#' # gene_list1 / gene_list2 are built by the caller with any custom
+#' # filtering and scoring, then handed to the renderer:
+#' p <- plot_intracellular_sankey(
+#'   gene_list1 = my_receptor_tf_edges,
+#'   gene_list2 = my_tf_ligand_edges,
+#'   cluster = "Tumor",
+#'   pagerank_table = pagerank_tbl,
+#'   score_name = "LRScore",
+#'   size_node = "score_size"
+#' )
+#' p                                   # display in the current device
+#' ggplot2::ggsave("intra.pdf", p, width = 8, height = 8,
+#'                 device = grDevices::cairo_pdf)   # or save it yourself
+#' }
+plot_graph_sankey_tf_custom <- function(gene_list1,
+                                      gene_list2,
+                                      cluster,
+                                      pagerank_table,
+                                      score_name = "LRScore",
+                                      min_max_val = 1,
+                                      legend_name = "Intracellular Scoring",
+                                      title = "Intra",
+                                      size_node = "fixed_size",
+                                      colors = c("#2c7bb6", "#84b0d1", "#ebebeb", "#f88e5f", "#bb001c")) {
+  gene_list1$score <- gene_list1[[score_name]]
+  gene_list2$score <- gene_list2[[score_name]]
+  graph_df <- rbind(gene_list1, gene_list2)
+  graph1 <- igraph::graph_from_data_frame(graph_df[, c("gene_A", "gene_B", "score")])
+
+  receptors_coord <- gene_list1 %>%
+    select(gene_A, score) %>%
+    rename(gene = gene_A) %>%
+    arrange(desc(score)) %>%
+    select(gene) %>%
+    unique()
+  ligands_coord <- gene_list2 %>%
+    select(gene_B, score) %>%
+    rename(gene = gene_B) %>%
+    arrange(desc(score)) %>%
+    select(gene) %>%
+    unique()
+  tf_coord_r <- gene_list1 %>%
+    select(gene_B, score, AvgTFScore) %>%
+    rename(gene = gene_B) %>%
+    unique()
+  tf_coord_l <- gene_list2 %>%
+    select(gene_A, score, AvgTFScore) %>%
+    rename(gene = gene_A) %>%
+    unique()
+  tf_coord <- rbind(tf_coord_r, tf_coord_l) %>%
+    arrange(desc(abs(AvgTFScore))) %>%
+    select(gene) %>%
+    unique()
+  tf_coord_df <- rbind(tf_coord_r, tf_coord_l) %>%
+    arrange(desc(abs(AvgTFScore))) %>%
+    distinct(gene, AvgTFScore)
+  tf_score_lookup <- setNames(as.numeric(tf_coord_df$AvgTFScore),
+                              as.character(tf_coord_df$gene))
+
+  res_df <- NULL
+  if (nrow(ligands_coord) > 0) {
+    res_df <- set_coords(ligands_coord, "L")
+  }
+  if (nrow(tf_coord) > 0) {
+    res_df <- if (is.null(res_df)) {
+      set_coords(tf_coord, "TF")
+    } else {
+      rbind(res_df, set_coords(tf_coord, "TF"))
+    }
+  }
+  if (nrow(receptors_coord) > 0) {
+    res_df <- if (is.null(res_df)) {
+      set_coords(receptors_coord, "R")
+    } else {
+      rbind(res_df, set_coords(receptors_coord, "R"))
+    }
+  }
+  rownames(res_df) <- res_df$gene
+
+  for (vertice in V(graph1)) {
+    name <- vertex_attr(graph1, "name", vertice)
+    key <- paste0(cluster, "/", name)
+    if (grepl("|R", name, fixed = TRUE)) {
+      vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Receptor"
+      vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[key, "Pagerank"]
+      vertex_attr(graph = graph1, name = "clustername", index = vertice) <- key
+    } else if (grepl("|L", name, fixed = TRUE)) {
+      vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Ligand"
+      vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[key, "Pagerank"]
+      vertex_attr(graph = graph1, name = "clustername", index = vertice) <- key
+    } else {
+      vertex_attr(graph = graph1, name = "Gene_Type", index = vertice) <- "Transcription Factor"
+      vertex_attr(graph = graph1, name = "Score", index = vertice) <- pagerank_table[key, "Pagerank"]
+      vertex_attr(graph = graph1, name = "AvgTFScore", index = vertice) <- tf_score_lookup[name]
+      vertex_attr(graph = graph1, name = "clustername", index = vertice) <- key
+    }
+  }
+
+  V(graph1)$size <- NA_real_
+  if (size_node == "fixed_size") {
+    V(graph1)$size <- 0.5
+  } else if (size_node == "score_size") {
+    tf_idx <- V(graph1)$Gene_Type == "Transcription Factor"
+    V(graph1)$size[tf_idx] <- scales::rescale(abs(V(graph1)$AvgTFScore[tf_idx]), to = c(2, 5))
+    V(graph1)$size[!tf_idx] <- 3
+  } else {
+    pagerank_list <- setNames(as.list(pagerank_table$Pagerank), pagerank_table$nodes)
+    test_result_pg <- pagerank_list[V(graph1)$clustername]
+    V(graph1)$size <- unlist(test_result_pg)
+  }
+
+  mat_coords <- matrix(nrow = length(V(graph1)), ncol = 2)
+  for (vertice in V(graph1)) {
+    name <- vertex_attr(graph1, "name", vertice)
+    mat_coords[vertice, ] <- c(res_df[name, ]$x, res_df[name, ]$y)
+  }
+
+  V(graph1)$TF_size <- NA_real_
+  tf_idx <- V(graph1)$Gene_Type == "Transcription Factor"
+  V(graph1)$TF_size[tf_idx] <- abs(V(graph1)$AvgTFScore[tf_idx])
+  tf_vals <- abs(V(graph1)$AvgTFScore[tf_idx])
+
+  ggraph(graph1, layout = mat_coords) +
+    geom_edge_fan(aes(colour = score),
+                  width = 2,
+                  arrow = arrow(angle = 30, length = unit(4, "mm"))) +
+    geom_node_point(
+      data = function(x) dplyr::filter(x, Gene_Type != "Transcription Factor"),
+      aes(size = size),
+      show.legend = FALSE,
+      color = "#464646") +
+    geom_node_point(
+      data = function(x) dplyr::filter(x, Gene_Type == "Transcription Factor"),
+      aes(size = TF_size),
+      color = "#464646",
+      show.legend = TRUE) +
+    scale_size_continuous(
+      name = "TF AvgTFScore\n(node size)",
+      range = c(1, 5),
+      breaks = quantile(tf_vals, probs = c(0, 0.5, 1)),
+      labels = scales::number_format(accuracy = 0.01)) +
+    geom_node_text(aes(label = name), size = 4, nudge_y = 1) +
+    scale_edge_color_gradientn(
+      colours = colors,
+      values = scales::rescale(c(-min_max_val, -min_max_val / 2, 0, min_max_val / 2, min_max_val)),
+      limits = c(-min_max_val, min_max_val),
+      name = legend_name) +
+    coord_cartesian(clip = "off") +
+    theme_void() +
+    annotate(geom = "text", x = 5, y = max(res_df$y) + 5, label = "Receptor", size = 5, fontface = "bold") +
+    annotate(geom = "text", x = 15, y = max(res_df$y) + 5, label = "Transcription Factor", size = 5, fontface = "bold") +
+    annotate(geom = "text", x = 25, y = max(res_df$y) + 5, label = "Ligand", size = 5, fontface = "bold") +
+    theme(plot.margin = unit(rep(30, 4), "points")) +
+    ggtitle(title)
 }
 
 
